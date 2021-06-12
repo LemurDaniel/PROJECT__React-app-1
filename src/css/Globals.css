@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+    @apply bg-dark-800 relative
+}
+
+.container {
+    @apply mx-auto p-5
+}
+
+
+.header {
+    @apply py-5 px-10  md:flex justify-start items-center flex-wrap text-center md:text-left 
+}
+
+.header > * {
+    @apply px-10 py-5
+}
+
+
+
+.btn-custom-lg {
+    @apply p-2 m-2 mx-auto md:mx-0 text-lg
+}
+
+.btn-custom-2x {
+    @apply p-2 m-2 mx-auto md:mx-0 text-2xl
+}
+
+
+
+.btn-orange {
+    @apply rounded-md border-2 text-brand2-300 bg-dark-700 border-brand2-300
+} 
+
+.btn-orange:hover {
+    @apply transition-all duration-300 text-white bg-brand2-300 border-white
+}
+
+
+
+.btn-header {
+    @apply btn-custom-lg rounded text-brand-100 hover:underline
+}
+
+.btn-header.active {
+    @apply text-brand-250
+}
+.btn-header:not(.active) {
+    @apply text-white
+}
+
+
+.iconButton {
+    @apply text-4xl hover:opacity-80 hidden sm:block
+}
+
+
+
+.task {
+    @apply p-2 my-1 rounded-sm flex items-center  border-2 hover:opacity-80 duration-300 relative
+}
+
+.done {
+    @apply bg-brand2-450 text-white 
+}
+
+.notdone {
+    @apply bg-brand2-350 text-white 
+}
+
+
+
+
+
