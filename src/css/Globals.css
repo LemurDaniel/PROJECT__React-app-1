@@ -2,34 +2,39 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Ghost element for fixed nav */
+
+body::before {
+    display: block;
+    content: '';
+    height: 80px;
+  
+  }
+
 body {
     @apply bg-dark-800 relative
 }
+
+
+/* Center Container */
 
 .container {
     @apply mx-auto p-5
 }
 
 
+/* Header for Tasklist */
+
 .header {
-    @apply py-5 px-10  md:flex justify-start items-center flex-wrap text-center md:text-left 
-}
-
-.header > * {
-    @apply px-10 py-5
+    @apply py-5 px-12 text-center md:text-left md:flex justify-between items-center
 }
 
 
+/* Button types */
 
-.btn-custom-lg {
-    @apply p-2 m-2 mx-auto md:mx-0 text-lg
+.btn-custom {
+    @apply p-1 px-2 mt-2 mx-auto md:mx-0 text-lg md:text-xl
 }
-
-.btn-custom-2x {
-    @apply p-2 m-2 mx-auto md:mx-0 text-2xl
-}
-
-
 
 .btn-orange {
     @apply rounded-md border-2 text-brand2-300 bg-dark-700 border-brand2-300
@@ -42,7 +47,7 @@ body {
 
 
 .btn-header {
-    @apply btn-custom-lg rounded text-brand-100 hover:underline
+    @apply btn-custom rounded text-brand-100 hover:underline
 }
 
 .btn-header.active {
@@ -58,6 +63,8 @@ body {
 }
 
 
+
+/* CSS for Tasklist and tasks */
 
 .task {
     @apply p-2 my-1 rounded-sm flex items-center  border-2 hover:opacity-80 duration-300 relative
