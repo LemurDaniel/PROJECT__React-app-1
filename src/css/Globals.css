@@ -59,7 +59,7 @@ body {
 
 
 .iconButton {
-    @apply text-4xl hover:opacity-80 hidden sm:block
+    @apply p-2  text-2xl hidden sm:block hover:opacity-80 rounded-full bg-white
 }
 
 
@@ -71,7 +71,7 @@ body {
 }
 
 .done {
-    @apply bg-brand2-450 text-white 
+    @apply bg-brand2-400 text-white 
 }
 
 .notdone {

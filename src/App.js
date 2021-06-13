@@ -2,9 +2,9 @@ import './css/Tailwind.css'
 import './css/App.css';
 
 
-import Nav from './pages/fragments/Nav';
-import Footer from './pages/fragments/Footer';
-import TaskTracker from './pages/TaskTracker';
+import Nav from './components/website/Nav';
+import Footer from './components/website/Footer';
+import TaskTracker from './components/tasks/TaskTracker';
 
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
