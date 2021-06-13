@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 import { FaTimes, FaCalendarDay } from 'react-icons/fa'
 import { ImCross, ImCheckmark } from 'react-icons/im'
@@ -25,10 +25,14 @@ const Task = ({ task, onDelete, toggleDone }) => {
 
             <div>
                 <h1 className='font-bold underline' >{task.text} </h1>
-                <p className='flex justify-start items-center'>  <i className='pr-2'><FaCalendarDay /></i> {task.day}</p>
+                <p className='flex justify-start items-center'>  
+                    <i className='pr-2'><FaCalendarDay /></i> 
+                    {task.date.toLocaleDateString() + ' at ' + task.date.toLocaleTimeString().substr(0,5)}
+                </p>
             </div>
 
-            <i className='absolute right-2 top-2 rounded-full hover:bg-white hover:text-brand2-300 duration-300' onClick={e => onDelete(task.id)}>
+            <i className='absolute right-2 top-2 rounded-full hover:bg-white hover:text-brand2-300 duration-300' 
+                onClick={e => onDelete(task.id)}>
                 <FaTimes />
             </i>
 
@@ -38,4 +42,4 @@ const Task = ({ task, onDelete, toggleDone }) => {
 }
 
 
-export default Task
+export default Task;
