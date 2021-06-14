@@ -9,10 +9,12 @@ import TaskTracker from './components/tasks/TaskTracker';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Authorization from './components/Authorization';
+import { useState } from 'react';
 
 
 function App() {
 
+  const [user, setUser] = useState(null);
 
   const navigations = [
     {

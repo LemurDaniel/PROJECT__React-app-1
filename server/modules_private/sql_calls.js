@@ -21,7 +21,7 @@ const game1 = 'ASTO';
 const SQL_CREATE_USER =     'create table '+TABLE_USER+' ( '+
                             'user_id nchar(16) PRIMARY KEY,'+
                             'username nvarchar(50) NOT NULL unique,'+
-                            'username_display nvarchar(50) NOT NULL unique,'+
+                            'username_display nvarchar(50) NOT NULL ,'+
                             'bcrypt BINARY(60) NOT NULL ) ';
 
 const SQL_CREATE_SCORE =    'create table '+TABLE_SCORE+' ( '+

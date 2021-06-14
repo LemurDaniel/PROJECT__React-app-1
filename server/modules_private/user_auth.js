@@ -42,7 +42,7 @@ function decrypt(encrypted){
 }
 
 
-function create_jwt(user_raw, res, auth2) {
+function create_jwt(user_raw, res) {
     // Make sure only id and username_display gets encoded into JWT
     // no sensitive data like password or bycrypt hash
     user = { id: user_raw.id, username_display: user_raw.username_display };    
@@ -65,12 +65,14 @@ function create_jwt(user_raw, res, auth2) {
 }
 
 
-async function register ({ body }, res) {
+async function register ({ body }, res, schema = true) {
 
     console.log(body)
     const user = { ...body, username: body.username.toLowerCase() };
-    const validated = schema.user_register.validate(user);
-    if(validated.error) return res.json(schema.error(validated.error));
+    if(schema) {
+        const validated = schema.user_register.validate(user);
+        if(validated.error) return res.json(schema.error(validated.error));
+    }
 
     try {
 
@@ -99,11 +101,11 @@ async function register ({ body }, res) {
 
 async function login ({ body }, res) {
 
+    console.log(body)
     const user = { ...body, username: body.username.toLowerCase() };
 
     try {
 
-        console.log(user)
         const hash = await sql.get_password_hash(sql.pool, user);
         const valid = await bcrypt.compare(user.password, hash);
 
@@ -115,6 +117,15 @@ async function login ({ body }, res) {
     } catch(err) {
         res.json({err: err});
     }
+
+}
+
+async function loginGuest (req, res) {
+
+    req.body.username = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
+    req.body.password = req.body.username;
+    req.body.username_display += ' (Guest - ' + crypto.randomBytes(2).toString('hex') + ')' 
+    register(req, res, false);
 
 }
 
@@ -158,6 +169,7 @@ function auth2 (req, res, next) {
 
 route.post('/user/register', register );
 route.post('/user/login', login );
+route.post('/user/guest', loginGuest );
 route.get('/user/logedin', (req, res) => res.status(validate_token(req) ? 200 : 401).send() );
 
 route.get('/user/logout', (req, res) => { 
