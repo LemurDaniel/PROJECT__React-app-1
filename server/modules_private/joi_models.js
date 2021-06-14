@@ -3,7 +3,7 @@ const joi = require('joi');
 schemas = {};
 schemas.user_register = joi.object({
 
-    username_display: joi.string()
+    userDisplayName: joi.string()
         .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)
@@ -36,7 +36,7 @@ schemas.user = joi.object({
         .pattern(new RegExp('^[0-9a-f]{16}$'))
         .required(),
 
-    username_display: joi.string()
+    userDisplayName: joi.string()
         .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)
@@ -50,11 +50,6 @@ schemas.user = joi.object({
 
 })
 
-schemas.save_score = joi.object({ 
-    
-    user: schemas.user,
-    score: joi.number()
-})
 
 schemas.image = joi.object({
 
