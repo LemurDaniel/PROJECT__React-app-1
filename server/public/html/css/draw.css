@@ -1,0 +1,112 @@
+
+body{
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.container_canvas {
+    width: 420px;
+    height: 320px;
+}
+
+#predictions {
+    position: absolute;
+}
+
+.center.info_container {
+    left: 47%;
+}
+
+.box {
+    width: fit-content;
+    height: fit-content;
+    margin-right: 1%;
+    margin-left: 1%;
+}
+
+ol, ol li {
+    margin: 0;
+    padding: 0;
+    text-align: left;
+    font-weight: bold;
+}
+
+#predictions_loader.loader_small {
+    position: relative;
+    margin: auto;
+    margin-top: 200%;
+}
+
+
+.weight_showcase_container {
+    width: 80%;
+}
+
+.weight_showcase_container * {
+    display: inline-block;
+    margin-top: 2%;
+    border: none;
+    border-color:#3498db;
+}
+
+
+/* color switch */
+.switch, #weight_showcase {
+    overflow: hidden;
+    border-style: solid;
+    width: 35px;
+    height: 35px;
+    padding: 0;
+    margin: 1%;
+}
+
+/* overly invisible colorpicker on stroke showcase */
+#input_color {
+    opacity: 0;
+    height: 35px;
+    width: 35px;
+    position: absolute;
+    margin: 0;
+    padding: 0;
+}
+
+
+
+/* rubber switch */
+.switch img {
+    max-height: 30px;
+    margin-top: 5%;
+}
+ 
+.switch.active:hover, .switch.inactive {
+    background-color: white;
+    border-color:#3498db;
+
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition:all 0.5s;
+}
+
+.switch.active, .switch.inactive:hover {
+    background-color: #3498db;
+    border-color: white;
+    
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition:all 0.5s;
+}
+
+
+#instructions p {
+    font-weight: bold;
+    line-height: 0.4;
+    font-size: 0.8em;
+    text-align: left;
+    margin-left: 12%;
+}

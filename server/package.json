@@ -1,0 +1,16 @@
+{
+    "name": "doodle-drawing-server",
+    "version": "1.0.0",
+    "description": "A webserver with user login/register serving services to draw, classify and search doodles of other users",
+    "author": "Daniel Landau <landau.daniel.1998+code@gmail.com",
+    "main": "webserver.js",
+    "dependencies": {
+        "bcrypt": "^5.0.0",
+        "body-parser": "^1.19.0",
+        "cors": "^2.8.5",
+        "express": "^4.17.1",
+        "joi": "^17.3.0",
+        "jsonwebtoken": "^8.5.1",
+        "mysql": "^2.18.1"
+    }
+}

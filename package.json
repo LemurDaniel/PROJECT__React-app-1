@@ -20,8 +20,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:CSS": "npx tailwindcss build ./src/css/Globals.css -o ./src/css/Tailwind.css",
-    "serve": "serve -s build -p 8000",
-    "json-server": "json-server --watch --port 5000"
+    "build:Docker": "docker build -t daniellandau1998/node-webserver -f ./docker/df-webserver .",
+    "server": "docker-compose -f ./docker/dc-web-db.yaml up"
   },
   "eslintConfig": {
     "extends": [

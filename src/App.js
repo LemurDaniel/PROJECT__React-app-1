@@ -8,6 +8,7 @@ import TaskTracker from './components/tasks/TaskTracker';
 
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import Authorization from './components/Authorization';
 
 
 function App() {
@@ -35,7 +36,8 @@ function App() {
       <Nav navigations={navigations}/>
 
       <Router>
-        <Route path='/taskTracker' exact component={TaskTracker} />
+      <Route path='/' exact component={Authorization} />
+        <Route path='/taskTracker'  component={TaskTracker} />
       </Router>
 
       <Footer />

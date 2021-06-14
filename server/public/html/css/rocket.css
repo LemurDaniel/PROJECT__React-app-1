@@ -1,0 +1,16 @@
+body {
+    background-image: url("../../assets/rocket-background2.jpg");
+    background-color: #cccccc;
+    background-size: 540px;
+}
+
+
+.game_container div canvas {
+    border-style: solid;
+    border-width: 4px;    
+}
+
+#restart {
+    top: 35%;
+    font-size: 25px;
+}

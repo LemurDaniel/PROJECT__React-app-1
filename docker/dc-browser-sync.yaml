@@ -1,0 +1,20 @@
+
+version: '3.1'
+
+services:
+    webserver_dev_bsync:
+        image: node-webserver:dev-bsync
+        container_name: webserver_dev_bsync
+        restart: always
+        volumes:
+            - ".././nodesrc:/var/project/src"
+        ports:
+            - "3000:3000"
+        environment:
+            SQL_HOST: db
+            SQL_PORT: 3306
+            SQL_USER: node_user
+            SQL_PASSWORD: geheimesPWDuser
+            SQL_DATABASE: node_wp
+volumes:
+    src_data:

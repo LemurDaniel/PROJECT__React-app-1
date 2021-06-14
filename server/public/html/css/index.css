@@ -1,0 +1,67 @@
+.box * {
+    display: block;
+    overflow: hidden;
+    color: #3498db;
+
+    margin: 0;
+    padding: 0;
+    margin: auto;
+}
+
+.box {
+    display: inline-block;
+    background-color: transparent;
+    border: none;
+    width: 40%;
+    max-height: 230px;
+    opacity: 0.85;
+    padding: 1%;
+    margin: 3%;
+
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}  
+
+.box:hover {
+    font-size: 1.4em;
+    font-weight: bold;
+    opacity: 1;
+
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.box img {
+    opacity: 0.8;
+
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.box:hover img {
+    opacity: 1;
+
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+
+
+.box .image_holder {
+    width: fit-content;
+    padding: 0;
+    border: none
+}
+
+.box img {
+    max-width: 50%;
+}
+

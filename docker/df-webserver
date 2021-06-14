@@ -1,0 +1,13 @@
+FROM node:alpine3.13
+
+WORKDIR /var/project
+
+COPY ./server/package.json .
+
+RUN npm install
+
+WORKDIR /var/project/src
+
+COPY ./server/ ./
+
+CMD ["node", "webserver.js"]

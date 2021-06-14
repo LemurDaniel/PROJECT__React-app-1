@@ -1,0 +1,47 @@
+
+version: '3.1'
+
+services:
+    webserver:
+        depends_on: 
+            - db
+        image: daniellandau1998/node-webserver
+        command: node webserver.js
+        container_name: nodejs
+        restart: always
+        volumes:
+            - ".././server:/var/project/src"
+        ports:
+            - "443:443"
+            - "80:80"
+        environment: 
+            AUTH2_USER: 'd.landau,admin'
+            AUTH2_PASS: 7376fbc46827c5d878a7c9b302d420e6cdc3fa437f9559fbcc1ac173c5c47658
+            SQL_HOST: db
+            SQL_PORT: 3306
+            SQL_DATABASE: node_db
+            SQL_TABLE_NAME: doodle
+            SQL_USER: node-webserver
+            SQL_PASSWORD: .Mvl/AueZ|#zCa?/Sq#r)>D68Z^L:ip`
+            HTTPS_ENABLE: 'false'
+            JWT_ENCRYPTION_ENABLE: 'false'
+        env_file:
+            - jwt-config.env
+            - https-config.env
+
+    db:
+        image: mysql:5.7
+        container_name: database
+        restart: always
+        volumes:
+            - "./mysql_data:/var/lib/mysql"
+        ports:
+            - "3001:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: ZG6p)VD3gj{C])eM66_)KMc)K46eZ5LW_UZKLjhDG<g[948I
+            MYSQL_PASSWORD: .Mvl/AueZ|#zCa?/Sq#r)>D68Z^L:ip`
+            MYSQL_USER: node-webserver
+            MYSQL_DATABASE: node_db
+volumes:
+    src_data:
+    db_data:

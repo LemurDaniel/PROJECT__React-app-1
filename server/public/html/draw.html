@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doodledrawing</title>
+
+    <link rel="stylesheet" href="/html/css/main.css">
+    <link rel="stylesheet" href="/html/css/draw.css">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/ml5@0.6.0/dist/ml5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+  
+    <script src="/html/js/logout.js"></script>
+    <script src="/html/js/draw.js"></script>
+
+</head>
+<body>
+    <div class="container left">
+        <a href="/">
+            <div class="link_button back_button button">
+                <img src="" alt="">
+            </div>
+        </a>
+    </div>
+    <div class="container right">
+        <a href="/credits">
+            <div class="link_button button"> credits</div>
+        </a>
+        <a href="/user">
+            <div class="link_button button"> info</div>
+        </a>
+        <div id="logout_button" class="link_button button">logout</div>
+    </div>
+
+    <div class="container center_down draw_container">
+
+        
+        <button id="btn_new_doodle" type="button" class="link_button">Create a new doodle</button>        
+
+        <br>
+
+        <input id="input_name" type="text" placeholder="Name your drawing">
+
+        <br>
+
+        <div class="container weight_showcase_container">
+            <div class="switch box inactive">
+                <img src="/assets/rubber.png" alt="" class="">
+                <img src="/assets/rubber-white.png" alt="" style="display: none;">
+            </div>
+            <div id="weight_showcase" class="box mark_on_hover">
+                <input id="input_color" type="color">
+                <!-- p5 canvas here -->
+            </div>
+            <input type="range" min="1" max="25" value="20" id="input_weight" class="box">
+        </div>
+
+        <br>
+
+        <div class="container container_canvas" oncontextmenu="return false;">
+            <div id="p5_canvas" class="box left">
+                <div id="p5_canvas_hidden" class="hidden_visually"></div>
+            </div>
+
+            <!-- Predictions -->
+            <div id="predictions" class="box right">
+                <div id="predictions_loader" class="loader_small"></div>
+                <div id="ml5_DoodleNet"></div>
+            </div>
+        </div>
+
+        <br>
+        
+        <div class="container">
+            <!--<button type="button" id="btn_clear" class="link_button">Clear Canvas</button>-->
+            <button type="button" id="btn_post"  class="link_button">Save Image to Server</button>
+            <button type="button" id="btn_download" class="link_button">Download Image</button>
+        </div>
+
+        <br>
+
+        <div id="instructions">
+            <p>Instructions:</p>
+            <p>Draw: Press LMB</p>
+            <p>Erase: Press RMB or click Eraser Button</p>
+            <p>Change Size: Move Slider</p>
+            <p>Change Color: Click stroke-size-showcase</p>
+        </div>
+    </div>
+ 
+    <div class="container center info_container" oncontextmenu="return false;">
+        <div id="http_loader" class="loader loader_small loaderhidden"></div>
+        <div id="info_display">
+            <p></p>
+        </div>
+    </div>
+</body>
+</html>

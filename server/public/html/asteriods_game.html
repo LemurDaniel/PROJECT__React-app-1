@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shoot the Asteroids</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+
+    <script src="html/js/asteroids.js"></script>
+    <script src="html/js/logout.js"></script>
+
+    <link rel="stylesheet" href="html/css/main.css">
+    <link rel="stylesheet" href="html/css/rocket.css">
+
+</head>
+<body>
+    <div class="container left">
+        <a href="/">
+            <div class="link_button back_button button">
+                <img src="" alt="">
+            </div>
+        </a>
+    </div>
+    <div class="container right">
+        <a href="/credits">
+            <div class="link_button button"> credits</div>
+        </a>
+        <a href="/user">
+            <div class="link_button button"> info</div>
+        </a>
+        <div id="logout_button" class="link_button button">logout</div>
+    </div>
+
+    <div class="center_down game_container">
+        <div id="div_game"></div>
+        <button id="restart" class="center link_button button hidden">Restart</button>
+
+        <div id="instructions">
+            <p><b>Move: AWSD or arrow-Keys -- Shoot: Spacebar</b></p>
+        </div>
+    </div>
+</body>
+</html>
