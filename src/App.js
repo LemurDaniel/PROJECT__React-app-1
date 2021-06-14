@@ -10,6 +10,7 @@ import TaskTracker from './components/tasks/TaskTracker';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import Authorization from './components/Authorization';
 import { useState } from 'react';
+import Clock from './components/Clock';
 
 
 function App() {
@@ -37,8 +38,12 @@ function App() {
 
       <Nav navigations={navigations}/>
 
+<div className="">
+  <Clock /> 
+</div>
+
       <Router>
-      <Route path='/' exact component={Authorization} />
+        { false ? <Route path='/' exact component={Authorization} /> : null }
         <Route path='/taskTracker'  component={TaskTracker} />
       </Router>
 

@@ -62,13 +62,13 @@ const TaskTracker = () => {
 
     // Delete Task
     const deleteTask = async id => {
-        const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`, {
-            method: 'DELETE',
-        })
+        //const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`, {
+        //    method: 'DELETE',
+        //})
 
-        if(res.status !== 200) throw 'Something went wrong!';
+        //if(res.status !== 200) throw 'Something went wrong!';
 
-        const data = await res.json();
+        //const data = await res.json();
         setTasks(tasks.filter(task => task.id !== id));
     }
 
@@ -99,6 +99,8 @@ const TaskTracker = () => {
     }
 
     const toggleDone = async id => {
+        
+        /*
         const taskToToggle = await fetchTask(id);
         const updatedTask = {...taskToToggle, done: !taskToToggle.done };
 
@@ -113,9 +115,10 @@ const TaskTracker = () => {
 
         const data = await res.json();
         data.date = new Date(data.date);
+        */
 
-        // Just a mock server so toggle again
-        data.done = !tasks.filter( v => v.id === data.id )[0].done;
+        const data = tasks.filter( v => v.id == id )[0];
+        data.done = !data.done;
 
         // Insert the new Task and replace an eventually existing task.
         const allTasks = tasks.map( v => v.id !== data.id ? v : data );
