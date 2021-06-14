@@ -20,7 +20,7 @@ services:
             SQL_HOST: db
             SQL_PORT: 3306
             SQL_DATABASE: node_db
-            SQL_TABLE_NAME: doodle
+            SQL_TABLE_NAME: doodle55555555
             SQL_USER: node-webserver
             SQL_PASSWORD: .Mvl/AueZ|#zCa?/Sq#r)>D68Z^L:ip`
             HTTPS_ENABLE: 'false'

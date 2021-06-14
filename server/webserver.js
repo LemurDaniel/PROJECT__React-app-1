@@ -57,6 +57,7 @@ async function check_for_connection() {
         server.listen(PORT);
         console.log('Connection Successfull, listening now on Port: '+PORT);
     } catch(err) {
+        console.log(err)
         console.log('Waiting for database connection | Trie: '+tries+'/'+MAX_TRIES+'  - CODE: '+err.code);
         setTimeout(() => check_for_connection(), 2000);
     }

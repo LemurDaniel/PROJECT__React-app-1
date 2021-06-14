@@ -1,36 +1,23 @@
 const mysql = require('mysql');
 const fs = require('fs');
-const { resolve } = require('path');
 
 const SQL_HOST = process.env.SQL_HOST;
 const SQL_USER = process.env.SQL_USER;
 const SQL_PORT = process.env.SQL_PORT;
 const SQL_PASSWORD = process.env.SQL_PASSWORD;
 const SQL_DATABASE = process.env.SQL_DATABASE;
+
 const CON_LIMIT = 15;
 
-
 const TABLE_IMG = process.env.SQL_TABLE_NAME;
-const TABLE_ML5 = TABLE_IMG+'_ml5';
 const TABLE_USER = TABLE_IMG+'_user';
-const TABLE_SCORE = TABLE_IMG+'_score';
-const MIN_CONF = 0.05;
-
-const game1 = 'ASTO';
+const TABLE_TASK = TABLE_IMG+'_task';
 
 const SQL_CREATE_USER =     'create table '+TABLE_USER+' ( '+
                             'user_id nchar(16) PRIMARY KEY,'+
                             'username nvarchar(50) NOT NULL unique,'+
                             'username_display nvarchar(50) NOT NULL ,'+
                             'bcrypt BINARY(60) NOT NULL ) ';
-
-const SQL_CREATE_SCORE =    'create table '+TABLE_SCORE+' ( '+
-                            'user_id nchar(16) NOT NULL,'+
-                            'score int NOT NULL, '+
-                            'timestamp nvarchar(64) NOT NULL, '+
-                            'gamename nchar(4) NOT NULL, '+
-                            'FOREIGN KEY(user_id) REFERENCES '+TABLE_USER+'(user_id) ,'+
-                            'CONSTRAINT pk_score PRIMARY KEY (user_id,timestamp) )';
 
 const SQL_CREATE_IMG =      'create table '+TABLE_IMG+' ( '+
                             'img_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,'+
@@ -42,11 +29,16 @@ const SQL_CREATE_IMG =      'create table '+TABLE_IMG+' ( '+
                             'ml5 text, '+
                             'FOREIGN KEY(user_id) REFERENCES '+TABLE_USER+'(user_id) )';
 
-const SQL_CREATE_ML5 =      'create table '+TABLE_ML5+' ( '+
-	                        'img_id int NOT NULL, '+
-	                        'ml5 nvarchar(25), '+
-	                        'ml5_confidence Decimal(20,19), '+
-                            'FOREIGN KEY(img_id) REFERENCES '+TABLE_IMG+'(img_id) ) ';
+const SQL_CREATE_TASK =    'create table '+TABLE_TASK+' ( '+
+                            'task_id nchar(16) NOT NULL, '+
+                            'user_id nchar(16) NOT NULL, '+
+                            'title nchar(20) NOT NULL, '+
+                            'description text, '+
+                            'date bigint, '+
+                            'done BOOLEAN, '+
+                            'PRIMARY KEY (user_id, task_id), '+
+                            'FOREIGN KEY(user_id) REFERENCES '+TABLE_USER+'(user_id) )';
+
 
 const SQL_INSERT_IMG =      'Insert Into  '+TABLE_IMG+
                             ' (img_path, img_name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) '+
@@ -66,14 +58,6 @@ const SQL_GET_IMG       =   'Select img_path, du.username_display, img_name, ml5
                             ' Order By ml5_bestfit_conf desc';
 
 const SQL_DELETE_IMG     =   'Delete From '+TABLE_IMG+' where img_path = ?';
-
-const SQL_INSERT_SCORE  =   'Insert Into '+TABLE_SCORE+
-                            ' (user_id, timestamp, score, gamename) '+
-                            ' Values ( ?, ?, ?, ? )';
-
-const SQL_INSERT_ML5    =   'Insert Into '+TABLE_ML5+
-                            ' (img_id, ml5, ml5_confidence) '+
-                            ' Values ( ?, ?, ? )';
 
 const SQL_INSERT_USER    =  'Insert Into '+TABLE_USER+
                             ' (user_id, username, username_display, bcrypt) '+
@@ -230,16 +214,14 @@ func = {};
             if (fs.existsSync(doodles_path+TABLE_IMG+'_EXISTS.info')) return resolve();
 
             func.call_async(SQL_CREATE_USER).then(
-                v => func.call_async(SQL_CREATE_SCORE).then(
                     v => func.call_async(SQL_CREATE_IMG).then(
-                        v => func.call_async(SQL_CREATE_ML5).then(
+                        v => func.call_async(SQL_CREATE_TASK).then(
                             v => {
                                 fs.writeFile(doodles_path + TABLE_IMG + '_EXISTS.info', '', (err) => { console.log() });
                                 resolve();
                             }
                         ).catch(reject)
                     ).catch(reject)
-                ).catch(reject)
             ).catch(reject)
 
         });
