@@ -22,10 +22,10 @@ const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
                         'bcrypt BINARY(60) NOT NULL ) ';
 
 const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
-                        'img_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
+                        'id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
                         'user_id nchar(16) NOT NULL,' +
-                        'img_path nchar(20) NOT NULL unique,' +
-                        'img_name nvarchar(50),' +
+                        'path nchar(20) NOT NULL unique,' +
+                        'name nvarchar(50),' +
                         'ml5_bestfit nvarchar(25),' +
                         'ml5_bestfit_conf Decimal(20,19),' +
                         'ml5 text, ' +
@@ -43,20 +43,20 @@ const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
 
 
 const SQL_INSERT_IMG =  'Insert Into  ' + TABLE_IMG +
-                        ' (img_path, img_name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) ' +
+                        ' (path, name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) ' +
                         ' Values (?, ?, ?, ?, ?, ? )';
 
 const SQL_UPDATE_IMG = 'Update ' + TABLE_IMG + ' Set ' +
-                        'img_name = ?, ml5_bestfit = ?, ml5_bestfit_conf = ?, ml5 = ?' +
-                        ' Where img_path = ? AND user_id = ?';
+                        'name = ?, ml5_bestfit = ?, ml5_bestfit_conf = ?, ml5 = ?' +
+                        ' Where path = ? AND user_id = ?';
 
-const SQL_GET_IMG = 'Select img_path, du.username_display, img_name, ml5_bestfit, ml5_bestfit_conf ' +
-                    ' from ' + TABLE_IMG +
-                    ' join ' + TABLE_USER + ' as du on ' + TABLE_IMG + '.user_id = du.user_id' +
+const SQL_GET_IMG = 'Select path, username_display, img.name, ml5_bestfit, ml5_bestfit_conf ' +
+                    ' from ' + TABLE_IMG + ' as img '+
+                    ' join ' + TABLE_USER + ' as usr on img.user_id = usr.id' +
                     ' where ' +
                     ' ml5_bestfit like ? And' +
-                    ' img_name like ? And' +
-                    ' du.username_display like ? ' +
+                    ' img.name like ? And' +
+                    ' username_display like ? ' +
                     ' Order By ml5_bestfit_conf desc';
 
 const SQL_DELETE_IMG = 'Delete From ' + TABLE_IMG + ' where img_path = ?';
@@ -71,6 +71,10 @@ const SQL_GET_HASH = 'select id, username_display, bcrypt from ' + TABLE_USER +
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
                         ' (id, user_id, title, description, date, done) ' +
                         ' Values ( ?, ?, ?, ?, ?, ? )'
+
+const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
+                        ' title = ?, description = ?, date = ?, done = ? ' +
+                        ' where id = ? AND user_id = ? ';
 
 const SQL_GET_TASK = 'Select ta.id as id, title, description, date, done ' +
                     ' from ' + TABLE_TASK + ' as ta '+
@@ -139,7 +143,26 @@ func.insertTask = (con, task) => {
     })
 }
 
-func.searchTasks = (con, params) => {
+func.updateTask = (con, task) => {
+
+    return new Promise( (resolve, reject) => {
+
+        con.query(SQL_UPDATE_TASK, [
+            task.title,
+            task.description,
+            task.date,
+            task.done,
+            task.id,
+            task.user,
+        ], (error, data) => {
+            if(error) reject(error);
+            else resolve(data)
+        })
+
+    })
+}
+
+func.queryTasks = (con, params) => {
 
     return new Promise( (resolve, reject) => {
 
@@ -170,62 +193,58 @@ func.deleteTask = (con, id, userId) => {
 
 func.delete_img = (con, img_path, callback) => con.query(SQL_DELETE_IMG, [img_path], callback);
 
-func.insert_img = (con, body, callback) => {
+func.insertImage = (con, image) => {
 
-    con.query(SQL_INSERT_IMG,
-        [body.img_path,
-        body.img_name,
-        body.user.id,
-        body.ml5_bestfit.label,
-        body.ml5_bestfit.confidence,
-        JSON.stringify(body.ml5)],
-        callback);
-}
-
-func.update_img = (con, body, callback) => {
-
-    con.query(SQL_UPDATE_IMG,
-        [body.img_name,
-        body.ml5_bestfit.label,
-        body.ml5_bestfit.confidence,
-        JSON.stringify(body.ml5),
-        body.img_path,
-        body.user.id],
-        callback);
-}
-
-func.get_img = (con, params, callback) => {
-
-    let img_name = params.img_name + '%';
-    let user_display = params.user_searched + '%';
-    let ml5_bestfit = params.ml5_bestfit + '%';
-
-    if (!ml5_bestfit) ml5_bestfit = '%';
-    if (!img_name) img_name = '%';
-    if (!user_display) user_display = '%';
-
-    con.query(SQL_GET_IMG, [
-        ml5_bestfit,
-        img_name,
-        user_display],
-        (err, res) => {
-            if (err) return callback(err, null);
-
-            let result = [];
-            res.forEach(row => {
-                result.push({
-                    img_path: row.img_path,
-                    img_name: row.img_name,
-                    user_display: row.userDisplayName,
-                    ml5_bestfit: {
-                        label: row.ml5_bestfit,
-                        confidence: row.ml5_bestfit_conf
-                    }
-                });
-            });
-            callback(err, result);
+    return new Promise( (resolve, reject) => { 
+        con.query(SQL_INSERT_IMG,
+            [image.path,
+            image.name,
+            image.user.id,
+            image.ml5_bestfit.label,
+            image.ml5_bestfit.confidence,
+            JSON.stringify(image.ml5)
+        ], (err, data) => {
+            if(err) reject(err);
+            else resolve(data);
         });
+    })
 }
+
+func.updateImage = (con, image) => {
+
+    return new Promise( (resolve, reject) => { 
+        con.query(SQL_UPDATE_IMG,
+            [image.name,
+            image.ml5_bestfit.label,
+            image.ml5_bestfit.confidence,
+            JSON.stringify(image.ml5),
+            image.path,
+            image.user.id
+        ], (err, data) => {
+            if(err) reject(err);
+            else resolve(data);
+        });
+    });
+}
+
+func.queryImages = (con, params) => {
+
+    return new Promise((resolve, reject) => {
+
+        const name = (params.name ?? '') + '%';
+        const user = (params.user ?? '') + '%';
+        const ml5 = (params.ml5 ?? '') + '%';
+
+        con.query(SQL_GET_IMG, [
+            ml5, name, user
+        ], (err, res) => {
+            if (err) return reject(err);
+            const result = res.map(row => new Object({ ...row }));
+            resolve(result);
+        });
+    })
+}
+
 
 
 

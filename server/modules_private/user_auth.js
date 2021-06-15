@@ -186,8 +186,9 @@ route.post('/user/register', register );
 route.post('/user/login', login );
 route.post('/user/guest', loginGuest );
 
-route.get('/user/logedin', (req, res) => {
-    res.status(validate_token(req) ? 200 : 401).send(); 
+route.get('/user', (req, res) => {
+    if(!validate_token(req)) res.status(401).send()
+    else res.status(200).send(req.body.user.userDisplayName)
 });
 
 route.get('/user/logout', (req, res) => { 

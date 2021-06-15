@@ -34,15 +34,14 @@ const TaskTracker = () => {
 
     const { token } = useContext(UserContext)
 
+
+    // Maybe fetch periodically from server?
     useEffect(() => {
         const getTasks = async () => {
             const tasksFromServer = await fetchTasks();
-            setTasks(tasksFromServer);
         }
         getTasks();
     }, []);
-
-
 
     // Fetch Tasks from server
     const fetchTasks = async () => {
@@ -55,8 +54,8 @@ const TaskTracker = () => {
 
             // Convert timestamp to Date object.
             data.forEach( task => task.date = new Date(task.date) );
-            console.log(data)
-            return data;
+            data.sort( sortType.func );
+            setTasks(data);
 
         } catch(err) {
             console.log(err);
@@ -127,32 +126,30 @@ const TaskTracker = () => {
         
     }
 
-    const toggleDone = async id => {
+    const toggleDone = async task => {
         
-        /*
-        const taskToToggle = await fetchTask(id);
-        const updatedTask = {...taskToToggle, done: !taskToToggle.done };
+        const updatedTask = { ...task, done: !task.done, date: task.date.getTime() };
+        updatedTask.token = token;
 
-        console.log(updatedTask)
-        const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedTask),
-        });
+        try {
+            const res  = await fetch('http://localhost/tasks',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedTask)
+            })
 
-        const data = await res.json();
-        data.date = new Date(data.date);
-        */
+            const data = await res.json();
+            data.date = new Date(data.date);
 
-        const data = tasks.filter( v => v.id === id )[0];
-        data.done = !data.done;
+            const newTasks = tasks.map( task => task.id === data.id ? data : task);
+            newTasks.sort( sortType.func );
+            setTasks(newTasks);
 
-        // Insert the new Task and replace an eventually existing task.
-        const allTasks = tasks.map( v => v.id !== data.id ? v : data );
-        allTasks.sort( sortType.func );
-        setTasks( allTasks );
+        } catch (err) {
+            console.log(err)
+        }
     }
 
     const onSortChange = e => {

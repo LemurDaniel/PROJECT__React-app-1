@@ -13,7 +13,7 @@ const Task = ({ task, onDelete, toggleDone }) => {
 
         <div className={'task ' + style} key={'task-' + task.id} >
 
-            <div className='mx-2 sm:mx-5 ' onClick={e => toggleDone(task.id)}>
+            <div className='mx-2 sm:mx-5 ' onClick={e => toggleDone(task)}>
                 {task.done ? (
                     <i className='iconButton text-brand2-400' > <ImCheckmark /> </i>
                 ) : (

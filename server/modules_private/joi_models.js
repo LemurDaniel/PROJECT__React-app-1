@@ -82,17 +82,17 @@ schemas.task = joi.object({
 
 schemas.image = joi.object({
 
-    img_data: joi.string()
+    data: joi.string()
         .dataUri()
         .required(),
 
-    img_path: joi.string()
+    path: joi.string()
         .pattern(new RegExp('^[0-9a-f]{16}[.]png$'))
         .allow('')
         .lowercase()
         .required(),
 
-    img_name: joi.string()
+    name: joi.string()
         .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)

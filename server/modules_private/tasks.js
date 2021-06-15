@@ -10,13 +10,19 @@ const { auth, validate_token } = require('./user_auth');
 
 async function addTask( req, res) {
 
-    const task = { ...req.body, user: req.body.user.id, id: crypto.randomBytes(8).toString('hex') };
+    let flag_update = false;
+    console.log(req.body)
+    if(req.body.id) flag_update = true;
+    else req.body.id = crypto.randomBytes(8).toString('hex');
+
+    const task = { ...req.body, user: req.body.user.id  };
     const validated = schema.task.validate(task);
     if(validated.error) return res.status(400).json(schema.error(validated.error));
 
     try {
 
-        await sql.insertTask(sql.pool, task);
+        if(flag_update) await sql.updateTask(sql.pool, task);
+        else await sql.insertTask(sql.pool, task);
 
         delete task.user;
         res.status(200).json(task);
@@ -45,10 +51,10 @@ async function getTasks(req, res) {
     try {
 
         console.log(params)
-        const data = await sql.searchTasks(sql.pool, params);
+        const data = await sql.queryTasks(sql.pool, params);
     
-        console.log(data)
-        res.status(200);
+        //console.log(data)
+        res.status(200).json(data);
 
     } catch (err) {
         console.log(err)

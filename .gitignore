@@ -26,3 +26,4 @@ yarn-error.log*
 node_modules
 docker/mysql_data
 doodles/
+cache/

@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const sql = require('./modules_private/sql_calls');
 const schema = require('./modules_private/joi_models');
 const { auth, route: auth_routes } = require('./modules_private/user_auth');
-const { image_routes, helper } = require('./modules_private/image_data');
+const { routes: image_routes, helper } = require('./modules_private/image_data');
 const { routes: task_routes } = require('./modules_private/tasks');
 const HTML = helper.HTML;
 
@@ -61,8 +61,6 @@ async function check_for_connection() {
             fs.writeFileSync(file, '');
         };
 
-        const exportsss = await sql.export_data();
-        console.log(exportsss)
         server.listen(PORT);
         console.log('Connection Successfull, listening now on Port: '+PORT);
     } catch(err) {
@@ -85,24 +83,9 @@ app.get('/rocket', auth, (req,res) => res.sendFile(HTML('rocket_game')));
 app.get('/draw/gallery', auth, (req, res) => res.sendFile(HTML('gallery')));
 app.get('/translation', auth, (req,res) => res.sendFile(helper.TRANSLATION));
 
-// load template html file as string
-const authorized_html = fs.readFileSync(HTML('authorized'), 'utf-8'); 
-app.get('/user', (req,res) => {
-    
-    // if not verifed direct to login page
-    if(!verify_token(req)) return res.sendFile(HTML('authorize'));
-
-    // if loggend in then show some info about the node.js version, current username and containername / k8s podname
-    // by replacing strings in template with said values.
-    let html = authorized_html.replace('%0', req.body.user.username_display);
-    html = html.replace('%1', process.env.HOSTNAME);
-    html = html.replace('%2', process.env.NODE_VERSION);
-    res.send(html);
-});
 
 // Only for testing, shows all certificates, passwords and other environment variables//
 app.get('/info', auth, (req,res) =>  res.json(process.env) );
-
 
 
 // Catch 404's and send user to the 404 page //
