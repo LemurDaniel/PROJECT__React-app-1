@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+
+input:-internal-autofill-selected {
+    appearance: menulist-button;
+    background-color: white !important;
+    background-image: none !important;
+    color: -internal-light-dark(black, white) !important;
+}
+
 /* Ghost element for fixed nav */
 
 body::before {

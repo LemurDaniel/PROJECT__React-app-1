@@ -16,58 +16,69 @@ const TABLE_IMG = TABLE_NAME + '_img';
 const TABLE_TASK = TABLE_NAME + '_task';
 
 const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
-    'user_id nchar(16) PRIMARY KEY,' +
-    'username nvarchar(50) NOT NULL unique,' +
-    'username_display nvarchar(50) NOT NULL ,' +
-    'bcrypt BINARY(60) NOT NULL ) ';
+                        'id nchar(16) PRIMARY KEY,' +
+                        'username nvarchar(50) NOT NULL unique,' +
+                        'username_display nvarchar(50) NOT NULL ,' +
+                        'bcrypt BINARY(60) NOT NULL ) ';
 
-const SQL_CREATE_IMG = 'create table ' + TABLE_IMG + ' ( ' +
-    'img_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
-    'user_id nchar(16) NOT NULL,' +
-    'img_path nchar(20) NOT NULL unique,' +
-    'img_name nvarchar(50),' +
-    'ml5_bestfit nvarchar(25),' +
-    'ml5_bestfit_conf Decimal(20,19),' +
-    'ml5 text, ' +
-    'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(user_id) )';
+const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
+                        'img_id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
+                        'user_id nchar(16) NOT NULL,' +
+                        'img_path nchar(20) NOT NULL unique,' +
+                        'img_name nvarchar(50),' +
+                        'ml5_bestfit nvarchar(25),' +
+                        'ml5_bestfit_conf Decimal(20,19),' +
+                        'ml5 text, ' +
+                        'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
 
 const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
-    'task_id nchar(16) NOT NULL, ' +
-    'user_id nchar(16) NOT NULL, ' +
-    'title nchar(20) NOT NULL, ' +
-    'description text, ' +
-    'date bigint, ' +
-    'done BOOLEAN, ' +
-    'PRIMARY KEY (user_id, task_id), ' +
-    'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(user_id) )';
+                        'id nchar(16) NOT NULL, ' +
+                        'user_id nchar(16) NOT NULL, ' +
+                        'title nchar(50) NOT NULL, ' +
+                        'description text, ' +
+                        'date bigint, ' +
+                        'done BOOLEAN, ' +
+                        'PRIMARY KEY (user_id, id), ' +
+                        'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
 
 
-const SQL_INSERT_IMG = 'Insert Into  ' + TABLE_IMG +
-    ' (img_path, img_name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) ' +
-    ' Values (?, ?, ?, ?, ?, ? )';
+const SQL_INSERT_IMG =  'Insert Into  ' + TABLE_IMG +
+                        ' (img_path, img_name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) ' +
+                        ' Values (?, ?, ?, ?, ?, ? )';
 
 const SQL_UPDATE_IMG = 'Update ' + TABLE_IMG + ' Set ' +
-    'img_name = ?, ml5_bestfit = ?, ml5_bestfit_conf = ?, ml5 = ?' +
-    ' Where img_path = ? AND user_id = ?';
+                        'img_name = ?, ml5_bestfit = ?, ml5_bestfit_conf = ?, ml5 = ?' +
+                        ' Where img_path = ? AND user_id = ?';
 
 const SQL_GET_IMG = 'Select img_path, du.username_display, img_name, ml5_bestfit, ml5_bestfit_conf ' +
-    ' from ' + TABLE_IMG +
-    ' join ' + TABLE_USER + ' as du on ' + TABLE_IMG + '.user_id = du.user_id' +
-    ' where ' +
-    ' ml5_bestfit like ? And' +
-    ' img_name like ? And' +
-    ' du.username_display like ? ' +
-    ' Order By ml5_bestfit_conf desc';
+                    ' from ' + TABLE_IMG +
+                    ' join ' + TABLE_USER + ' as du on ' + TABLE_IMG + '.user_id = du.user_id' +
+                    ' where ' +
+                    ' ml5_bestfit like ? And' +
+                    ' img_name like ? And' +
+                    ' du.username_display like ? ' +
+                    ' Order By ml5_bestfit_conf desc';
 
 const SQL_DELETE_IMG = 'Delete From ' + TABLE_IMG + ' where img_path = ?';
 
 const SQL_INSERT_USER = 'Insert Into ' + TABLE_USER +
-    ' (user_id, username, username_display, bcrypt) ' +
-    ' Values ( ?, ?, ?, ? )';
+                        ' (id, username, username_display, bcrypt) ' +
+                        ' Values ( ?, ?, ?, ? )';
 
-const SQL_GET_HASH = 'select user_id, username_display, bcrypt from ' + TABLE_USER +
-    ' where username = ?';
+const SQL_GET_HASH = 'select id, username_display, bcrypt from ' + TABLE_USER +
+                        ' where username = ?';
 
+const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
+                        ' (id, user_id, title, description, date, done) ' +
+                        ' Values ( ?, ?, ?, ?, ?, ? )'
+
+const SQL_GET_TASK = 'Select ta.id as id, title, description, date, done ' +
+                    ' from ' + TABLE_TASK + ' as ta '+
+                    ' join ' + TABLE_USER + ' as du on ta.user_id = du.id' +
+                    ' where du.id = ? ';
+
+const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
+                        ' where id = ? AND user_id = ? ';
 
 func = {}
 
@@ -109,6 +120,53 @@ func.transaction = async (method) => {
 
 }
 
+func.insertTask = (con, task) => {
+
+    return new Promise( (resolve, reject) => {
+
+        con.query(SQL_INSERT_TASK, [
+            task.id,
+            task.user,
+            task.title,
+            task.description,
+            task.date,
+            task.done
+        ], (error, data) => {
+            if(error) reject(error);
+            else resolve(data)
+        })
+
+    })
+}
+
+func.searchTasks = (con, params) => {
+
+    return new Promise( (resolve, reject) => {
+
+        con.query(SQL_GET_TASK, [
+            params.user
+        ], (error, data) => {
+            if(error) reject(error);
+            else resolve(data)
+        })
+
+    })
+}
+
+func.deleteTask = (con, id, userId) => {
+
+    return new Promise( (resolve, reject) => {
+
+        con.query(SQL_DELETE_TASK, [
+            id,
+            userId
+        ], (error, data) => {
+            if(error) reject(error);
+            else resolve(data)
+        })
+
+    })
+}
 
 func.delete_img = (con, img_path, callback) => con.query(SQL_DELETE_IMG, [img_path], callback);
 
@@ -198,10 +256,10 @@ func.get_password_hash = (con, user) => {
         con.query(SQL_GET_HASH, [user.username], (err, res) => {
             console.log(res)
             console.log(res.length > 0)
-            if (err) reject(err);
-            else if( res.length <= 0 ) reject('No User Found');
+            if (err) return reject(err);
+            else if( res.length <= 0 ) return reject('No User Found');
 
-            user.id = res[0].user_id;
+            user.id = res[0].id;
             user.userDisplayName = res[0].username_display;
             console.log(user)
             resolve(res[0].bcrypt.toString());
@@ -243,8 +301,8 @@ func.export_data = () => {
 
         return {
             users: user_data.map( row => new Object({ ...row, bcrypt: row.bcrypt.toString() }) ),
-            tasks: img_data.map( row => new Object({ ...row }) ),
-            images: task_data.map( row => new Object({ ...row }) ),
+            tasks: task_data.map( row => new Object({ ...row }) ),
+            images: img_data.map( row => new Object({ ...row }) ),
         }
     });
 }

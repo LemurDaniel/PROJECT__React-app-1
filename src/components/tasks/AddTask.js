@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 
 import { MdCancel } from 'react-icons/md'
+import { ImCross, ImCheckmark } from 'react-icons/im'
 
 const AddTask = ({ showModal, onAdd }) => {
 
@@ -9,25 +9,28 @@ const AddTask = ({ showModal, onAdd }) => {
     const year = DateNow.getFullYear().toString();
     let month = DateNow.getMonth().toString();
     let day = DateNow.getDate().toString();
+    let hours = DateNow.getHours();
 
-    if (month.length != 2) month = '0'+month;
-    if (day.length != 2) day = '0'+day;
+    if (month.length !== 2) month = '0'+month;
+    if (day.length !== 2) day = '0'+day;
 
-    const [text, setText] = useState('');
-    const [desc, setDesc] = useState('');
-    const [date, setDate] = useState(year+'-'+month+'-'+day);
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [done, setDone] = useState(false);
+    const [date, setDate] = useState(year+'-'+month+'-'+day + 'T' + hours + ':00');
 
     const onSubmit = e => {
-        if(!text) {
+        if(!title) {
             alert('Please add a Title for your Task');
             return;
         }
 
-        onAdd({ text, desc, date })
+        onAdd({ title, description, date, done })
         showModal(false);
 
-        setText('');
-        setDesc('');
+        setTitle('');
+        setDone(false);
+        setDescription('');
     }
 
 
@@ -36,9 +39,16 @@ const AddTask = ({ showModal, onAdd }) => {
 
             <div className="bg-white rounded-md border-brand2-100 border-2 w-80">
 
-                <header className="p-1 px-2 bg-dark-700  text-white text-xl rounded-t-md">
+                <header className="p-1 px-2 bg-dark-700  text-white text-xl rounded-t-md flex justify-start">
 
-                    <h1 className="inline">Add a new Task</h1>
+                    <div className="p-1 mr-3 w-min hover:bg-white hover:text-dark-700 rounded-full duration-300" onClick={ e => setDone(!done) } > 
+                        { !done ? 
+                            <ImCross className="text-brand2-300" /> :
+                            <ImCheckmark className="text-brand2-400" />
+                        }
+                    </div>
+
+                    <h1 >Add a new Task</h1>
                     <i className="absolute right-1 top-1 text-sm hover:bg-brand2-250 rounded-full" onClick={ e => showModal(false) }> <MdCancel /> </i>
 
                 </header>
@@ -48,27 +58,27 @@ const AddTask = ({ showModal, onAdd }) => {
                         <div className="border-b-2 p-2">
                             <label htmlFor="task_text" className="block">Title</label>
                             <input type="text" name="task_text" id="task_text" 
-                                className = "focus:outline-none"
-                                placeholder='Add a Title' value={text}
-                                onChange={ e => setText(e.target.value) }
+                                className = "focus:outline-none w-full"
+                                placeholder='Add a Title' value={title}
+                                onChange={ e => setTitle(e.target.value) }
                             />
                         </div>
                         <div className="border-b-2 p-2">
-                            <label htmlFor="task_desc" className="block">Description</label>
-                            <input type="text" name="task_desc" id="task_desc" 
-                                className = "focus:outline-none"
-                                placeholder='Add a description' value={desc}
-                                onChange={ e => setDesc(e.target.value) }
-                            />
-                        </div >
-                        <div className="border-b-2 p-2">
-                            <label htmlFor="task_date" className="block">Date</label>
-                            <input type="date" name="task_date" id="task_date"
-                                className="select-none focus:outline-none w-30"
+                            <label htmlFor="task_date" className="block">Date and Time</label>
+                            <input type="datetime-local" name="task_date" id="task_date"
+                                className="select-none focus:outline-none w-full"
                                 value={date}
                                 onChange={ e => setDate(e.target.value) }
                             />
                         </div>
+                        <div className="border-b-2 p-2">
+                            <label htmlFor="task_desc" className="block">Description</label>
+                            <textarea name="task_desc" rows="4" 
+                                className = "focus:outline-none w-full"
+                                placeholder='Add a description' value={description}
+                                onChange={ e => setDescription(e.target.value) }
+                            />
+                        </div >
                     </form>
                 </div>
 

@@ -11,6 +11,7 @@ const sql = require('./modules_private/sql_calls');
 const schema = require('./modules_private/joi_models');
 const { auth, route: auth_routes } = require('./modules_private/user_auth');
 const { image_routes, helper } = require('./modules_private/image_data');
+const { routes: task_routes } = require('./modules_private/tasks');
 const HTML = helper.HTML;
 
 // Get environment variables
@@ -30,6 +31,7 @@ app.use(bodyParser.json({ limit: '5mb' }))
 // Use routes from authorization module and image module
 app.use(auth_routes);
 app.use(image_routes);
+app.use(task_routes);
 // Send nicley formatted Json
 app.set('json spaces', 2)
 

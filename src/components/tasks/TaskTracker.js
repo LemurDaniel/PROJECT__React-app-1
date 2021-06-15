@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 
 import { BsInfoSquareFill } from 'react-icons/bs'
 
+import Clock from '../Clock';
 import Task from './Task';
 import AddTask from './AddTask';
+import UserContext from '../UserContext';
 
     const sortTypes = {
         'date': {
@@ -30,6 +32,8 @@ const TaskTracker = () => {
     const [sortType, setSortType] = useState(sortTypes['date']);
     const [tasks, setTasks] = useState([]);
 
+    const { token } = useContext(UserContext)
+
     useEffect(() => {
         const getTasks = async () => {
             const tasksFromServer = await fetchTasks();
@@ -38,15 +42,26 @@ const TaskTracker = () => {
         getTasks();
     }, []);
 
+
+
     // Fetch Tasks from server
     const fetchTasks = async () => {
-        const res  = await fetch('https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?all')
-        const data = await res.json();
 
-        // Convert timestamp to Date object.
-        data.forEach( task => task.date = new Date(task.date) );
+        const date = null;
 
-        return data;
+        try {
+            const res  = await fetch(`http://localhost/tasks?date=${date}&token=${token}`)
+            const data = await res.json();
+
+            // Convert timestamp to Date object.
+            data.forEach( task => task.date = new Date(task.date) );
+            console.log(data)
+            return data;
+
+        } catch(err) {
+            console.log(err);
+            return [];
+        }
     }
 
     // Fetch Single Tasks from server
@@ -62,40 +77,54 @@ const TaskTracker = () => {
 
     // Delete Task
     const deleteTask = async id => {
-        //const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`, {
-        //    method: 'DELETE',
-        //})
 
-        //if(res.status !== 200) throw 'Something went wrong!';
+        try {
+            const res = await fetch(`http://localhost/tasks?id=${id}&token=${token}`, {
+                method: 'DELETE',
+            })
 
-        //const data = await res.json();
-        setTasks(tasks.filter(task => task.id !== id));
+            if(res.status !== 200) throw 'Something went wrong!';
+            const data = await res.json();
+            setTasks(tasks.filter( task => task.id !== id));
+            console.log(data)
+
+        } catch (err) {
+            console.log(err)
+        }
     }
+
 
     // Add a new Task
     const addTask = async task => {
 
-        const id = tasks.length+1;
-        const newTask = { ...task, done: false, date: new Date(task.date).getTime() };
+        const newTask = { ...task, date: new Date(task.date).getTime(), token: token };
 
-        console.log(newTask)
-        const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(newTask),
-        })
+        try {
+            const res  = await fetch('http://localhost/tasks',{
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newTask)
+            })
 
+            if(res.status !== 200) throw 'Something went wrong';
 
-        if(res.status !== 200) throw 'Something went wrong';
+            const data = await res.json();
+            data.date = new Date(data.date);
 
-        const data = await res.json();
-        data.date = new Date(data.date);
+            const newTasks = [...tasks, data];
+            newTasks.sort( sortType.func );
+            setTasks(newTasks);
 
-        const newTasks = [...tasks, data];
-        newTasks.sort( sortType.func );
-        setTasks(newTasks);
+            console.log(data)
+            return data;
+
+        } catch(err) {
+            console.log(err);
+            return [];
+        }
+        
     }
 
     const toggleDone = async id => {
@@ -117,7 +146,7 @@ const TaskTracker = () => {
         data.date = new Date(data.date);
         */
 
-        const data = tasks.filter( v => v.id == id )[0];
+        const data = tasks.filter( v => v.id === id )[0];
         data.done = !data.done;
 
         // Insert the new Task and replace an eventually existing task.
@@ -142,6 +171,9 @@ const TaskTracker = () => {
             <div className="rounded-sm shadow-2xl pb-5">
 
                 <header className="header border-b ">
+
+                    <div className="pr-4"> <Clock size={65} digital={false}/> </div>
+
                     <h1 className='font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
 
                     <div className="w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md hover:border-brand2-100 focus:border-brand2-100 duration-300">

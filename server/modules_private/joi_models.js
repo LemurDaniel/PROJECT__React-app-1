@@ -50,6 +50,35 @@ schemas.user = joi.object({
 
 })
 
+schemas.task = joi.object({
+
+    id: joi.string()
+        .pattern(new RegExp('^[0-9a-f]{16}$'))
+        .required(),
+
+    user: joi.string()
+        .pattern(new RegExp('^[0-9a-f]{16}$'))
+        .required(),
+
+    title: joi.string()
+        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
+        .min(2)
+        .max(50)
+        .trim()
+        .required(),
+
+    description: joi.string()
+        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
+        .min(5)
+        .max(100)
+        .trim()
+        .allow('', null),
+
+    date: joi.number().required(),
+
+    done: joi.boolean().required(),
+
+})
 
 schemas.image = joi.object({
 

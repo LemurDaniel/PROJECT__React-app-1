@@ -57,11 +57,11 @@ function create_jwt(user_raw, res) {
     // Encrypt token
     if(ENCRYPTION_ENABLE) token = encrypt(token);
 
-    // Set cookie with encrypted token
-    if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token='+token+'; path=/; HttpOnly; secure; max-age='+JWT_LIFESPAN*60*60);
-    else res.setHeader('Set-Cookie', 'doodle_token='+token+'; path=/; HttpOnly; max-age='+JWT_LIFESPAN*60*60);
+    const cookieMeta = '; Path=/; HttpOnly; '+ ( HTTPS_ENABLE ? 'secure; ' : '' ) +' max-age='+ (JWT_LIFESPAN*60*60) + '; ';
+    res.cookie('user='+user.userDisplayName + cookieMeta);
+    res.cookie('doodle_token='+token + cookieMeta);
     
-    return res.status(200).json({ userDisplayName: user.userDisplayName });
+    return res.status(200).json({ userDisplayName: user.userDisplayName, token: token });
 }
 
 
@@ -128,6 +128,23 @@ async function loginGuest (req, res) {
 
 function validate_token (req) {
 
+    if(req.body.token) {
+        try {
+
+            // Decrypt token and grant access if verified succesfully.
+            const token = req.body.token;
+            delete req.body.token;
+            if(ENCRYPTION_ENABLE) token = decrypt(token);
+    
+            req.body.user = jwt.verify(token, VERIFY_KEY, { expiresIn: JWT_LIFESPAN+'h', algorithm:  [SIGNING_ALGO] });
+            return req; 
+    
+        } catch (ex) {
+            // If jwt invalid, deny access
+            return false;
+        }
+    }
+
     // Deny access if no cookie present
     let cookies = req.headers.cookie;
     if(!cookies) return false;
@@ -161,6 +178,10 @@ function auth2 (req, res, next) {
     res.status(401).send();
 }
 
+route.get('/cookie', (req, res) => {
+    create_jwt({ username: 'test' }, res)
+} );
+
 route.post('/user/register', register );
 route.post('/user/login', login );
 route.post('/user/guest', loginGuest );
@@ -178,6 +199,7 @@ route.get('/user/logout', (req, res) => {
 
 module.exports = {
     route,
+    validate_token,
     auth2,
     auth
 }

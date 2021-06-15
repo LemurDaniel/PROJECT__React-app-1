@@ -9,11 +9,11 @@ const Footer = () => {
 
             <a href="/CurrencyCalculator"
                 className="btn-header active"
-            >Currency Calculator</a>
+            >Calculator</a>
 
             <a href="/MaggiTable"
                 className="btn-header"
-            >Maggi Table</a>
+            >Table</a>
 
         </footer>
 

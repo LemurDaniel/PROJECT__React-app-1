@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 
-import { MdCancel } from 'react-icons/md'
+import UserContext from './UserContext'
+
 
 const types = {
     guest: {
         title: 'Login as a Guest',
         btn: 'Guestlogin',
         fields: [1, 0, 0, 0],
-        api: '/user/login'
+        api: '/user/guest'
     },
     login: {
         title: 'Login as a User',
@@ -25,12 +26,14 @@ const types = {
 
 const Authorization = ({ showModal }) => {
 
+    const { setUser, setToken } = useContext(UserContext);
+
+
     const [activeType, setActiveType] = useState(Object.keys(types)[0])
     const [userName, setUserName] = useState(null)
     const [userDisplayName, setUserDisplayName] = useState(null)
     const [password, setPassword] = useState(null)
     const [passwordRepeat, setPasswordRepeat] = useState(null)
-
 
     const sendRequest = async e => {
 
@@ -41,19 +44,30 @@ const Authorization = ({ showModal }) => {
         if (type.fields[3] && !passwordRepeat) return alert('Please repeat your Password');
 
         if (type.fields[2] && type.fields[3]
-            && password != passwordRepeat) return alert('Your Passwords do not match');
+            && password !== passwordRepeat) return alert('Your Passwords do not match');
 
         const res = await fetch('http://localhost' + type.api, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: userName, password: password, username_display: userDisplayName })
+            body: JSON.stringify({ username: userName, password: password, userDisplayName: userDisplayName })
         })
 
         console.log(res)
 
+        const data = await res.json();
+        console.log(data);
+        setUser(data.userDisplayName);
+        setToken(data.token);
+
+        // temporary
+        document.cookie = "user=" + data.userDisplayName;
+        document.cookie = "doodle_token=" + data.token;
+    
     }
+
+
 
     return (
         <div className="fixed inset-x-0 w-min mx-auto top-28 z-50  justify-center items-center flex overflow-x-hidden overflow-y-auto shadow-2xl">
@@ -68,9 +82,8 @@ const Authorization = ({ showModal }) => {
                         ) : <option value={v} >{types[v].title} </option>)}
                     </select>
 
-                    <i className="absolute right-1 top-1 text-sm hover:bg-brand2-250 rounded-full" onClick={e => showModal(false)}> <MdCancel /> </i>
-
                 </header>
+
 
                 <div className="p-1 px-2 text-dark-700 font-bold">
                     <form >
@@ -79,7 +92,7 @@ const Authorization = ({ showModal }) => {
                             <div className="border-b-2 p-2">
                                 <label htmlFor="task_text" className="block">Display Username</label>
                                 <input type="text" name="task_text" id="task_text"
-                                    className="focus:outline-none"
+                                    className="focus:outline-none w-full px-1 rounded-sm"
                                     placeholder='Enter a name for Display' value={userDisplayName}
                                     onChange={e => setUserDisplayName(e.target.value)}
                                 />
@@ -91,7 +104,7 @@ const Authorization = ({ showModal }) => {
                             <div className="border-b-2 p-2">
                                 <label htmlFor="task_text" className="block">Username</label>
                                 <input type="text" name="task_text" id="task_text"
-                                    className="focus:outline-none"
+                                    className="focus:outline-none w-full px-1 rounded-sm"
                                     placeholder='Enter your username' value={userName}
                                     onChange={e => setUserName(e.target.value)}
                                 />
@@ -104,7 +117,7 @@ const Authorization = ({ showModal }) => {
                             <div className="border-b-2 p-2">
                                 <label htmlFor="task_pass" className="block">Password</label>
                                 <input type="password" name="task_pass" id="task_pass"
-                                    className="focus:outline-none"
+                                    className="focus:outline-none w-full px-1 rounded-sm"
                                     placeholder='Enter your password' value={password}
                                     onChange={e => setPassword(e.target.value)}
                                 />
@@ -115,7 +128,7 @@ const Authorization = ({ showModal }) => {
                         {types[activeType].fields[3] ?
                             <div className="border-b-2 p-2">
                                 <input type="password" name="task_pass" id="task_pass2"
-                                    className="focus:outline-none"
+                                    className="focus:outline-none w-full px-1 rounded-sm"
                                     placeholder='Repeat the password' value={passwordRepeat}
                                     onChange={e => setPasswordRepeat(e.target.value)}
                                 />

@@ -1,5 +1,3 @@
-
-
 import React, { useRef, useEffect, useState } from 'react'
 
 const Clock = props => {
@@ -14,13 +12,13 @@ const Clock = props => {
             const canvas = canvasRef.current;
 
             // Note https://coderwall.com/p/vmkk6a/how-to-make-the-canvas-not-look-like-crap-on-retina
-            canvas.height = props.size * 2;
-            canvas.width = props.size * 2;
+            canvas.height = props.size * 4;
+            canvas.width = props.size * 4;
             canvas.style.width = props.size + 'px'
             canvas.style.height = props.size + 'px';
 
             // Scale and translate origin once.
-            canvas.getContext('2d').scale(2, 2);
+            canvas.getContext('2d').scale(4, 4);
             canvas.getContext('2d').translate(props.size / 2, props.size / 2);
         }
 
@@ -30,7 +28,7 @@ const Clock = props => {
         return () => clearInterval(ticks);
 
         // Only do logic again when size changes instead of every single render
-    }, [props.size, props.interval])
+    }, [props.size, props.interval, props.analog])
 
 
     // Handle the drawing of the clock for every new timechange.

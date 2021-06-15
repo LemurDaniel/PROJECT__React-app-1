@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 
 import { FaTimes, FaCalendarDay } from 'react-icons/fa'
 import { ImCross, ImCheckmark } from 'react-icons/im'
@@ -24,7 +24,7 @@ const Task = ({ task, onDelete, toggleDone }) => {
 
 
             <div>
-                <h1 className='font-bold underline' >{task.text} </h1>
+                <h1 className='font-bold underline' >{task.title} </h1>
                 <p className='flex justify-start items-center'>  
                     <i className='pr-2'><FaCalendarDay /></i> 
                     {task.date.toLocaleDateString() + ' at ' + task.date.toLocaleTimeString().substr(0,5)}
