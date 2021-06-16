@@ -14,6 +14,9 @@ if(!fs.existsSync(CACHE)) fs.mkdirSync(CACHE);
 
 async function checkCache(req, res, resolve) {
 
+    for(let label of Object.keys(req.query))
+        if(req.query[label] === 'undefined' || req.query[label] === 'null') req.query[label] = '';
+
     const hash = req.query.hash;
     const key = getCachKey(req);
 
@@ -28,7 +31,7 @@ async function checkCache(req, res, resolve) {
         if(read) return sendData(read);
 
         const data = await resolve( req.method === 'GET' ? req.query : req.body );
-        const written = writeCache(key, data);
+        const written = writeCache(key, data, req);
         return sendData(written);
 
     } catch (err) {
@@ -67,14 +70,14 @@ function readCache(key) {
 // conditions like one container writing shortly after another container has read its content
 // which causes it to therefore operate on stale data and then search the database again
 // can be ignored. Regardless of that the cache file will always be overwritten with a valid entry.
-function writeCache(key, data) {
+function writeCache(key, data, req) {
 
     // Hash identifies changes in result
     const hash = crypto.createHash('md5').update(JSON.stringify(data)).digest('base64'); 
     const object = { hash: hash, data: data };
     const expiration = Date.now()+(TTL*1000);
 
-    const cache = JSON.stringify({ exp: expiration, content: object }, null, 4);
+    const cache = JSON.stringify({ exp: expiration, query: req.query, body: req.body, content: object }, null, 4);
 
     fs.writeFileSync(key, cache);
 

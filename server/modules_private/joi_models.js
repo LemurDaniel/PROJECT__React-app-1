@@ -101,16 +101,16 @@ schemas.image = joi.object({
 
     user: schemas.user,
 
-    ml5_bestfit: joi.object({
+    ml5: joi.object({
         label: joi.string()
         .max(25)
         .required(),
 
         confidence: joi.number()
-        .required()
-    }),
+        .required(),
 
-    ml5: joi.array() 
+        meta: joi.array()
+    }), 
 })
 
 schemas.error = (message) => {

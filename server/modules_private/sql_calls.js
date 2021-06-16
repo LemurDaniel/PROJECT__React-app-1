@@ -18,7 +18,7 @@ const TABLE_TASK = TABLE_NAME + '_task';
 const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
                         'id nchar(16) PRIMARY KEY,' +
                         'username nvarchar(50) NOT NULL unique,' +
-                        'username_display nvarchar(50) NOT NULL ,' +
+                        'userDisplayName nvarchar(50) NOT NULL ,' +
                         'bcrypt BINARY(60) NOT NULL ) ';
 
 const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
@@ -26,9 +26,9 @@ const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
                         'user_id nchar(16) NOT NULL,' +
                         'path nchar(20) NOT NULL unique,' +
                         'name nvarchar(50),' +
-                        'ml5_bestfit nvarchar(25),' +
-                        'ml5_bestfit_conf Decimal(20,19),' +
-                        'ml5 text, ' +
+                        'ml5 nvarchar(25),' +
+                        'ml5_conf Decimal(20,19),' +
+                        'ml5_meta text, ' +
                         'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
 
 const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
@@ -43,29 +43,29 @@ const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
 
 
 const SQL_INSERT_IMG =  'Insert Into  ' + TABLE_IMG +
-                        ' (path, name, user_id, ml5_bestfit, ml5_bestfit_conf, ml5) ' +
+                        ' (path, name, user_id, ml5, ml5_conf, ml5_meta) ' +
                         ' Values (?, ?, ?, ?, ?, ? )';
 
 const SQL_UPDATE_IMG = 'Update ' + TABLE_IMG + ' Set ' +
-                        'name = ?, ml5_bestfit = ?, ml5_bestfit_conf = ?, ml5 = ?' +
+                        'name = ?, ml5 = ?, ml5_conf = ?, ml5_meta = ?' +
                         ' Where path = ? AND user_id = ?';
 
-const SQL_GET_IMG = 'Select path, username_display, img.name, ml5_bestfit, ml5_bestfit_conf ' +
+const SQL_GET_IMG = 'Select path, userDisplayName, img.name, ml5, ml5_conf ' +
                     ' from ' + TABLE_IMG + ' as img '+
                     ' join ' + TABLE_USER + ' as usr on img.user_id = usr.id' +
                     ' where ' +
-                    ' ml5_bestfit like ? And' +
+                    ' ml5 like ? And' +
                     ' img.name like ? And' +
-                    ' username_display like ? ' +
-                    ' Order By ml5_bestfit_conf desc';
+                    ' userDisplayName like ? ' +
+                    ' Order By ml5_conf desc';
 
 const SQL_DELETE_IMG = 'Delete From ' + TABLE_IMG + ' where img_path = ?';
 
 const SQL_INSERT_USER = 'Insert Into ' + TABLE_USER +
-                        ' (id, username, username_display, bcrypt) ' +
+                        ' (id, username, userDisplayName, bcrypt) ' +
                         ' Values ( ?, ?, ?, ? )';
 
-const SQL_GET_HASH = 'select id, username_display, bcrypt from ' + TABLE_USER +
+const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
                         ' where username = ?';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
@@ -200,9 +200,9 @@ func.insertImage = (con, image) => {
             [image.path,
             image.name,
             image.user.id,
-            image.ml5_bestfit.label,
-            image.ml5_bestfit.confidence,
-            JSON.stringify(image.ml5)
+            image.ml5.label,
+            image.ml5.confidence,
+            JSON.stringify(image.ml5.meta)
         ], (err, data) => {
             if(err) reject(err);
             else resolve(data);
@@ -215,9 +215,9 @@ func.updateImage = (con, image) => {
     return new Promise( (resolve, reject) => { 
         con.query(SQL_UPDATE_IMG,
             [image.name,
-            image.ml5_bestfit.label,
-            image.ml5_bestfit.confidence,
-            JSON.stringify(image.ml5),
+            image.ml5.label,
+            image.ml5.confidence,
+            JSON.stringify(image.ml5.meta),
             image.path,
             image.user.id
         ], (err, data) => {
@@ -230,7 +230,7 @@ func.updateImage = (con, image) => {
 func.queryImages = (con, params) => {
 
     return new Promise((resolve, reject) => {
-
+        
         const name = (params.name ?? '') + '%';
         const user = (params.user ?? '') + '%';
         const ml5 = (params.ml5 ?? '') + '%';
@@ -248,7 +248,7 @@ func.queryImages = (con, params) => {
 
 
 
-func.insert_user = (con, user) => {
+func.insertUser = (con, user) => {
 
     return new Promise((resolve, reject) => {
 
@@ -267,7 +267,7 @@ func.insert_user = (con, user) => {
 }
 
 
-func.get_password_hash = (con, user) => {
+func.getPasswordHash = (con, user) => {
 
     return new Promise((resolve, reject) => {
 
@@ -279,7 +279,7 @@ func.get_password_hash = (con, user) => {
             else if( res.length <= 0 ) return reject('No User Found');
 
             user.id = res[0].id;
-            user.userDisplayName = res[0].username_display;
+            user.userDisplayName = res[0].userDisplayName;
             console.log(user)
             resolve(res[0].bcrypt.toString());
         });

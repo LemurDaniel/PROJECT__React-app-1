@@ -81,7 +81,7 @@ async function register ({ body }, res, validate = true) {
         delete user.password;
 
         // Insert new user into database
-        await sql.insert_user(sql.pool, user);
+        await sql.insertUser(sql.pool, user);
 
         create_jwt(user, res);
 
@@ -103,7 +103,7 @@ async function login ({ body }, res) {
 
     try {
 
-        const hash  = await sql.get_password_hash(sql.pool, user);
+        const hash  = await sql.getPasswordHash(sql.pool, user);
         const valid = await bcrypt.compare(user.password, hash);
 
         if(!valid) throw 'Invalid username or password';
