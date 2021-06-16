@@ -9,7 +9,7 @@ const Nav = ({ navigations }) => {
 
     return (
 
-        <nav className="px-5 fixed w-full top-0 z-50 border-b-2 border-brand2-100 bg-dark-700 flex justify-evenly text-white font-bold">
+        <nav className="px-5 fixed w-full top-0 z-50 border-b border-brand2-100 bg-dark-700 flex justify-evenly text-white font-bold">
 
             {navigations.map( (nav,i) => (
                 <a key={i} href={ !user ? '/' : nav.url } 

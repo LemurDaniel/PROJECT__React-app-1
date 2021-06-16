@@ -7,24 +7,24 @@ import Task from './Task';
 import AddTask from './AddTask';
 import UserContext from '../UserContext';
 
-    const sortTypes = {
-        'date': {
-            title: 'Date',
-            func: (a, b) => a.date - b.date,
-        },
-        'status': {
-            title: 'Todo',
-            func: (a, b) =>  a.done - b.done ,
-        },
-        'status_reverse': {
-            title: 'Done',
-            func: (a, b) =>  !a.done - !b.done ,
-        },
-        'title': {
-            title: 'Title',
-            func: (a, b) => a.text.localeCompare(b.text),
-        },
-    }
+const sortTypes = {
+    'date': {
+        title: 'Date',
+        func: (a, b) => a.date - b.date,
+    },
+    'status': {
+        title: 'Todo',
+        func: (a, b) => a.done - b.done,
+    },
+    'status_reverse': {
+        title: 'Done',
+        func: (a, b) => !a.done - !b.done,
+    },
+    'title': {
+        title: 'Title',
+        func: (a, b) => a.text.localeCompare(b.text),
+    },
+}
 
 const TaskTracker = () => {
 
@@ -34,38 +34,34 @@ const TaskTracker = () => {
 
     const { token } = useContext(UserContext)
 
-
-    // Maybe fetch periodically from server?
-    useEffect(() => {
-        const getTasks = async () => {
-            const tasksFromServer = await fetchTasks();
-        }
-        getTasks();
-    }, []);
-
     // Fetch Tasks from server
     const fetchTasks = async () => {
 
         const date = null;
 
         try {
-            const res  = await fetch(`http://localhost/tasks?date=${date}&token=${token}`)
+            const res = await fetch(`http://localhost/tasks?date=${date}&token=${token}`)
             const data = await res.json();
 
             // Convert timestamp to Date object.
-            data.forEach( task => task.date = new Date(task.date) );
-            data.sort( sortType.func );
+            data.forEach(task => task.date = new Date(task.date));
+            data.sort(sortType.func);
             setTasks(data);
 
-        } catch(err) {
+        } catch (err) {
             console.log(err);
             return [];
         }
     }
+    // Maybe fetch periodically from server?
+    useEffect(() => {
+        fetchTasks();
+    }, []);
+
 
     // Fetch Single Tasks from server
     const fetchTask = async id => {
-        const res  = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`)
+        const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`)
         const data = await res.json();
 
         // Convert timestamp to Date object.
@@ -82,9 +78,9 @@ const TaskTracker = () => {
                 method: 'DELETE',
             })
 
-            if(res.status !== 200) throw 'Something went wrong!';
+            if (res.status !== 200) throw new Error('Something went wrong!');
             const data = await res.json();
-            setTasks(tasks.filter( task => task.id !== id));
+            setTasks(tasks.filter(task => task.id !== id));
             console.log(data)
 
         } catch (err) {
@@ -99,7 +95,7 @@ const TaskTracker = () => {
         const newTask = { ...task, date: new Date(task.date).getTime(), token: token };
 
         try {
-            const res  = await fetch('http://localhost/tasks',{
+            const res = await fetch('http://localhost/tasks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -107,32 +103,32 @@ const TaskTracker = () => {
                 body: JSON.stringify(newTask)
             })
 
-            if(res.status !== 200) throw 'Something went wrong';
+            if (res.status !== 200) throw new Error('Something went wrong!');
 
             const data = await res.json();
             data.date = new Date(data.date);
 
             const newTasks = [...tasks, data];
-            newTasks.sort( sortType.func );
+            newTasks.sort(sortType.func);
             setTasks(newTasks);
 
             console.log(data)
             return data;
 
-        } catch(err) {
+        } catch (err) {
             console.log(err);
             return [];
         }
-        
+
     }
 
     const toggleDone = async task => {
-        
+
         const updatedTask = { ...task, done: !task.done, date: task.date.getTime() };
         updatedTask.token = token;
 
         try {
-            const res  = await fetch('http://localhost/tasks',{
+            const res = await fetch('http://localhost/tasks', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -143,8 +139,8 @@ const TaskTracker = () => {
             const data = await res.json();
             data.date = new Date(data.date);
 
-            const newTasks = tasks.map( task => task.id === data.id ? data : task);
-            newTasks.sort( sortType.func );
+            const newTasks = tasks.map(task => task.id === data.id ? data : task);
+            newTasks.sort(sortType.func);
             setTasks(newTasks);
 
         } catch (err) {
@@ -155,11 +151,11 @@ const TaskTracker = () => {
     const onSortChange = e => {
 
         const newSortType = sortTypes[e.target.value];
-        setSortType( newSortType );
+        setSortType(newSortType);
 
         const copy = tasks.slice(0);
-        copy.sort( newSortType.func ); 
-        setTasks( copy );
+        copy.sort(newSortType.func);
+        setTasks(copy);
     }
 
 
@@ -169,29 +165,29 @@ const TaskTracker = () => {
 
                 <header className="header border-b ">
 
-                    <div className="pr-4"> <Clock size={65} digital={false}/> </div>
+                    <div className="pr-4"> <Clock size={65} digital={false} /> </div>
 
                     <h1 className='font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
 
                     <div className="w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md hover:border-brand2-100 focus:border-brand2-100 duration-300">
                         <label htmlFor="sorting" className="px-2">Sort by </label>
-                        <select name="sorting" id="sorting" onChange={onSortChange} 
+                        <select name="sorting" id="sorting" onChange={onSortChange}
                             className="bg-dark-700 focus:outline-none" >
-                            { Object.keys(sortTypes).map( v => <option value={v}>{sortTypes[v].title}</option> )}
+                            {Object.keys(sortTypes).map(v => <option key={v} value={v}>{sortTypes[v].title}</option>)}
                         </select>
                     </div>
-                    
-                    <button className="btn-custom btn-orange" onClick={ e => setShowModal(!showModal) } > 
-                    { !showModal ? 'Add new Task' : 'Close new Task'  }
+
+                    <button className="btn-custom btn-orange" onClick={e => setShowModal(!showModal)} >
+                        {!showModal ? 'Add new Task' : 'Close new Task'}
                     </button>
                 </header>
 
-                { showModal ? <AddTask showModal={setShowModal} onAdd={addTask}/>  : null }
+                {showModal ? <AddTask showModal={setShowModal} onAdd={addTask} /> : null}
 
                 <div className="flex flex-col justify-center px-10 pt-4 ">
                     {tasks.length > 0 ? (
                         tasks.map(task => (
-                            <Task task={task} onDelete={deleteTask} toggleDone={toggleDone} />
+                            <Task key={task.id} task={task} onDelete={deleteTask} toggleDone={toggleDone} />
                         ))
                     ) : (
                         <i className="mx-auto py-10 text-2xl text-brand2-100">

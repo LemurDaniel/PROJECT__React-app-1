@@ -11,7 +11,7 @@ const Task = ({ task, onDelete, toggleDone }) => {
 
     return (
 
-        <div className={'task ' + style} key={'task-' + task.id} >
+        <div className={'task ' + style} key={task.id} >
 
             <div className='mx-2 sm:mx-5 ' onClick={e => toggleDone(task)}>
                 {task.done ? (

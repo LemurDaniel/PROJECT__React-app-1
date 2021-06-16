@@ -3,13 +3,6 @@
 @tailwind utilities;
 
 
-input:-internal-autofill-selected {
-    appearance: menulist-button;
-    background-color: white !important;
-    background-image: none !important;
-    color: -internal-light-dark(black, white) !important;
-}
-
 /* Ghost element for fixed nav */
 
 body::before {
@@ -23,12 +16,6 @@ body {
     @apply bg-dark-800 relative
 }
 
-
-/* Center Container */
-
-.container {
-    @apply mx-auto p-5
-}
 
 
 /* Header for Tasklist */
@@ -59,7 +46,7 @@ body {
 }
 
 .btn-header.active {
-    @apply text-brand-250
+    @apply text-brand2-100
 }
 .btn-header:not(.active) {
     @apply text-white
