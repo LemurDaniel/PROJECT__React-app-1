@@ -14,7 +14,7 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
 
         // Scale  once.
         canvas.getContext('2d').scale(2, 2);
-    }, [canvasRef])
+    }, [canvasRef, size])
 
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -32,7 +32,7 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
         ctx.stroke()
         ctx.fill();
 
-    }, [width, color])
+    }, [width, color, size])
     
     
     return (
@@ -42,7 +42,7 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
                         ref={canvasRef} height={size} width={size} />
                 <input style= {{ height: size, width: size }} 
                     className="rounded-full opacity-0 absolute top-0"
-                    type="color" value={width} onChange={e => setColor(e.target.value)} />
+                    type="color" value={color} onChange={e => setColor(e.target.value)} />
             </div>
             <input type="range" min={widthMin} max={widthMax} value={width} onChange={e => setWidth(e.target.value)} />
         </div>

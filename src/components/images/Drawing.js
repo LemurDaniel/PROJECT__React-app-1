@@ -30,11 +30,11 @@ const Drawing = ({ size }) => {
         canvas.getContext('2d').scale(4, 4);
         hidden.getContext('2d').scale(4, 4);
 
-    }, [canvasMain, canvasHidden])
+    }, [canvasMain, canvasHidden, size])
 
 
-    const [strokeWidth, setStrokeWidth] = useState(5);
-    const [strokeColor, setStrokeColor] = useState('#000000');
+
+
 
 
 
@@ -47,6 +47,8 @@ const Drawing = ({ size }) => {
 
     }
 
+    const [strokeWidth, setStrokeWidth] = useState(5);
+    const [strokeColor, setStrokeColor] = useState('#000000');
     const draw = e => {
 
         if (e.buttons !== 1) return;
@@ -188,7 +190,7 @@ const Drawing = ({ size }) => {
                         onMouseDown={updatePosition} onMouseMove={draw} onMouseEnter={updatePosition} />
                 </div>
 
-                <a ref={download} download href=""></a>
+                <a ref={download} download href="http://localhost/doodle">Download</a>
                 <button onClick={sendToServer}  >Test</button>
 
             </div>

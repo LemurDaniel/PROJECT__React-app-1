@@ -1,7 +1,6 @@
 import React, { useContext, useState } from 'react'
 
 import { BsInfoSquareFill } from 'react-icons/bs'
-import { BiLoaderAlt } from 'react-icons/bi'
 
 import UserContext from '../UserContext'
 import Searchbar from './Searchbar';

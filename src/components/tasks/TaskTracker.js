@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext } from 'react'
+import React, { useState, useContext, useEffect } from 'react'
 
-import { BsInfoSquareFill  } from 'react-icons/bs'
+import { BsInfoSquareFill } from 'react-icons/bs'
 
 import Clock from '../Clock';
 import Task from './Task';
@@ -11,7 +11,7 @@ import Datepicker from './Datepicker';
 const sortTypes = {
     'time': {
         title: 'Time',
-        func: (a, b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time),
+        func: (a, b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time),
     },
     'status': {
         title: 'Todo',
@@ -41,102 +41,75 @@ const TaskTracker = () => {
     // Fetch Tasks from server
     const fetchTasks = async date => {
 
-        try {
-            const res = await fetch(`http://localhost/tasks?date=${date}&hash=${hash}&token=${token}`)
-            const data = await res.json();
+        const res = await fetch(`http://localhost/tasks?date=${date}&hash=${hash}&token=${token}`)
+        const data = await res.json();
 
-            if(data.hash === hash) return;
+        if (data.hash === hash) return;
 
-            // data.result.forEach(task => task.timestamp = new Date(task.date + 'T' + task.time));
-            data.result.sort(sortType.func);
-            setTasks(data.result);
-            setHash(data.hash)
+        data.result.sort(sortType.func);
+        setTasks(data.result);
+        setHash(data.hash)
 
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
     }
 
-    const [date, setDate] = useState('');
-    const onChangeDate = date => {
-        setDate(date);
-        fetchTasks(date);
-    }
 
+
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+    useEffect(() => fetchTasks(date), [date]);
 
     // Delete Task
     const deleteTask = async id => {
 
-        try {
-            const res = await fetch(`http://localhost/tasks?id=${id}&token=${token}`, {
-                method: 'DELETE',
-            })
+        const res = await fetch(`http://localhost/tasks?id=${id}&token=${token}`, {
+            method: 'DELETE',
+        })
 
-            if (res.status !== 200) throw new Error('Something went wrong!');
-            const data = await res.json();
-            setTasks(tasks.filter(task => task.id !== id));
-            console.log(data)
+        await res.json();
 
-        } catch (err) {
-            console.log(err)
-        }
+        const filtered = tasks.filter(task => task.id !== id);
+        setTasks(filtered);
+
     }
 
 
     // Add a new Task
     const addTask = async task => {
 
-        const newTask = { ...task };
+        const res = await fetch(`http://localhost/tasks?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(task)
+        })
 
-        try {
-            const res = await fetch(`http://localhost/tasks?token=${token}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newTask)
-            })
+        const data = await res.json();
+        const newTasks = [...tasks, data];
+        newTasks.sort(sortType.func)
 
-            if (res.status !== 200) throw new Error('Something went wrong!');
-            /*
-            const data = await res.json();
-            data.date = new Date(data.date);
-
-            const newTasks = [...tasks, data];
-            newTasks.sort(sortType.func);
-            setTasks(newTasks);
-            */
-            onChangeDate(task.date);
-    
-        } catch (err) {
-            console.log(err);
-            return [];
-        }
+        setDate(task.date);
+        setTasks(newTasks);
 
     }
 
+    
     const toggleDone = async task => {
 
-        try {
-            const res = await fetch(`http://localhost/tasks?token=${token}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ ...task, done: !task.done })
-            })
+        const res = await fetch(`http://localhost/tasks?token=${token}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ ...task, done: !task.done })
+        })
 
-            const data = await res.json();
+        const data = await res.json();
 
-            const newTasks = tasks.map(task => task.id === data.id ? data : task);
-            newTasks.sort(sortType.func);
-            setTasks(newTasks);
-
-        } catch (err) {
-            console.log(err)
-        }
+        const newTasks = tasks.map(task => task.id === data.id ? data : task);
+        newTasks.sort(sortType.func);
+        setTasks(newTasks);
     }
+
 
     const onSortChange = e => {
 
@@ -153,6 +126,7 @@ const TaskTracker = () => {
         <section className="pt-2 pb-20 px-5 lg:px-40 xl:px-80 select-none">
             <div className="rounded-sm shadow-2xl pb-5">
 
+                {/* Header containing Clock, Dropdown and Button */}
                 <header className="header border-b ">
 
                     <div className="pr-4"> <Clock size={65} digital={false} /> </div>
@@ -172,10 +146,13 @@ const TaskTracker = () => {
                     </button>
                 </header>
 
-                <Datepicker onChangeDate={onChangeDate} date={date} />
+                {/* The Datepicker to switch between dates. */}
+                <Datepicker setDate={setDate} date={date} />
 
+                {/* The Modal for adding a new Task. */}
                 {showModal ? <AddTask showModal={setShowModal} onAdd={addTask} /> : null}
 
+                {/* The list containing all tasks of the current date. */}
                 <div className="flex flex-col justify-center px-10 pt-4 ">
                     {tasks.length > 0 ? (
                         tasks.map(task => (
