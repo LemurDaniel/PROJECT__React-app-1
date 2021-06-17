@@ -1,27 +1,16 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import { MdCancel } from 'react-icons/md'
 import { ImCross, ImCheckmark } from 'react-icons/im'
 
 const AddTask = ({ showModal, onAdd }) => {
 
-    const dateObject_toString = date => {
-        const year = date.getFullYear().toString();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        let hours = date.getHours();
-
-        if (month < 10) month = '0'+month;
-        if (day < 10) day = '0'+day;
-        if (hours < 10) hours = '0'+hours;
-
-        return year+'-'+month+'-'+day + 'T' + hours + ':00';
-    }
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [done, setDone] = useState(false);
-    const [date, setDate] = useState( dateObject_toString(new Date()) );
+    const [date, setDate] = useState( new Date().toISOString().split('.')[0].substr(0, 17)+'00' );
+
 
     const onSubmit = e => {
         if(!title) {
@@ -29,7 +18,15 @@ const AddTask = ({ showModal, onAdd }) => {
             return;
         }
 
-        onAdd({ title, description, date, done }, dateObject_toString(new Date(date)))
+        const task = {
+            title: title, 
+            description: description, 
+            date: date.split('T')[0],
+            time: date.split('T')[1],
+            done: done
+        }
+        console.log(task)
+        onAdd(task)
         showModal(false);
 
         setTitle('');

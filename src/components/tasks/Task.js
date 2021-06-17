@@ -27,7 +27,7 @@ const Task = ({ task, onDelete, toggleDone }) => {
                 <h1 className='font-bold underline' >{task.title} </h1>
                 <p className='flex justify-start items-center'>  
                     <i className='pr-2'><FaCalendarDay /></i> 
-                    {task.date.toLocaleDateString() + ' at ' + task.date.toLocaleTimeString().substr(0,5)}
+                    {task.date + ' at ' + task.time}
                 </p>
             </div>
 

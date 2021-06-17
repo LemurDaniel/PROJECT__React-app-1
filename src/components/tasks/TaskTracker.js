@@ -11,7 +11,7 @@ import Datepicker from './Datepicker';
 const sortTypes = {
     'date': {
         title: 'Date',
-        func: (a, b) => a.date - b.date,
+        func: (a, b) => a.time - b.time,
     },
     'status': {
         title: 'Todo',
@@ -47,8 +47,7 @@ const TaskTracker = () => {
 
             if(data.hash === hash) return;
 
-            // Convert timestamp to Date object.
-            data.result.forEach(task => task.date = new Date(task.date));
+            // data.result.forEach(task => task.timestamp = new Date(task.date + 'T' + task.time));
             data.result.sort(sortType.func);
             setTasks(data.result);
             setHash(data.hash)
@@ -70,9 +69,6 @@ const TaskTracker = () => {
     const fetchTask = async id => {
         const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`)
         const data = await res.json();
-
-        // Convert timestamp to Date object.
-        data.date = new Date(data.date);
 
         return data;
     }
@@ -99,7 +95,7 @@ const TaskTracker = () => {
     // Add a new Task
     const addTask = async task => {
 
-        const newTask = { ...task, date: new Date(task.date).getTime(), token: token };
+        const newTask = { ...task, token: token };
 
         try {
             const res = await fetch('http://localhost/tasks', {
@@ -119,7 +115,7 @@ const TaskTracker = () => {
             newTasks.sort(sortType.func);
             setTasks(newTasks);
             */
-            onChangeDate(task.date.split('T')[0]);
+            onChangeDate(task.date);
     
         } catch (err) {
             console.log(err);
@@ -130,7 +126,7 @@ const TaskTracker = () => {
 
     const toggleDone = async task => {
 
-        const updatedTask = { ...task, done: !task.done, date: task.date.getTime() };
+        const updatedTask = { ...task, done: !task.done };
         updatedTask.token = token;
 
         try {
@@ -143,7 +139,6 @@ const TaskTracker = () => {
             })
 
             const data = await res.json();
-            data.date = new Date(data.date);
 
             const newTasks = tasks.map(task => task.id === data.id ? data : task);
             newTasks.sort(sortType.func);

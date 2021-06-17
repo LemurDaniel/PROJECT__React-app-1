@@ -36,8 +36,8 @@ const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
                         'user_id nchar(16) NOT NULL, ' +
                         'title nchar(50) NOT NULL, ' +
                         'description text, ' +
-                        'dateLiteral date, '+
-                        'date bigint, ' +
+                        'date date, '+
+                        'time time, ' +
                         'done BOOLEAN, ' +
                         'PRIMARY KEY (user_id, id), ' +
                         'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
@@ -70,20 +70,19 @@ const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
                         ' where username = ?';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
-                        ' (id, user_id, title, description, date, dateLiteral, done) ' +
+                        ' (id, user_id, title, description, date, time, done) ' +
                         ' Values ( ?, ?, ?, ?, ?, ?, ? )'
 
 const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
-                        ' title = ?, description = ?, date = ?, done = ? ' +
+                        ' title = ?, description = ?, date = ?, time = ?, done = ? ' +
                         ' where id = ? AND user_id = ? ';
 
-const SQL_QUERY_TASK = 'Select ta.id as id, title, description, date, done ' +
-                    ' from ' + TABLE_TASK + ' as ta '+
-                    ' join ' + TABLE_USER + ' as du on ta.user_id = du.id' +
-                    ' where du.id = ? '+
-                    ' AND Date(dateLiteral) = Date(?)';
+const SQL_QUERY_TASK = 'Select id, title, description, date, time, done ' +
+                    ' from ' + TABLE_TASK +
+                    ' where user_id = ? '+
+                    ' AND Date(date) = Date(?)';
 
-const SQL_GET_TASK = 'Select dateLiteral ' +
+const SQL_GET_TASK = 'Select date ' +
                     ' from ' + TABLE_TASK + ' as ta '+
                     ' where id = ? '+
                     ' AND user_id = ?';
@@ -141,7 +140,7 @@ func.insertTask = (con, task) => {
             task.title,
             task.description,
             task.date,
-            new Date(task.date).toISOString().split('T')[0],
+            task.time,
             task.done
         ], (error, data) => {
             if(error) reject(error);
@@ -159,6 +158,7 @@ func.updateTask = (con, task) => {
             task.title,
             task.description,
             task.date,
+            task.time,
             task.done,
             task.id,
             task.user,
@@ -178,8 +178,9 @@ func.queryTasks = (con, params) => {
             params.user,
             params.date
         ], (error, data) => {
-            if(error) reject(error);
-            else resolve(data)
+            if(error) return reject(error);
+            data.forEach( row => row.date = row.date.toISOString().split('T')[0] );
+            resolve(data)
         })
 
     })
@@ -195,7 +196,7 @@ func.getTaskDate = (con, id, user) => {
         ], (error, data) => {
             if(error) reject(error);
             if(data.length === 0) reject(error);
-            else resolve(data[0].dateLiteral);
+            else resolve(data[0].date.toISOString().split('T')[0]);
         })
 
     })

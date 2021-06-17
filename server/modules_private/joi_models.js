@@ -74,7 +74,8 @@ schemas.task = joi.object({
         .trim()
         .allow('', null),
 
-    date: joi.number().required(),
+    date: joi.string().required(),
+    time: joi.string().required(),
 
     done: joi.boolean().required(),
 

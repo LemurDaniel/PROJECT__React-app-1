@@ -72,8 +72,7 @@ async function deleteTask(req, res) {
         const id = req.query.id;
         console.log(params)
 
-        const literal = await sql.getTaskDate(sql.pool, id, req.body.user);
-        const date = new Date(literal).toISOString().split('T')[0];
+        const date = await sql.getTaskDate(sql.pool, id, req.body.user);
         await deleteCache('GET', '/tasks', { date: date }, { user: req.body.user }, true); 
 
         const data = await sql.deleteTask(sql.pool, id, req.body.user);
