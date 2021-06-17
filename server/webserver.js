@@ -7,11 +7,11 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 // load custom modules
-const sql = require('./modules_private/sql_calls');
-const schema = require('./modules_private/joi_models');
-const { auth, route: auth_routes } = require('./modules_private/user_auth');
-const { routes: image_routes, helper } = require('./modules_private/image_data');
-const { routes: task_routes } = require('./modules_private/tasks');
+const sql = require('./modules/sqlCalls');
+const { routes: task_routes } = require('./modules/tasks');
+const { auth, routes: auth_routes } = require('./modules/userAuth');
+const { routes: image_routes, helper } = require('./modules/imageData');
+
 const HTML = helper.HTML;
 
 // Get environment variables

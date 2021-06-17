@@ -2,9 +2,9 @@ const fs = require('fs');
 const crypto = require('crypto');
 const routes =  require('express').Router();
 
-const sql = require('./sql_calls');
-const schema = require('./joi_models');
-const { auth, auth2 } = require('./user_auth');
+const sql = require('./sqlCalls');
+const schema = require('./joiModels');
+const { auth, auth2 } = require('./userAuth');
 const { checkCache } = require('./caching');
 
 // Constants
@@ -81,7 +81,7 @@ async function postImage(req, res) {
 
 // POSTS //
 routes.get('/images', (req,res) => {
-    checkCache(req, res, false, async query => await sql.queryImages(sql.pool, query));
+    checkCache(req, res, 10, false, async query => await sql.queryImages(sql.pool, query));
 });
 
 routes.post('/images', auth, postImage);

@@ -2,9 +2,9 @@ const fs = require('fs');
 const crypto = require('crypto');
 const routes =  require('express').Router();
 
-const sql = require('./sql_calls');
-const schema = require('./joi_models');
-const { auth, validate_token } = require('./user_auth');
+const sql = require('./sqlCalls');
+const schema = require('./joiModels');
+const { auth, validate_token } = require('./userAuth');
 const { checkCache, deleteCache } = require('./caching');
 
 
@@ -44,13 +44,6 @@ async function addTask( req, res) {
 
 async function getTasks(req, res) {
 
-    console.log(req.query)
-    if(req.query.token) {
-        req.body = { token: req.query.token };
-    }
-
-    validate_token(req);
-
     checkCache(req, res, 60, true, async params => {
         return await sql.queryTasks(sql.pool, { ...req.query, user: req.body.user.id });
     })
@@ -59,12 +52,6 @@ async function getTasks(req, res) {
 
 async function deleteTask(req, res) {
 
-    console.log(req.query)
-    if(req.query.token) {
-        req.body = { token: req.query.token };
-    }
-
-    validate_token(req);
     const params = { ...req.body, user: req.body.user.id };
 
     try {
@@ -90,10 +77,10 @@ async function deleteTask(req, res) {
 
 // POSTS //
 routes.post('/tasks', auth, addTask);
-routes.get('/tasks', getTasks);
-routes.delete('/tasks', deleteTask);
+routes.get('/tasks', auth, getTasks);
+routes.delete('/tasks', auth, deleteTask);
 
 
 module.exports = { 
     routes
- }
+}

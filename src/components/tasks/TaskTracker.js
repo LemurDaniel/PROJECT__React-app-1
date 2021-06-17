@@ -65,14 +65,6 @@ const TaskTracker = () => {
     }
 
 
-    // Fetch Single Tasks from server
-    const fetchTask = async id => {
-        const res = await fetch(`https://b1a1ccd6-5f98-4563-bb39-bfb3e6dbf241.mock.pstmn.io/tasks?id=${id}`)
-        const data = await res.json();
-
-        return data;
-    }
-
     // Delete Task
     const deleteTask = async id => {
 
@@ -95,10 +87,10 @@ const TaskTracker = () => {
     // Add a new Task
     const addTask = async task => {
 
-        const newTask = { ...task, token: token };
+        const newTask = { ...task };
 
         try {
-            const res = await fetch('http://localhost/tasks', {
+            const res = await fetch(`http://localhost/tasks?token=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -126,16 +118,13 @@ const TaskTracker = () => {
 
     const toggleDone = async task => {
 
-        const updatedTask = { ...task, done: !task.done };
-        updatedTask.token = token;
-
         try {
-            const res = await fetch('http://localhost/tasks', {
+            const res = await fetch(`http://localhost/tasks?token=${token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(updatedTask)
+                body: JSON.stringify({ ...task, done: !task.done })
             })
 
             const data = await res.json();

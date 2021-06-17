@@ -65,7 +65,7 @@ function getCachKey(method, path, query, body, userSpecific) {
     const hashedParams = crypto.createHash('md5').update(JSON.stringify(preHash)).digest('hex'); 
     const key = folder + method + '#' + hashedParams + '.json';
 
-
+    console.log(query)
     console.log(params)
     console.log(key)
 
@@ -96,7 +96,7 @@ function writeCache(key, data, req, TTL, userSpecific) {
 
     const temp = {
         exp: expiration, 
-        user: req.body.user.userDisplayName,
+        user: userSpecific ? req.body.user.userDisplayName : null,
         query: req.query, 
         body: { ...req.body, user: null }, 
         content: object

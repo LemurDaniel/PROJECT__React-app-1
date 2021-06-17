@@ -13,6 +13,7 @@ import Home from './pages/Home';
 
 import UserContext from './components/UserContext';
 import Imagegallery from './pages/Imagegallery';
+import Drawing from './components/images/Drawing';
 
 
 const navigations = [
@@ -56,7 +57,7 @@ function App() {
           <Route path='/' exact component={Home} />
           <Route path='/taskTracker' component={Tasktracking} />
           <Route path='/gallery' component={Imagegallery} />
-          <Route path='/drawing' component={Tasktracking} />
+          <Route path='/drawing' component={Drawing} />
 
         </Router>
 

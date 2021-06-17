@@ -37,7 +37,7 @@ schemas.user = joi.object({
         .required(),
 
     userDisplayName: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
+        .pattern(new RegExp('^[0-9a-zA-Z()-_\\s]+$'))
         .min(2)
         .max(50)
         .trim()

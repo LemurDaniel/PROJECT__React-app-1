@@ -1,10 +1,10 @@
 const fs = require('fs');
 var crypto = require('crypto');
 const bcrypt = require('bcrypt');
-const route =  require('express').Router();
+const routes =  require('express').Router();
 const jwt = require('jsonwebtoken');
-const sql = require('./sql_calls');
-const schema = require('./joi_models');
+const sql = require('./sqlCalls');
+const schema = require('./joiModels');
 
 
 
@@ -41,10 +41,11 @@ function decrypt(encrypted){
 }
 
 
-function create_jwt(user_raw, res) {
+function createJwt(userRaw, res) {
+
     // Make sure only id and userDisplayName gets encoded into JWT
     // no sensitive data like password or bycrypt hash
-    user = { id: user_raw.id, userDisplayName: user_raw.userDisplayName };    
+    user = { id: userRaw.id, userDisplayName: userRaw.userDisplayName };    
 
     /*
     if(AUTH2_USER && AUTH2_PASS){
@@ -83,7 +84,7 @@ async function register ({ body }, res, validate = true) {
         // Insert new user into database
         await sql.insertUser(sql.pool, user);
 
-        create_jwt(user, res);
+        createJwt(user, res);
 
     } catch (err) {
         console.log(err)
@@ -108,7 +109,7 @@ async function login ({ body }, res) {
 
         if(!valid) throw 'Invalid username or password';
 
-        create_jwt(user, res);
+        createJwt(user, res);
 
     } catch(err) {
         console.log(err)
@@ -126,40 +127,26 @@ async function loginGuest (req, res) {
 
 }
 
-function validate_token (req) {
+function validateToken (req) {
 
-    if(req.body.token) {
-        try {
+    let token = req.query.token;
 
-            // Decrypt token and grant access if verified succesfully.
-            const token = req.body.token;
-            delete req.body.token;
-            if(ENCRYPTION_ENABLE) token = decrypt(token);
-    
-            req.body.user = jwt.verify(token, VERIFY_KEY, { expiresIn: JWT_LIFESPAN+'h', algorithm:  [SIGNING_ALGO] });
-            return req; 
-    
-        } catch (ex) {
-            // If jwt invalid, deny access
-            return false;
-        }
+    if(!token) {
+        // Deny access if no cookie present
+        let cookies = req.headers.cookie;
+        if(!cookies) return false;
+
+        // Split cookies to array and deny access if no doodle_token is present.
+        cookies = cookies.split(';').filter( v => v.includes('doodle_token') );
+        if(cookies.length == 0) return false;
+
+        token = cookies[0].split('=')[1].trim();
     }
-
-    // Deny access if no cookie present
-    let cookies = req.headers.cookie;
-    if(!cookies) return false;
-
-    // Split cookies to array and deny access if no doodle_token is present.
-    cookies = cookies.split(';').filter( v => v.includes('doodle_token') );
-    if(cookies.length == 0) return false;
-
 
     try {
 
         // Decrypt token and grant access if verified succesfully.
-        const token = cookies[0].split('=')[1].trim();
         if(ENCRYPTION_ENABLE) token = decrypt(token);
-
         req.body.user = jwt.verify(token, VERIFY_KEY, { expiresIn: JWT_LIFESPAN+'h', algorithm:  [SIGNING_ALGO] });
         return req; 
 
@@ -170,7 +157,7 @@ function validate_token (req) {
 }
 
 function auth (req, res, next) {
-    if(validate_token(req)) next();
+    if(validateToken(req)) next();
     else res.status(401).send();
 }
 
@@ -178,20 +165,20 @@ function auth2 (req, res, next) {
     res.status(401).send();
 }
 
-route.get('/cookie', (req, res) => {
-    create_jwt({ username: 'test' }, res)
+routes.get('/cookie', (req, res) => {
+    createJwt({ username: 'test' }, res)
 } );
 
-route.post('/user/register', register );
-route.post('/user/login', login );
-route.post('/user/guest', loginGuest );
+routes.post('/user/register', register );
+routes.post('/user/login', login );
+routes.post('/user/guest', loginGuest );
 
-route.get('/user', (req, res) => {
-    if(!validate_token(req)) res.status(401).send()
+routes.get('/user', (req, res) => {
+    if(!validateToken(req)) res.status(401).send()
     else res.status(200).send(req.body.user.userDisplayName)
 });
 
-route.get('/user/logout', (req, res) => { 
+routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
     else res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; max-age=0');
     res.status(300).redirect('/user');
@@ -199,8 +186,7 @@ route.get('/user/logout', (req, res) => {
 
 
 module.exports = {
-    route,
-    validate_token,
+    routes,
     auth2,
     auth
 }
