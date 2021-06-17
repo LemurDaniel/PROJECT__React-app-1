@@ -101,7 +101,7 @@ routes.post('/images/delete', auth2, (req, res) => {
 // Send back all database entries encoded in json //
 routes.get('/export', auth, async (req, res) => {
     
-    sql.export_data().then(
+    sql.exportData().then(
         data => res.status(200).json(data)
     ).catch(
         err => res.status(500).send(err)

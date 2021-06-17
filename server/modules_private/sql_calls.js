@@ -77,11 +77,16 @@ const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
                         ' title = ?, description = ?, date = ?, done = ? ' +
                         ' where id = ? AND user_id = ? ';
 
-const SQL_GET_TASK = 'Select ta.id as id, title, description, date, done ' +
+const SQL_QUERY_TASK = 'Select ta.id as id, title, description, date, done ' +
                     ' from ' + TABLE_TASK + ' as ta '+
                     ' join ' + TABLE_USER + ' as du on ta.user_id = du.id' +
                     ' where du.id = ? '+
                     ' AND Date(dateLiteral) = Date(?)';
+
+const SQL_GET_TASK = 'Select dateLiteral ' +
+                    ' from ' + TABLE_TASK + ' as ta '+
+                    ' where id = ? '+
+                    ' AND user_id = ?';
 
 const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
                         ' where id = ? AND user_id = ? ';
@@ -169,7 +174,7 @@ func.queryTasks = (con, params) => {
 
     return new Promise( (resolve, reject) => {
 
-        con.query(SQL_GET_TASK, [
+        con.query(SQL_QUERY_TASK, [
             params.user,
             params.date
         ], (error, data) => {
@@ -180,13 +185,29 @@ func.queryTasks = (con, params) => {
     })
 }
 
-func.deleteTask = (con, id, userId) => {
+func.getTaskDate = (con, id, user) => {
+
+    return new Promise( (resolve, reject) => {
+
+        con.query(SQL_GET_TASK, [
+            id,
+            user.id
+        ], (error, data) => {
+            if(error) reject(error);
+            if(data.length === 0) reject(error);
+            else resolve(data[0].dateLiteral);
+        })
+
+    })
+}
+
+func.deleteTask = (con, id, user) => {
 
     return new Promise( (resolve, reject) => {
 
         con.query(SQL_DELETE_TASK, [
             id,
-            userId
+            user.id
         ], (error, data) => {
             if(error) reject(error);
             else resolve(data)
@@ -291,7 +312,7 @@ func.getPasswordHash = (con, user) => {
     })
 }
 
-func.init_Database = function () {
+func.initDatabase = function () {
 
     // Check for file indicating that tables have been initialized
     return func.transaction(async con => {
@@ -309,7 +330,7 @@ func.init_Database = function () {
 
 
 
-func.export_data = () => {
+func.exportData = () => {
 
     return func.transaction( async con => {
 

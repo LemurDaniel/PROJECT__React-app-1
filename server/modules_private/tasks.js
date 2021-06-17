@@ -5,7 +5,7 @@ const routes =  require('express').Router();
 const sql = require('./sql_calls');
 const schema = require('./joi_models');
 const { auth, validate_token } = require('./user_auth');
-const { checkCache } = require('./caching');
+const { checkCache, deleteCache } = require('./caching');
 
 
 
@@ -24,6 +24,9 @@ async function addTask( req, res) {
 
         if(flag_update) await sql.updateTask(sql.pool, task);
         else await sql.insertTask(sql.pool, task);
+
+        const date = new Date(task.date).toISOString().split('T')[0];
+        await deleteCache('GET', '/tasks', { date: date }, { user: req.body.user }, true); 
 
         delete task.user;
         res.status(200).json(task);
@@ -48,7 +51,7 @@ async function getTasks(req, res) {
 
     validate_token(req);
 
-    checkCache(req, res, true, async params => {
+    checkCache(req, res, 60, true, async params => {
         return await sql.queryTasks(sql.pool, { ...req.query, user: req.body.user.id });
     })
 
@@ -68,7 +71,12 @@ async function deleteTask(req, res) {
 
         const id = req.query.id;
         console.log(params)
-        const data = await sql.deleteTask(sql.pool, id, req.body.user.id);
+
+        const literal = await sql.getTaskDate(sql.pool, id, req.body.user);
+        const date = new Date(literal).toISOString().split('T')[0];
+        await deleteCache('GET', '/tasks', { date: date }, { user: req.body.user }, true); 
+
+        const data = await sql.deleteTask(sql.pool, id, req.body.user);
     
         console.log(data)
         res.status(200).json(data);

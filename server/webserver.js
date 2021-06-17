@@ -50,14 +50,14 @@ else {
 // Initialize DB
 var tries = 0;
 const MAX_TRIES = 30;
-async function check_for_connection() {
+async function checkForConnection() {
 
     if(++tries > MAX_TRIES) return console.log('Couldn\'t connect to database')
 
     try {
         const file = helper.DOODLES + process.env.SQL_TABLE_NAME + '_EXISTS.info';
         if (!fs.existsSync(file)) {
-            await sql.init_Database();
+            await sql.initDatabase();
             fs.writeFileSync(file, '');
         };
 
@@ -66,11 +66,11 @@ async function check_for_connection() {
     } catch(err) {
         console.log(err)
         console.log('Waiting for database connection | Trie: '+tries+'/'+MAX_TRIES+'  - CODE: '+err.code);
-        setTimeout(() => check_for_connection(), 2000);
+        setTimeout(() => checkForConnection(), 2000);
     }
 
 }
-check_for_connection();
+checkForConnection();
 
 
 
