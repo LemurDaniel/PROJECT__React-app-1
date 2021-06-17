@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const Searchbar = ({ onSearch, timeout }) => {
 
@@ -7,6 +7,9 @@ const Searchbar = ({ onSearch, timeout }) => {
     const [user, setUser] = useState('')
     const [label, setLabel] = useState('')
     const [conf, setConf] = useState('')
+
+    // Reset timestamp when a value has changed.
+    useEffect(() => setTimestamp(0), [name, user, label])
 
     const buttonPress = e => {
 
