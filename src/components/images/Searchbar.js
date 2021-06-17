@@ -23,7 +23,7 @@ const Searchbar = ({ onSearch, timeout }) => {
     }
 
     return (
-        <div className="border-b py-5 flex flex-col">
+        <div className="border-b py-5 flex flex-col select-none">
             <form className="p-1 text-center md:text-left md:flex flex-wrap justify-evenly font-bold text-brand2-100">
                 <div className="w-min mx-auto md:mx-0">
                     <label htmlFor="name">Name of the Drawing:</label>

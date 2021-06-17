@@ -9,9 +9,9 @@ import UserContext from '../UserContext';
 import Datepicker from './Datepicker';
 
 const sortTypes = {
-    'date': {
-        title: 'Date',
-        func: (a, b) => a.time - b.time,
+    'time': {
+        title: 'Time',
+        func: (a, b) => new Date(a.date+'T'+a.time) - new Date(b.date+'T'+b.time),
     },
     'status': {
         title: 'Todo',
@@ -23,7 +23,7 @@ const sortTypes = {
     },
     'title': {
         title: 'Title',
-        func: (a, b) => a.text.localeCompare(b.text),
+        func: (a, b) => a.title.localeCompare(b.title),
     },
 }
 
@@ -33,7 +33,7 @@ const TaskTracker = () => {
 
 
     const [showModal, setShowModal] = useState(false);
-    const [sortType, setSortType] = useState(sortTypes['date']);
+    const [sortType, setSortType] = useState(sortTypes['time']);
 
     const [tasks, setTasks] = useState([]);
     const [hash, setHash] = useState(null);
