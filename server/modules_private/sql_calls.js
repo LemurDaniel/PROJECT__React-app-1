@@ -36,6 +36,7 @@ const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
                         'user_id nchar(16) NOT NULL, ' +
                         'title nchar(50) NOT NULL, ' +
                         'description text, ' +
+                        'dateLiteral date, '+
                         'date bigint, ' +
                         'done BOOLEAN, ' +
                         'PRIMARY KEY (user_id, id), ' +
@@ -69,8 +70,8 @@ const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
                         ' where username = ?';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
-                        ' (id, user_id, title, description, date, done) ' +
-                        ' Values ( ?, ?, ?, ?, ?, ? )'
+                        ' (id, user_id, title, description, date, dateLiteral, done) ' +
+                        ' Values ( ?, ?, ?, ?, ?, ?, ? )'
 
 const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
                         ' title = ?, description = ?, date = ?, done = ? ' +
@@ -79,7 +80,8 @@ const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
 const SQL_GET_TASK = 'Select ta.id as id, title, description, date, done ' +
                     ' from ' + TABLE_TASK + ' as ta '+
                     ' join ' + TABLE_USER + ' as du on ta.user_id = du.id' +
-                    ' where du.id = ? ';
+                    ' where du.id = ? '+
+                    ' AND Date(dateLiteral) = Date(?)';
 
 const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
                         ' where id = ? AND user_id = ? ';
@@ -134,6 +136,7 @@ func.insertTask = (con, task) => {
             task.title,
             task.description,
             task.date,
+            new Date(task.date).toISOString().split('T')[0],
             task.done
         ], (error, data) => {
             if(error) reject(error);
@@ -167,7 +170,8 @@ func.queryTasks = (con, params) => {
     return new Promise( (resolve, reject) => {
 
         con.query(SQL_GET_TASK, [
-            params.user
+            params.user,
+            params.date
         ], (error, data) => {
             if(error) reject(error);
             else resolve(data)

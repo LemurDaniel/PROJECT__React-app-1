@@ -81,7 +81,7 @@ async function postImage(req, res) {
 
 // POSTS //
 routes.get('/images', (req,res) => {
-    checkCache(req, res, async query => await sql.queryImages(sql.pool, query));
+    checkCache(req, res, false, async query => await sql.queryImages(sql.pool, query));
 });
 
 routes.post('/images', auth, postImage);

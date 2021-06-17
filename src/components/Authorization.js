@@ -30,10 +30,10 @@ const Authorization = ({ showModal }) => {
 
 
     const [activeType, setActiveType] = useState(Object.keys(types)[0])
-    const [userName, setUserName] = useState(null)
-    const [userDisplayName, setUserDisplayName] = useState(null)
-    const [password, setPassword] = useState(null)
-    const [passwordRepeat, setPasswordRepeat] = useState(null)
+    const [userName, setUserName] = useState('')
+    const [userDisplayName, setUserDisplayName] = useState('')
+    const [password, setPassword] = useState('')
+    const [passwordRepeat, setPasswordRepeat] = useState('')
 
     const sendRequest = async e => {
 
@@ -78,8 +78,8 @@ const Authorization = ({ showModal }) => {
 
                     <select className="bg-dark-700 focus:outline-none" onChange={e => setActiveType(e.target.value)} >
                         {Object.keys(types).map(v => v === activeType ? (
-                            <option value={v} selected >{types[v].title} </option>
-                        ) : <option value={v} >{types[v].title} </option>)}
+                            <option key={v} value={v} defaultValue >{types[v].title} </option>
+                        ) : <option key={v} value={v} >{types[v].title} </option>)}
                     </select>
 
                 </header>

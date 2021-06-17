@@ -4,7 +4,7 @@ const crypto = require('crypto');
 
 // Constants
 const PATH = '/var/project/src/public/';
-const CACHE = PATH+'/cache/';
+const CACHE = PATH+'cache/';
 const TTL = process.env.CACHE_TTL || 10; //seconds
 
 
@@ -12,13 +12,13 @@ const TTL = process.env.CACHE_TTL || 10; //seconds
 if(!fs.existsSync(CACHE)) fs.mkdirSync(CACHE);
 
 
-async function checkCache(req, res, resolve) {
+async function checkCache(req, res, userSpecific, resolve) {
 
     for(let label of Object.keys(req.query))
         if(req.query[label] === 'undefined' || req.query[label] === 'null') req.query[label] = '';
 
     const hash = req.query.hash;
-    const key = getCachKey(req);
+    const key = getCachKey(req, userSpecific);
 
     const sendData = cache => {
         if( !hash || cache.hash !== hash ) res.status(200).json( cache );
@@ -30,8 +30,9 @@ async function checkCache(req, res, resolve) {
         const read = readCache(key);
         if(read) return sendData(read);
 
-        const data = await resolve( req.method === 'GET' ? req.query : req.body );
-        const written = writeCache(key, data, req);
+        const params = req.method === 'GET' ? req.query : req.body
+        const data = await resolve( params, req.body.user );
+        const written = writeCache(key, data, req, userSpecific);
         return sendData(written);
 
     } catch (err) {
@@ -42,15 +43,23 @@ async function checkCache(req, res, resolve) {
 }
 
 
-function getCachKey(req) {
+function getCachKey(req, userSpecific) {
 
     let params;
-    if(req.method !== 'GET') params = Object.values({ ...req.query, hash: null }); 
-    else params = Object.values(req.body); 
+    if(req.method === 'GET') params = req.query; 
+    else params = req.body; 
+
+    delete params.hash;
+    delete params.user;
+    if(userSpecific) params.user = req.body.user.id;
     
-    const preHash = [req.path.split('/').join('#'), ...params ].join('#');
+    const preHash = [req.path.split('/').join('#'), Object.values(params) ].join('#');
     const hashedParams = crypto.createHash('md5').update(JSON.stringify(preHash)).digest('hex'); 
     const key = CACHE + req.method + '#' + hashedParams + '.json';
+
+    console.log(req.query)
+    console.log(params)
+    console.log(key)
 
     return key;
 }
@@ -70,14 +79,25 @@ function readCache(key) {
 // conditions like one container writing shortly after another container has read its content
 // which causes it to therefore operate on stale data and then search the database again
 // can be ignored. Regardless of that the cache file will always be overwritten with a valid entry.
-function writeCache(key, data, req) {
+function writeCache(key, data, req, userSpecific) {
 
     // Hash identifies changes in result
-    const hash = crypto.createHash('md5').update(JSON.stringify(data)).digest('base64'); 
-    const object = { hash: hash, data: data };
+    const hash = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex'); 
+    const object = { hash: hash, result: data };
     const expiration = Date.now()+(TTL*1000);
 
-    const cache = JSON.stringify({ exp: expiration, query: req.query, body: req.body, content: object }, null, 4);
+    const temp = {
+        exp: expiration, 
+        user: req.body.user.userDisplayName,
+        query: req.query, 
+        body: { ...req.body, user: null }, 
+        content: object
+    }
+
+    delete temp.body.user;
+    if(!userSpecific) delete temp.user;
+    
+    const cache = JSON.stringify(temp, null, 4);
 
     fs.writeFileSync(key, cache);
 

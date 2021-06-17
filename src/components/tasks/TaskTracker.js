@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react'
 
-import { BsInfoSquareFill } from 'react-icons/bs'
+import { BsInfoSquareFill  } from 'react-icons/bs'
 
 import Clock from '../Clock';
 import Task from './Task';
 import AddTask from './AddTask';
 import UserContext from '../UserContext';
+import Datepicker from './Datepicker';
 
 const sortTypes = {
     'date': {
@@ -28,35 +29,41 @@ const sortTypes = {
 
 const TaskTracker = () => {
 
+    const { token } = useContext(UserContext);
+
+
     const [showModal, setShowModal] = useState(false);
     const [sortType, setSortType] = useState(sortTypes['date']);
-    const [tasks, setTasks] = useState([]);
 
-    const { token } = useContext(UserContext)
+    const [tasks, setTasks] = useState([]);
+    const [hash, setHash] = useState(null);
 
     // Fetch Tasks from server
-    const fetchTasks = async () => {
-
-        const date = null;
+    const fetchTasks = async date => {
 
         try {
-            const res = await fetch(`http://localhost/tasks?date=${date}&token=${token}`)
+            const res = await fetch(`http://localhost/tasks?date=${date}&hash=${hash}&token=${token}`)
             const data = await res.json();
 
+            if(data.hash === hash) return;
+
             // Convert timestamp to Date object.
-            data.forEach(task => task.date = new Date(task.date));
-            data.sort(sortType.func);
-            setTasks(data);
+            data.result.forEach(task => task.date = new Date(task.date));
+            data.result.sort(sortType.func);
+            setTasks(data.result);
+            setHash(data.hash)
 
         } catch (err) {
             console.log(err);
             return [];
         }
     }
-    // Maybe fetch periodically from server?
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+
+    const [date, setDate] = useState('');
+    const onChangeDate = date => {
+        setDate(date);
+        fetchTasks(date);
+    }
 
 
     // Fetch Single Tasks from server
@@ -104,17 +111,16 @@ const TaskTracker = () => {
             })
 
             if (res.status !== 200) throw new Error('Something went wrong!');
-
+            /*
             const data = await res.json();
             data.date = new Date(data.date);
 
             const newTasks = [...tasks, data];
             newTasks.sort(sortType.func);
             setTasks(newTasks);
-
-            console.log(data)
-            return data;
-
+            */
+            onChangeDate(task.date.split('T')[0]);
+    
         } catch (err) {
             console.log(err);
             return [];
@@ -182,6 +188,8 @@ const TaskTracker = () => {
                     </button>
                 </header>
 
+                <Datepicker onChangeDate={onChangeDate} date={date} />
+
                 {showModal ? <AddTask showModal={setShowModal} onAdd={addTask} /> : null}
 
                 <div className="flex flex-col justify-center px-10 pt-4 ">
@@ -194,7 +202,6 @@ const TaskTracker = () => {
                             <BsInfoSquareFill className="inline" />  No Tasks remaining
                         </i>
                     )
-
                     }
                 </div>
 

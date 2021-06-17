@@ -5,6 +5,7 @@ const routes =  require('express').Router();
 const sql = require('./sql_calls');
 const schema = require('./joi_models');
 const { auth, validate_token } = require('./user_auth');
+const { checkCache } = require('./caching');
 
 
 
@@ -46,20 +47,10 @@ async function getTasks(req, res) {
     }
 
     validate_token(req);
-    const params = { ...req.body, user: req.body.user.id };
 
-    try {
-
-        console.log(params)
-        const data = await sql.queryTasks(sql.pool, params);
-    
-        //console.log(data)
-        res.status(200).json(data);
-
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json(err)
-    }
+    checkCache(req, res, true, async params => {
+        return await sql.queryTasks(sql.pool, { ...req.query, user: req.body.user.id });
+    })
 
 }
 

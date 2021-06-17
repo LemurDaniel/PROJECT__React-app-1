@@ -29,10 +29,10 @@ const Gallery = () => {
             if(data.hash === hash) return;
             setHash(data.hash);
 
-            for(let image of data.data) 
+            for(let image of data.result) 
                 image.ml5_conf = Math.floor(image.ml5_conf * 10000) / 100 + ' %';
             
-            setImages(data.data);
+            setImages(data.result);
    
         } catch (err) {
             setLoading(false);

@@ -5,19 +5,23 @@ import { ImCross, ImCheckmark } from 'react-icons/im'
 
 const AddTask = ({ showModal, onAdd }) => {
 
-    const DateNow = new Date();
-    const year = DateNow.getFullYear().toString();
-    let month = DateNow.getMonth().toString();
-    let day = DateNow.getDate().toString();
-    let hours = DateNow.getHours();
+    const dateObject_toString = date => {
+        const year = date.getFullYear().toString();
+        let month = date.getMonth() + 1;
+        let day = date.getDate();
+        let hours = date.getHours();
 
-    if (month.length !== 2) month = '0'+month;
-    if (day.length !== 2) day = '0'+day;
+        if (month < 10) month = '0'+month;
+        if (day < 10) day = '0'+day;
+        if (hours < 10) hours = '0'+hours;
+
+        return year+'-'+month+'-'+day + 'T' + hours + ':00';
+    }
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [done, setDone] = useState(false);
-    const [date, setDate] = useState(year+'-'+month+'-'+day + 'T' + hours + ':00');
+    const [date, setDate] = useState( dateObject_toString(new Date()) );
 
     const onSubmit = e => {
         if(!title) {
@@ -25,7 +29,7 @@ const AddTask = ({ showModal, onAdd }) => {
             return;
         }
 
-        onAdd({ title, description, date, done })
+        onAdd({ title, description, date, done }, dateObject_toString(new Date(date)))
         showModal(false);
 
         setTitle('');
