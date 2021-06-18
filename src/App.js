@@ -75,6 +75,7 @@ function App() {
         <Footer />
 
       </UserContext.Provider>
+
     </>
 
   );

@@ -110,7 +110,8 @@ function processPng(file) {
 }
 
 
-// POSTS //
+routes.get('/translation', (req,res) => res.sendFile(TRANSLATION));
+
 routes.get('/images', (req,res) => {
     checkCache(req, res, 10, false, async query => await sql.queryImages(sql.pool, query));
 });
