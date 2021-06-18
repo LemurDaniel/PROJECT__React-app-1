@@ -1,23 +1,3 @@
-
-## Build dockerfiles
-
-<details><br>
-
-### Build nodejs webserver:
-
-    docker build -t daniellandau1998/node-webserver -f ./docker/df-webserver .
-
-### Run docker-compose:
-  
-     docker-compose -f ./docker/dc-web-db.yaml up
-
-</details>
-
-
-___
-
-
-
 ## Generate Self-signed SSL for local-testing
 
 <details><br>

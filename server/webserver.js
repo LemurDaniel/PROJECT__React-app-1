@@ -1,5 +1,6 @@
 // Load Modules //
 const fs = require('fs');
+const path = require('path');
 const cors = require('cors'); 
 const http = require('http');
 const https = require('https');
@@ -9,10 +10,9 @@ const bodyParser = require('body-parser');
 // load custom modules
 const sql = require('./modules/sqlCalls');
 const { routes: task_routes } = require('./modules/tasks');
-const { auth, routes: auth_routes } = require('./modules/userAuth');
-const { routes: image_routes, helper } = require('./modules/imageData');
+const { routes: image_routes } = require('./modules/imageData');
+const { routes: auth_routes, auth } = require('./modules/userAuth');
 
-const HTML = helper.HTML;
 
 // Get environment variables
 const HTTPS_ENABLE = (process.env.HTTPS_ENABLE == 'true' ? true:false);
@@ -24,14 +24,19 @@ const PORT = process.env.PORT || (HTTPS_ENABLE ? 443:80);
 //Create Server//
 const app = express();
 app.use(cors())
+
 // Make everything in /public  publicly accessible
-app.use(express.static('/var/project/src/public'));
+app.use( express.static(path.join(__dirname, 'public')) );
+app.use( express.static(path.join(__dirname, 'build')) );
+
 // Use bodyParser to automatically convert json body to object
 app.use(bodyParser.json({ limit: '5mb' }))
+
 // Use routes from authorization module and image module
 app.use(auth_routes);
 app.use(image_routes);
 app.use(task_routes);
+
 // Send nicley formatted Json
 app.set('json spaces', 2)
 
@@ -55,7 +60,7 @@ async function checkForConnection() {
     if(++tries > MAX_TRIES) return console.log('Couldn\'t connect to database')
 
     try {
-        const file = helper.DOODLES + process.env.SQL_TABLE_NAME + '_EXISTS.info';
+        const file = path.join(__dirname, 'public', 'doodles', process.env.SQL_TABLE_NAME + '_EXISTS.info');
         if (!fs.existsSync(file)) {
             await sql.initDatabase();
             fs.writeFileSync(file, '');
@@ -74,22 +79,25 @@ checkForConnection();
 
 
 
-// GET //
-app.get('/', auth, (req,res) => res.sendFile(HTML('index')));
-app.get('/draw', auth, (req,res) => res.sendFile(HTML('draw')));
-app.get('/space', auth, (req,res) => res.sendFile(HTML('asteriods_game')));
-app.get('/credits', (req,res) =>  res.sendFile(HTML('credits')));
-app.get('/rocket', auth, (req,res) => res.sendFile(HTML('rocket_game')));
-app.get('/draw/gallery', auth, (req, res) => res.sendFile(HTML('gallery')));
+app.use( '/drawing', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
+app.use( '/gallery', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
+app.use( '/taskTracker', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 
+// GET //
+app.get('/draw', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
+app.get('/space', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
+
+app.get('/credits', (req,res) =>  res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
+app.get('/rocket', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
 
 // Only for testing, shows all certificates, passwords and other environment variables//
 app.get('/info', auth, (req,res) =>  res.json(process.env) );
 
 
-// Catch 404's and send user to the 404 page //
-app.use((req, res, next) => res.status(404).sendFile(HTML('codepen_template/404')));
 
+
+// Catch 404's and send user to the 404 page //
+app.use((req, res) => res.status(404).sendFile(HTML('codepen_template/404')));
 
 // If https is enabled then create a second http server that automatically redirects all traffic to https //
 if(HTTPS_ENABLE) {

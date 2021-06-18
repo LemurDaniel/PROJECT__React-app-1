@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path')
 const PNG = require("pngjs").PNG;
 const crypto = require('crypto');
 const routes =  require('express').Router();
@@ -8,16 +9,15 @@ const schema = require('./joiModels');
 const { auth, auth2 } = require('./userAuth');
 const { checkCache } = require('./caching');
 
-// Constants
-const PATH = '/var/project/src/public/';
-const DOODLES = PATH+'doodles/';
+
+const DOODLES = path.join(__dirname, '..', 'public', 'doodles')
 
 // create chache folder if non-existant
 if(!fs.existsSync(DOODLES)) fs.mkdirSync(DOODLES);
 
-const TRANSLATION = PATH+'assets/other/translation.json';
-const TRANSLATION_ENG = PATH+'assets/other/class_names.txt';
-const TRANSLATION_DE = PATH+'assets/other/class_names_german.txt';
+const TRANSLATION = path.join(__dirname, '..', 'public', 'other', 'translation.json');
+const TRANSLATION_ENG = path.join(__dirname, '..', 'public', 'other', 'class_names.txt'); 
+const TRANSLATION_DE = path.join(__dirname, '..', 'public', 'other', 'class_names_german.txt'); 
 
 
 /* Create Translation File  */
@@ -37,15 +37,6 @@ fs.readFile(TRANSLATION, 'utf8', (err, data) => {
     }
     fs.writeFileSync(TRANSLATION, JSON.stringify(translation, null, 4));
 });
-
-
-
-const helper = {
-    TRANSLATION: TRANSLATION,
-    DOODLES: DOODLES,
-    PATH: PATH,
-    HTML: (str) => PATH+'html/'+str+'.html'
-};
 
 
 async function postImage(req, res) {
@@ -142,6 +133,5 @@ routes.get('/export', auth, async (req, res) => {
 })
 
 module.exports = { 
-    helper,
     routes 
 }

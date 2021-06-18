@@ -1,10 +1,10 @@
 const fs = require('fs');
+const path = require('path');
 const crypto = require('crypto');
 
 
 // Constants
-const PATH = '/var/project/src/public/';
-const CACHE = PATH+'cache/';
+const CACHE = path.join(__dirname, '..', 'cache')
 const CACHE_TTL = process.env.CACHE_TTL || 10; //seconds
 
 
@@ -58,7 +58,7 @@ function getCachKey(method, path, query, body, userSpecific) {
     delete params.hash;
     delete params.user;
 
-    let folder = CACHE + (userSpecific ? body.user.id+'/' : '')
+    let folder = CACHE + '/' + (userSpecific ? body.user.id+'/' : '')
     if(!fs.existsSync(folder)) fs.mkdirSync(folder);
     
     const preHash = [path.split('/').join('#'), Object.values(params) ].join('#');

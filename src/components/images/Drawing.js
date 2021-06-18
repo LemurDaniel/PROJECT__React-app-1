@@ -69,10 +69,10 @@ const Drawing = ({ size }) => {
 
         const date = new Date().getTime();
         if(date <= timeout) return;
-        setTimeout(date + 1 * 150)
+        setTimeout(date + 1 * 500)
 
         classifier.predict(canvasHidden.current)
-        .then( res => setMl5(res.map( v => new Object({ ...v, label: translation[v.label] ?? v.label }))) )
+        .then( res => setMl5(res.map( v => ({ ...v, label: translation[v.label] ?? v.label }))) )
         .catch( err => console.log(err) )
 
     }
@@ -97,7 +97,18 @@ const Drawing = ({ size }) => {
     }
 
     // Color, Width and darwing method.
+    const strokeBounds = [2, 25];
     const [strokeWidth, setStrokeWidth] = useState(15);
+    const onScrollStroke = e => {
+        if(e.deltaY === -100) {
+            if(strokeWidth >= strokeBounds[1]) return;
+            setStrokeWidth(strokeWidth+1);
+        }
+        else if(e.deltaY === 100) {
+            if(strokeWidth <= strokeBounds[0]) return;
+            setStrokeWidth(strokeWidth-1);
+        }
+    }
     const [strokeColor, setStrokeColor] = useState('#000000');
     const draw = e => {
 
@@ -112,7 +123,7 @@ const Drawing = ({ size }) => {
         ctxMain.lineWidth = strokeWidth;
         ctxHidden.lineWidth = strokeWidth;
 
-        // Erase with white on rightclick
+        // Erase with white on rightclick.
         if(!rubber) {
             ctxMain.strokeStyle = strokeColor;
             ctxHidden.strokeStyle = 'black';
@@ -133,12 +144,7 @@ const Drawing = ({ size }) => {
 
         ctxMain.stroke();
         ctxHidden.stroke();
-        classify();
     }
-
-    const download = useRef(null);
-
-
 
 
     // Methods and states for sending picutre to server.
@@ -187,19 +193,20 @@ const Drawing = ({ size }) => {
                     type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
 
                 {/* The component containing the rubber, strokewidth and strokecolor controls. */}
-                < Strokecontrol color={strokeColor} setColor={setStrokeColor}
+                < Strokecontrol widthMin={strokeBounds[0]} widthMax={strokeBounds[1]}
+                    color={strokeColor} setColor={setStrokeColor}
                     width={strokeWidth} setWidth={setStrokeWidth}
                     rubber={rubber} setRubber={setRubber}
                 />
 
     
                 {/* The two canvas. */}
-                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} >
+                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel ={onScrollStroke} >
                     <canvas className="absolute top-0"
                         ref={canvasHidden} height={size} width={size} />
                     <canvas className="relative rounded-sm bg-white"
                         ref={canvasMain} height={size} width={size}
-                        onMouseDown={updatePosition} onMouseMove={draw} />
+                        onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}  />
 
 
                     {/* The classifications. */}
@@ -216,8 +223,6 @@ const Drawing = ({ size }) => {
               
 
                  {/* The Button for sending the image to the server. */}
-                <a ref={download} download href="http://localhost/doodle" className="absolute hidden">Download</a>
-                
                 <button className="mt-4 px-2 mx-auto border-b rounded-sm font-bold   border-brand2-100 text-brand2-100 hover:bg-brand2-100 hover:text-dark-700 duration-300"
                     onClick={sendToServer}  >Send Image</button>
 
