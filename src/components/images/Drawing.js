@@ -191,7 +191,7 @@ const Drawing = ({ size }) => {
         <div>
             <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
-                <input className="mx-auto rounded-sm bg-transparent border-b  text-center text-brand2-100"
+                <input className="mx-auto rounded-sm bg-transparent border-b  text-center text-brand2-100 focus:outline-none"
                     type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
 
                 < Strokecontrol color={strokeColor} setColor={setStrokeColor}

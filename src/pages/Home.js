@@ -19,7 +19,7 @@ const Home = () => {
 
                 <div className="pt-4 mx-auto text-white text-4xl text-center">
                     <h1 className="pb-5">You are logged in as: </h1>
-                    <i className="text-brand2-400 underline">{meta.user} </i>
+                    <i className="text-brand2-100 underline">{meta.user} </i>
                 </div>
               </>
             )

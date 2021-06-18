@@ -2,7 +2,7 @@ import './css/Tailwind.css'
 import './css/App.css';
 
 import { BrowserRouter as Router, Route } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 
 import Nav from './components/website/Nav';
@@ -41,6 +41,17 @@ function App() {
   const currToken = !cookie2 ? null : cookie2.split('=')[1];
 
   const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://localhost' });
+  useEffect(() => {
+    const call = async () => {
+      if(!currToken) return;
+      const res = await fetch(meta.endpoint+`/user?token=${currToken}`);
+      if(res.status === 200) return;
+      setMeta({ user: null, token: null });
+      document.cookie = "user=null; max-age=0";
+      document.cookie = "doodle_token=null; max-age=0";
+    }
+    call();
+  }, []);
 
   console.log(currUser)
   console.log(cookie)

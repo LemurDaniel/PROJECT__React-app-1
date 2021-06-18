@@ -173,10 +173,7 @@ routes.post('/user/register', register );
 routes.post('/user/login', login );
 routes.post('/user/guest', loginGuest );
 
-routes.get('/user', (req, res) => {
-    if(!validateToken(req)) res.status(401).send()
-    else res.status(200).send(req.body.user.userDisplayName)
-});
+routes.get('/user', auth, (req, res) => res.status(200).send());
 
 routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
