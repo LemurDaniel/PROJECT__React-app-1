@@ -140,7 +140,7 @@ const TaskTracker = () => {
                         </select>
                     </div>
 
-                    <button className="my-2 btn-prominent btn-orange" onClick={e => setShowModal(!showModal)} >
+                    <button className="my-2 btn-prominent btn-light font-bold" onClick={e => setShowModal(!showModal)} >
                         {!showModal ? 'Add new Task' : 'Close new Task'}
                     </button>
                 </header>

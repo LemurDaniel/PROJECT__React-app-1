@@ -38,7 +38,7 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
     
     return (
         <div className="m-5 flex justify-evenly ">
-            <BiEraser className={ rubber ? "rounded-active" : "rounded-active" } onClick={ e => setRubber(!rubber) }  />
+            <BiEraser className={ rubber ? "rounded-inactive" : "rounded-active" } onClick={ e => setRubber(!rubber) }  />
 
             <div className="relative">
                 <div className="bg-white rounded-full  hover:bg-blue-100 duration-300">
