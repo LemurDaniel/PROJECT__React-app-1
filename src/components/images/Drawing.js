@@ -189,7 +189,7 @@ const Drawing = ({ size }) => {
             <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
                 {/* The input element for naming the drawing */}
-                <input className="mx-auto rounded-sm bg-transparent border-b  text-center text-brand2-100 focus:outline-none"
+                <input className="input-light mx-auto text-center"
                     type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
 
                 {/* The component containing the rubber, strokewidth and strokecolor controls. */}
@@ -202,16 +202,14 @@ const Drawing = ({ size }) => {
     
                 {/* The two canvas. */}
                 <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel ={onScrollStroke} >
-                    <canvas className="absolute top-0"
-                        ref={canvasHidden} height={size} width={size} />
-                    <canvas className="relative rounded-sm bg-white"
-                        ref={canvasMain} height={size} width={size}
+                    <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0"  />
+                    <canvas ref={canvasMain} height={size} width={size}   className="relative rounded-sm bg-white"
                         onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}  />
 
 
                     {/* The classifications. */}
 
-                    <div className="text-brand2-100 font-bold  absolute top-0 left-full hidden md:block">
+                    <div className=" font-bold text-brand2-100 absolute top-0 left-full hidden md:block">
                         {ml5.map(({ label, confidence }, i) => (
                             <div key={i} className="ml-5 pb-1 w-max" >
                                 <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
@@ -220,7 +218,7 @@ const Drawing = ({ size }) => {
                         }
                     </div>
                 
-                    <div className="pt-1 w-full text-brand2-100 font-bold block md:hidden">
+                    <div className="pt-1 w-full font-bold  text-brand2-100 block md:hidden">
                         {ml5.slice(0,3).map(({ label, confidence }, i) => (
                             <div key={i} className=" pb-1 mx-auto w-48" >
                                 <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
@@ -232,7 +230,7 @@ const Drawing = ({ size }) => {
               
 
                  {/* The Button for sending the image to the server. */}
-                <button className="mt-4 px-2 mx-auto border-b rounded-sm font-bold   border-brand2-100 text-brand2-100 hover:bg-brand2-100 hover:text-dark-700 duration-300"
+                <button className="btn-decent btn-light font-bold mt-4"
                     onClick={sendToServer}  >Send Image</button>
 
             </div>

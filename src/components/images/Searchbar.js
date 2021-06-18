@@ -25,46 +25,28 @@ const Searchbar = ({ onSearch, timeout }) => {
 
     }
 
-    // TODO put in CSS 
-    const input = "px-2 mt-2 text-white bg-dark-800 font-bold focus:outline-none border-b border-brand2-100 text-center md:text-left";
-
+  
     return (
         <div className=" py-5 flex flex-col select-none">
-            <form className="p-1 text-center md:text-left md:flex flex-wrap justify-evenly font-bold text-brand2-100">
+            <form className="text-center md:text-left md:flex flex-wrap justify-evenly  ">
 
-                <div className="w-min mx-auto pb-2 md:pb-0 md:mx-0">
-                    <label htmlFor="name">Name of the Drawing:</label>
-                    <input name="name" id="name" className={input}
+           
+                    <input name="name" id="name" className="input-responsive" 
                        type='text' placeholder="Enter a Name" value={name} onChange={ e => setName(e.target.value) }
                        />
-                </div>
+              
+                    <input name="user" id="user" className="input-responsive"
+                        type='text' placeholder="Enter a Username" value={user} onChange={ e => setUser(e.target.value) } />
+            
 
-                <div className="w-min mx-auto pb-2 md:pb-0 md:mx-0">
-                    <label htmlFor="user">Drawn by user:</label>
-                    <input name="user" id="user" className={input}
-                        type='text' placeholder="Enter a Username" value={user} onChange={ e => setUser(e.target.value) }
-                        />
-                </div>
-
-                <div className="w-min mx-auto pb-2 md:pb-0 md:mx-0">
-                    <label htmlFor="class">AI Label:</label>
-                    <input name="class" id="class" className={input}
+                    <input name="class" id="class" className="input-responsive"
                         type='text' placeholder="Enter an AI label" value={label} onChange={ e => setLabel(e.target.value) }
                         />
-                </div>
 
-                { true ? null :
-                <div className="w-min mx-auto md:mx-0">
-                    <label htmlFor="conf">AI Confidence:</label>
-                    <input name="conf" id="conf" className={input}
-                        type='text' placeholder="Enter an AI label" value={conf} onChange={ e => setConf(e) }
-                        />
-                </div>   
-                }
 
             </form>
 
-            <button className="mt-5 btn-custom btn-orange mx-auto focus:outline-none"
+            <button className="btn-prominent btn-light mt-8 font-bold"
                 onClick={ buttonPress } > 
                 Search for Images 
             </button>  

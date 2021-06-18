@@ -122,17 +122,17 @@ const TaskTracker = () => {
 
 
     return (
-        <section className="pt-2 pb-20 px-5 lg:px-40 xl:px-80 select-none">
+        <section className="pt-2 pb-20 px-5   lg:px-20  xl:px-40   select-none">
             <div className="rounded-sm shadow-2xl pb-5">
 
                 {/* Header containing Clock, Dropdown and Button */}
-                <header className="header border-b ">
+                <header className="header border-b">
 
                     <div className="pr-4"> <Clock size={65} digital={false} /> </div>
 
-                    <h1 className='font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
+                    <h1 className='my-2 font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
 
-                    <div className="w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md hover:border-brand2-100 focus:border-brand2-100 duration-300">
+                    <div className="my-2 w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md ">
                         <label htmlFor="sorting" className="px-2">Sort by </label>
                         <select name="sorting" id="sorting" onChange={onSortChange}
                             className="bg-dark-700 focus:outline-none" >
@@ -140,7 +140,7 @@ const TaskTracker = () => {
                         </select>
                     </div>
 
-                    <button className="btn-custom btn-orange" onClick={e => setShowModal(!showModal)} >
+                    <button className="my-2 btn-prominent btn-orange" onClick={e => setShowModal(!showModal)} >
                         {!showModal ? 'Add new Task' : 'Close new Task'}
                     </button>
                 </header>

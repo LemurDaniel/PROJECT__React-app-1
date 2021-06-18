@@ -36,13 +36,13 @@ const AddTask = ({ showModal, onAdd }) => {
 
 
     return (
-        <div className="fixed inset-x-0 w-min mx-auto top-28 z-50  justify-center items-center flex overflow-x-hidden overflow-y-auto shadow-2xl">
+        <div className="modal">
 
-            <div className="bg-white rounded-md border-brand2-100 border-2 w-80">
+            <div>
 
-                <header className="p-1 px-2 bg-dark-700  text-white text-xl rounded-t-md flex justify-start">
+                <header className="p-1 px-2 bg-dark-700  text-xl rounded-t-md   flex justify-start">
 
-                    <div className="p-1 mr-3 w-min hover:bg-white hover:text-dark-700 rounded-full duration-300" onClick={ e => setDone(!done) } > 
+                    <div className="p-1 mr-3 w-min   hover:bg-white hover:text-dark-700 rounded-full  duration-300" onClick={ e => setDone(!done) } > 
                         { !done ? 
                             <ImCross className="text-brand2-300" /> :
                             <ImCheckmark className="text-brand2-400" />
@@ -83,8 +83,8 @@ const AddTask = ({ showModal, onAdd }) => {
                     </form>
                 </div>
 
-                <div className="py-2 px-2 rounded-b-md bg-dark-700 flex">
-                    <button className="btn-orange px-2 mx-auto" onClick={onSubmit}> Save Task </button>
+                <div className="py-2 rounded-b-md bg-dark-700 flex">
+                    <button className="btn-decent btn-light" onClick={onSubmit}> Save Task </button>
                 </div>
                
             </div>

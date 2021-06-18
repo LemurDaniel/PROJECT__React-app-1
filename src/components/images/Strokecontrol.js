@@ -36,18 +36,14 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
 
     }, [width, color, size])
     
-    const active = "w-9 h-9 my-auto rounded-full bg-white hover:bg-blue-600 hover:text-white duration-300"
-    const inactive = "w-9 h-9 my-auto rounded-full bg-blue-600 text-white hover:bg-white hover:text-black duration-300"
-
     return (
         <div className="m-5 flex justify-evenly ">
-            <BiEraser className={ rubber ? inactive : active } onClick={ e => setRubber(!rubber) }  />
+            <BiEraser className={ rubber ? "rounded-active" : "rounded-active" } onClick={ e => setRubber(!rubber) }  />
 
             <div className="relative">
                 <div className="bg-white rounded-full  hover:bg-blue-100 duration-300">
-                    <canvas ref={canvasRef} height={size} width={size} className="hover:bg-blue-100" />
-                    <input style= {{ height: size, width: size }} 
-                        className="rounded-full opacity-0 absolute top-0"
+                    <canvas ref={canvasRef} height={size} width={size} />
+                    <input style= {{ height: size, width: size }} className="opacity-0 absolute top-0"
                         type="color" value={color} onChange={e => setColor(e.target.value)} />
                 </div>
             </div>

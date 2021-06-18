@@ -7,17 +7,15 @@ import { ImCross, ImCheckmark } from 'react-icons/im'
 
 const Task = ({ task, onDelete, toggleDone }) => {
 
-    const style = (task.done ? 'done' : 'notdone');
-
     return (
 
-        <div className={'task ' + style} key={task.id} >
+        <div className={'p-2 my-1  rounded-sm   flex items-center  border hover:opacity-80 duration-300 relative  text-white ' + (task.done ? 'bg-brand2-400' : 'bg-brand2-350')} key={task.id} >
 
             <div className='mx-2 sm:mx-5 ' onClick={e => toggleDone(task)}>
                 {task.done ? (
-                    <i className='iconButton text-brand2-400' > <ImCheckmark /> </i>
+                    <i className='rounded-normal  text-brand2-400' > <ImCheckmark /> </i>
                 ) : (
-                    <i className='iconButton text-brand2-300' > <ImCross /> </i>
+                    <i className='rounded-normal  text-brand2-300' > <ImCross /> </i>
                 )
                 }
             </div>

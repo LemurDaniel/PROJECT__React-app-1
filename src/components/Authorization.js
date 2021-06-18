@@ -71,9 +71,9 @@ const Authorization = ({ showModal }) => {
 
 
     return (
-        <div className="fixed inset-x-0 w-min mx-auto top-28 z-50  justify-center items-center flex overflow-x-hidden overflow-y-auto shadow-2xl">
+        <div className="modal">
 
-            <div className="bg-white rounded-md border-brand2-100 border-2 w-80">
+            <div>
 
                 <header className="p-2 px-2 bg-dark-700  text-white text-xl rounded-t-md">
 
@@ -141,7 +141,7 @@ const Authorization = ({ showModal }) => {
                 </div>
 
                 <div className="py-2 px-2 rounded-b-md bg-dark-700 flex">
-                    <button className="btn-orange px-2 mx-auto" onClick={sendRequest}> {types[activeType].btn} </button>
+                    <button className="btn-decent btn-light font-bold" onClick={sendRequest}> {types[activeType].btn} </button>
                 </div>
 
             </div>
