@@ -9,7 +9,7 @@ import Loading from '../website/Loading';
 
 const Gallery = () => {
 
-    const { token } = useContext(UserContext);
+    const { meta } = useContext(UserContext);
 
     const [hash, setHash] = useState(null)
     const [images, setImages] = useState([]);
@@ -20,7 +20,7 @@ const Gallery = () => {
         try {    
             setLoading(true);
 
-            const res = await fetch(`http://localhost/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}&token=${token}`)
+            const res = await fetch(meta.endpoint+`/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
             const data = await res.json();
 
             setLoading(false);
@@ -44,7 +44,7 @@ const Gallery = () => {
 
             <Searchbar onSearch={searchImages} />
 
-            <div className="md:mx-0 md:flex flex-row flex-wrap justify-evenly relative">
+            <div className="pt-4 md:mx-0 md:flex flex-row flex-wrap justify-evenly relative">
 
                 { !loading ? null :
                     <div className="bg-transparent rounded-full absolute top-2">

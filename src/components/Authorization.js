@@ -26,7 +26,7 @@ const types = {
 
 const Authorization = ({ showModal }) => {
 
-    const { setUser, setToken } = useContext(UserContext);
+    const { setMeta } = useContext(UserContext);
 
 
     const [activeType, setActiveType] = useState(Object.keys(types)[0])
@@ -46,25 +46,26 @@ const Authorization = ({ showModal }) => {
         if (type.fields[2] && type.fields[3]
             && password !== passwordRepeat) return alert('Your Passwords do not match');
 
+        const body = {
+            username: userName, 
+            password: password, 
+            userDisplayName: userDisplayName
+        }
+
         const res = await fetch('http://localhost' + type.api, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ username: userName, password: password, userDisplayName: userDisplayName })
+            body: JSON.stringify(body)
         })
 
-        console.log(res)
-
         const data = await res.json();
-        console.log(data);
-        setUser(data.userDisplayName);
-        setToken(data.token);
+        setMeta({ user: userDisplayName, token: data.token });
 
         // temporary
         document.cookie = "user=" + data.userDisplayName;
         document.cookie = "doodle_token=" + data.token;
-    
     }
 
 

@@ -36,11 +36,11 @@ function App() {
 
   const cookie = document.cookie.split(';').filter(v => v.includes('user='))[0];
   const currUser = !cookie ? null : cookie.split('=')[1];
-  const [user, setUser] = useState(currUser);
 
   const cookie2 = document.cookie.split(';').filter(v => v.includes('doodle_token='))[0];
   const currToken = !cookie2 ? null : cookie2.split('=')[1];
-  const [token, setToken] = useState(currToken);
+
+  const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://localhost' });
 
   console.log(currUser)
   console.log(cookie)
@@ -48,7 +48,7 @@ function App() {
   return (
 
     <>
-      <UserContext.Provider value={{ user, setUser, token, setToken }}>
+      <UserContext.Provider value={{ meta, setMeta }}>
 
         <Nav navigations={navigations} />
 

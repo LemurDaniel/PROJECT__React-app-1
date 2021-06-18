@@ -30,9 +30,13 @@ const Drawing = ({ size }) => {
         canvas.getContext('2d').scale(4, 4);
         hidden.getContext('2d').scale(4, 4);
 
+        canvas.getContext('2d').fillStyle = 'white';
+        hidden.getContext('2d').fillStyle = 'white';
+
+        canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+        hidden.getContext('2d').fillRect(0, 0, hidden.width, hidden.height);
+
     }, [canvasMain, canvasHidden, size])
-
-
 
 
 
@@ -47,12 +51,18 @@ const Drawing = ({ size }) => {
 
     }
 
-    const [strokeWidth, setStrokeWidth] = useState(5);
+    const [rubber, setRubber] = useState(false);
+    const handleRubber = e => {
+        console.log(e)
+        if(e.button !== 2) return false;
+        else if(e.type === 'mousedown') setRubber(true);
+        else if(e.type === 'mouseup') setRubber(false);
+    }
+    const [strokeWidth, setStrokeWidth] = useState(15);
     const [strokeColor, setStrokeColor] = useState('#000000');
     const draw = e => {
 
-        if (e.buttons !== 1) return;
-
+        if (e.buttons !== 1 && e.buttons !== 2) return;
 
         const ctxMain = canvasMain.current.getContext('2d');
         const ctxHidden = canvasHidden.current.getContext('2d');
@@ -63,8 +73,14 @@ const Drawing = ({ size }) => {
         ctxMain.lineWidth = strokeWidth;
         ctxHidden.lineWidth = strokeWidth;
 
-        ctxMain.strokeStyle = strokeColor;
-        ctxHidden.strokeStyle = '#000000';
+        // Erase with white on rightclick
+        if(!rubber) {
+            ctxMain.strokeStyle = strokeColor;
+            ctxHidden.strokeStyle = 'black';
+        } else {
+            ctxMain.strokeStyle = 'white';
+            ctxHidden.strokeStyle = 'white';
+        }
 
         ctxMain.lineCap = 'round'
         ctxHidden.lineCap = 'round'
@@ -72,7 +88,6 @@ const Drawing = ({ size }) => {
         ctxMain.moveTo(pos.x, pos.y);
         ctxHidden.moveTo(pos.x, pos.y);
         updatePosition(e);
-        console.log(pos)
         ctxMain.lineTo(pos.x, pos.y);
         ctxHidden.lineTo(pos.x, pos.y);
 
@@ -85,17 +100,18 @@ const Drawing = ({ size }) => {
         const data = canvasHidden.current.toDataURL('image/png');
         download.current.href = data;
         console.log(download.current)
-        download.current.click(); 
+        download.current.click();
     }
 
 
 
- 
-    const { token } = useContext(UserContext)
+
+    const { meta } = useContext(UserContext)
     // Methods and states for sending picutre to server.
     const [title, setTitle] = useState('');
     const [path, setPath] = useState('');
     const [ml5, setMl5] = useState('');
+
     const sendToServer = async e => {
 
         const image = {
@@ -151,7 +167,7 @@ const Drawing = ({ size }) => {
         }
 
         try {
-            const res = await fetch(`http://localhost/images?token=${token}`,{
+            const res = await fetch(meta.endpoint + `/images?token=${meta.token}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -164,7 +180,7 @@ const Drawing = ({ size }) => {
             setTitle(image.name);
             console.log(data);
 
-        } catch(err) {
+        } catch (err) {
 
         }
 
@@ -173,25 +189,28 @@ const Drawing = ({ size }) => {
 
     return (
         <div>
-            <div className="w-min mx-auto flex flex-col ">
+            <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
-                <input className="mx-auto rounded-sm bg-transparent border-b  text-center text-brand2-100" 
-                    type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={ e => setTitle(e.target.value) } />
+                <input className="mx-auto rounded-sm bg-transparent border-b  text-center text-brand2-100"
+                    type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
 
                 < Strokecontrol color={strokeColor} setColor={setStrokeColor}
                     width={strokeWidth} setWidth={setStrokeWidth}
+                    rubber={rubber} setRubber={setRubber}
                 />
 
-                <div ref={canvasFrame} className="relative bg-transparent">
-                    <canvas  className="absolute top-0"
-                        ref={canvasHidden} height={size} width={size}  />
+                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={ e => e.preventDefault() }>
+                    <canvas className="absolute top-0"
+                        ref={canvasHidden} height={size} width={size} />
                     <canvas className="relative rounded-sm bg-white"
-                        ref={canvasMain} height={size} width={size} 
+                        ref={canvasMain} height={size} width={size}
                         onMouseDown={updatePosition} onMouseMove={draw} onMouseEnter={updatePosition} />
                 </div>
 
-                <a ref={download} download href="http://localhost/doodle">Download</a>
-                <button onClick={sendToServer}  >Test</button>
+                <a ref={download} download href="http://localhost/doodle" className="absolute hidden">Download</a>
+                
+                <button className="mt-4 px-2 mx-auto border-b rounded-sm font-bold   border-brand2-100 text-brand2-100 hover:bg-brand2-100 hover:text-dark-700 duration-300"
+                    onClick={sendToServer}  >Send Image</button>
 
             </div>
         </div>

@@ -29,8 +29,7 @@ const sortTypes = {
 
 const TaskTracker = () => {
 
-    const { token } = useContext(UserContext);
-
+    const { meta } = useContext(UserContext);
 
     const [showModal, setShowModal] = useState(false);
     const [sortType, setSortType] = useState(sortTypes['time']);
@@ -41,7 +40,7 @@ const TaskTracker = () => {
     // Fetch Tasks from server
     const fetchTasks = async date => {
 
-        const res = await fetch(`http://localhost/tasks?date=${date}&hash=${hash}&token=${token}`)
+        const res = await fetch(meta.endpoint+`/tasks?date=${date}&hash=${hash}&token=${meta.token}`)
         const data = await res.json();
 
         if (data.hash === hash) return;
@@ -60,7 +59,7 @@ const TaskTracker = () => {
     // Delete Task
     const deleteTask = async id => {
 
-        const res = await fetch(`http://localhost/tasks?id=${id}&token=${token}`, {
+        const res = await fetch(meta.endpoint+`/tasks?id=${id}&token=${meta.token}`, {
             method: 'DELETE',
         })
 
@@ -75,7 +74,7 @@ const TaskTracker = () => {
     // Add a new Task
     const addTask = async task => {
 
-        const res = await fetch(`http://localhost/tasks?token=${token}`, {
+        const res = await fetch(meta.endpoint+`/tasks?token=${meta.token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -95,7 +94,7 @@ const TaskTracker = () => {
     
     const toggleDone = async task => {
 
-        const res = await fetch(`http://localhost/tasks?token=${token}`, {
+        const res = await fetch(meta.endpoint+`/tasks?token=${meta.token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -155,13 +154,9 @@ const TaskTracker = () => {
                 {/* The list containing all tasks of the current date. */}
                 <div className="flex flex-col justify-center px-10 pt-4 ">
                     {tasks.length > 0 ? (
-                        tasks.map(task => (
-                            <Task key={task.id} task={task} onDelete={deleteTask} toggleDone={toggleDone} />
-                        ))
+                        tasks.map(task => ( <Task key={task.id} task={task} onDelete={deleteTask} toggleDone={toggleDone} /> ))
                     ) : (
-                        <i className="mx-auto py-10 text-2xl text-brand2-100">
-                            <BsInfoSquareFill className="inline" />  No Tasks remaining
-                        </i>
+                        <i className="mx-auto py-10 text-2xl text-brand2-100"> <BsInfoSquareFill className="inline" />  No Tasks remaining </i>
                     )
                     }
                 </div>
