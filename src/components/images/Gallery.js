@@ -55,9 +55,9 @@ const Gallery = () => {
                 { images.length > 0 ?
                     images.map( image => <Image key={image.id}  image={image}/> )  
                     :
-                    <i className="mx-auto py-10 text-2xl text-brand2-100">
-                        <BsInfoSquareFill className="inline" />  No Images found
-                    </i>
+                    <div className="py-12 text-2xl text-center text-brand2-100">
+                        <i> <BsInfoSquareFill className="inline" />  No Images found </i>
+                    </div>
                 }
             </div>
 

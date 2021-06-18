@@ -32,6 +32,7 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
 
         const params = req.method === 'GET' ? req.query : req.body
         const data = await resolve( params, req.body.user );
+        console.log(data)
         const written = writeCache(key, data, req, TTL ?? CACHE_TTL, userSpecific);
         return sendData(written);
 

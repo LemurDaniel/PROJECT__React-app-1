@@ -61,7 +61,7 @@ const Drawing = ({ size }) => {
     },[]);
 
     // classify the drawn image.
-    const [ml5, setMl5] = useState(new Array(10).fill({ label: 'Not classified', confidence: 0 }));
+    const [ml5, setMl5] = useState(new Array(10).fill({ label: '', confidence: 0 }));
     const [timeout, setTimeout] = useState(0);
     const classify = () => {
 
@@ -211,14 +211,23 @@ const Drawing = ({ size }) => {
 
                     {/* The classifications. */}
 
-                    <ol className="text-brand2-100 font-bold  absolute top-0 left-full">
+                    <div className="text-brand2-100 font-bold  absolute top-0 left-full hidden md:block">
                         {ml5.map(({ label, confidence }, i) => (
-                            <div key={i} className="w-max pl-5" >
+                            <div key={i} className="ml-5 pb-1 w-max" >
                                 <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
                                 <p className="inline-block">{label}</p>
                             </div>))
                         }
-                    </ol>
+                    </div>
+                
+                    <div className="pt-1 w-full text-brand2-100 font-bold block md:hidden">
+                        {ml5.slice(0,3).map(({ label, confidence }, i) => (
+                            <div key={i} className=" pb-1 mx-auto w-48" >
+                                <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
+                                <p className="inline-block">{label}</p>
+                            </div>))
+                        }
+                    </div>
                 </div>
               
 
