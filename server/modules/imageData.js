@@ -1,4 +1,5 @@
 const fs = require('fs');
+const PNG = require("pngjs").PNG;
 const crypto = require('crypto');
 const routes =  require('express').Router();
 
@@ -64,6 +65,7 @@ async function postImage(req, res) {
         if (!flag_update) image.path = crypto.randomBytes(8).toString('hex') + '.png';
         const base64 = image.data.replace(/^data:image\/png;base64,/, '');
         fs.writeFileSync(DOODLES + image.path, base64, 'base64');
+        processPng(DOODLES + image.path);
 
         if (flag_update) await sql.updateImage(sql.pool, image);
         else await sql.insertImage(sql.pool, image);
@@ -76,6 +78,35 @@ async function postImage(req, res) {
         res.status(500).send();
     }
 
+}
+
+function processPng(file) {
+
+    console.log(file)
+    fs.createReadStream(file)
+    .pipe( new PNG({ filterType: 4 }))
+    .on("parsed", function () {
+
+        const pixels = this.height * this.width;
+   
+        for (var y = 0; y < this.height; y++) {
+            for (var x = 0; x < this.width; x++) {
+                const idx = (this.width * y + x) << 2;
+
+                const rgb = [this.data[idx], this.data[idx + 1], this.data[idx + 2]]
+                const erase = rgb.every(data => data >= 225);
+
+                const px = y * this.height + x;
+                if(px % 1000 == 0) console.log( (px / pixels * 100) + '% Done')
+      
+                if (erase) {
+                    this.data[idx + 3] = 0;
+                }
+            }
+        }
+   
+      this.pack().pipe(fs.createWriteStream(file));
+    });
 }
 
 
