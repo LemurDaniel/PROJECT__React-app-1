@@ -1,8 +1,9 @@
 import React from 'react'
 
 import { BiCopyright } from 'react-icons/bi';
-import { SiTailwindcss, SiMysql } from 'react-icons/si';
-import { IoLogoNodejs, IoLogoReact, IoLogoGithub, IoLogoLinkedin, IoLogoXing } from 'react-icons/io5';
+import { SiTailwindcss, SiMysql, SiLetsencrypt } from 'react-icons/si';
+import { IoLogoNodejs, IoLogoReact, IoLogoGithub } from 'react-icons/io5';
+import { IoLogoJavascript, IoLogoLinkedin, IoLogoXing } from 'react-icons/io';
 
 
 const Footer = () => {
@@ -20,10 +21,12 @@ const Footer = () => {
         </div>
         
         <div>
-            <p className="px-2 inline">Powered by </p>
-            <a href="https://nodejs.org/en/"> <IoLogoNodejs className={icon} /> </a>
+            <p className="px-2 inline">Technologies </p>
+            <a href="https://www.javascript.com/"> <IoLogoJavascript className={icon} /> </a>
             <a href="https://reactjs.org/"> <IoLogoReact className={icon} /> </a>
             <a href="https://tailwindcss.com/"> <SiTailwindcss className={icon} /> </a>
+            <a href="https://nodejs.org/en/"> <IoLogoNodejs className={icon} /> </a>
+            <a href="https://letsencrypt.org/de/"> <SiLetsencrypt className={icon} /> </a>
             <a href="https://www.mysql.com/de/"> <SiMysql className={icon} /> </a>
         </div>
 
