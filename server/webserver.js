@@ -97,7 +97,7 @@ app.get('/info', auth, (req,res) =>  res.json(process.env) );
 
 
 // Catch 404's and send user to the 404 page //
-app.use((req, res) => res.status(404).sendFile(HTML('codepen_template/404')));
+app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'codepenTemplate', '404.html')) );
 
 // If https is enabled then create a second http server that automatically redirects all traffic to https //
 if(HTTPS_ENABLE) {

@@ -23,13 +23,13 @@ const Task = ({ task, onDelete, toggleDone }) => {
 
             <div>
                 <h1 className='font-bold underline' >{task.title} </h1>
-                <p className='flex justify-start items-center'>  
-                    <i className='pr-2'><FaCalendarDay /></i> 
+                <p className='flex justify-start items-center'>
+                    <i className='pr-2'><FaCalendarDay /></i>
                     {task.date + ' at ' + task.time}
                 </p>
             </div>
 
-            <i className='absolute right-2 top-2 rounded-full hover:bg-white hover:text-brand2-300 duration-300' 
+            <i className='absolute right-2 top-2 rounded-full hover:bg-white hover:text-brand2-300 duration-300'
                 onClick={e => onDelete(task.id)}>
                 <FaTimes />
             </i>

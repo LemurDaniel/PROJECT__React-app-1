@@ -14,6 +14,7 @@ const TABLE_NAME = process.env.SQL_TABLE_NAME;
 const TABLE_USER = TABLE_NAME + '_user';
 const TABLE_IMG = TABLE_NAME + '_img';
 const TABLE_TASK = TABLE_NAME + '_task';
+const TABLE_SCORE = TABLE_NAME + '_score';
 
 const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
                         'id nchar(16) PRIMARY KEY,' +
@@ -23,37 +24,45 @@ const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
 
 const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
                         'id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
-                        'user_id nchar(16) NOT NULL,' +
+                        'userId nchar(16) NOT NULL,' +
                         'path nchar(20) NOT NULL unique,' +
                         'name nvarchar(50),' +
                         'ml5 nvarchar(25),' +
                         'ml5_conf Decimal(20,19),' +
                         'ml5_meta text, ' +
-                        'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
+                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
 
 const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
                         'id nchar(16) NOT NULL, ' +
-                        'user_id nchar(16) NOT NULL, ' +
+                        'userId nchar(16) NOT NULL, ' +
                         'title nchar(50) NOT NULL, ' +
                         'description text, ' +
                         'date date, '+
                         'time time, ' +
                         'done BOOLEAN, ' +
-                        'PRIMARY KEY (user_id, id), ' +
-                        'FOREIGN KEY(user_id) REFERENCES ' + TABLE_USER + '(id) )';
+                        'PRIMARY KEY (userId, id), ' +
+                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
+
+
+const SQL_CREATE_SCORE = 'create table ' + TABLE_SCORE + ' ( ' +
+                        'score int NOT NULL, ' +
+                        'userId nchar(16) NOT NULL, ' +
+                        'timestamp timestamp NOT NULL, ' +
+                        'PRIMARY KEY (userId, score), ' +
+                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
 
 
 const SQL_INSERT_IMG =  'Insert Into  ' + TABLE_IMG +
-                        ' (path, name, user_id, ml5, ml5_conf, ml5_meta) ' +
+                        ' (path, name, userId, ml5, ml5_conf, ml5_meta) ' +
                         ' Values (?, ?, ?, ?, ?, ? )';
 
 const SQL_UPDATE_IMG = 'Update ' + TABLE_IMG + ' Set ' +
                         'name = ?, ml5 = ?, ml5_conf = ?, ml5_meta = ?' +
-                        ' Where path = ? AND user_id = ?';
+                        ' Where path = ? AND userId = ?';
 
 const SQL_GET_IMG = 'Select path, userDisplayName, img.name, ml5, ml5_conf ' +
                     ' from ' + TABLE_IMG + ' as img '+
-                    ' join ' + TABLE_USER + ' as usr on img.user_id = usr.id' +
+                    ' join ' + TABLE_USER + ' as usr on img.userId = usr.id' +
                     ' where ' +
                     ' ml5 like ? And' +
                     ' img.name like ? And' +
@@ -70,25 +79,34 @@ const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
                         ' where username = ?';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
-                        ' (id, user_id, title, description, date, time, done) ' +
+                        ' (id, userId, title, description, date, time, done) ' +
                         ' Values ( ?, ?, ?, ?, ?, ?, ? )'
 
 const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
                         ' title = ?, description = ?, date = ?, time = ?, done = ? ' +
-                        ' where id = ? AND user_id = ? ';
+                        ' where id = ? AND userId = ? ';
 
 const SQL_QUERY_TASK = 'Select id, title, description, date, time, done ' +
                     ' from ' + TABLE_TASK +
-                    ' where user_id = ? '+
+                    ' where userId = ? '+
                     ' AND Date(date) = Date(?)';
 
 const SQL_GET_TASK = 'Select date ' +
                     ' from ' + TABLE_TASK + ' as ta '+
                     ' where id = ? '+
-                    ' AND user_id = ?';
+                    ' AND userId = ?';
 
 const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
-                        ' where id = ? AND user_id = ? ';
+                        ' where id = ? AND userId = ? ';
+
+const SQL_INSERT_SCORE = 'Insert into '+TABLE_SCORE+
+                        ' (score, userId, timestamp) '+
+                        ' values( ?, ?, ? ) ';
+
+const SQL_GET_SCORE = 'Select score, userDisplayName from '+TABLE_SCORE+
+                        ' join '+TABLE_USER+' as usr on usr.id = userId '+
+                        ' order by score DESC '+
+                        ' limit 10 ';
 
 func = {}
 
@@ -272,7 +290,26 @@ func.queryImages = (con, params) => {
 }
 
 
+func.insertScore = (con, score) => {
+ 
+    return new Promise((resolve, reject) => {
 
+        con.query(SQL_INSERT_SCORE, [
+            score.score,
+            score.user.id,
+            score.timestamp
+        ], (error, data) => {
+            if (error) reject(error);
+            else resolve(data);
+        });
+
+    })
+
+}
+
+func.getScores = () => {
+    return func.call(func.pool, SQL_GET_SCORE);
+}
 
 func.insertUser = (con, user) => {
 
@@ -321,6 +358,7 @@ func.initDatabase = function () {
         await func.call(con, SQL_CREATE_USER);
         await func.call(con, SQL_CREATE_IMG);
         await func.call(con, SQL_CREATE_TASK);
+        await func.call(con, SQL_CREATE_SCORE);
         return 'OK';
 
     }
@@ -368,7 +406,7 @@ func.import_users = (con, users, callback) => {
     const qu = (i, info) => {
         const user = users[i];
         con.query('Insert into ' + TABLE_USER + ' Values( ?, ?, ?, ? )', [
-            user.user_id,
+            user.userId,
             user.username,
             user.userDisplayName,
             user.bcrypt],
@@ -389,7 +427,7 @@ func.import_images = (con, images, callback) => {
         const image = images[i];
         con.query('Insert into ' + TABLE_IMG + ' Values( ?, ?, ?, ?, ?, ?, ? )', [
             image.img_id,
-            image.user_id,
+            image.userId,
             image.img_path,
             image.img_name,
             image.ml5_bestfit,

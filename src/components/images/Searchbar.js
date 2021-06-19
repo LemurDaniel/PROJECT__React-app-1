@@ -17,39 +17,39 @@ const Searchbar = ({ onSearch, timeout }) => {
         const now = new Date().getTime();
 
         console.log(now - timestamp)
-        if( now - timestamp <= timeout ) return;
+        if (now - timestamp <= timeout) return;
 
         console.log('Search')
         setTimestamp(new Date().getTime());
-        if(onSearch) onSearch(name, user, label);
+        if (onSearch) onSearch(name, user, label);
 
     }
 
-  
+
     return (
         <div className=" py-5 flex flex-col select-none">
             <form className="text-center md:text-left md:flex flex-wrap justify-evenly  ">
 
-           
-                    <input name="name" id="name" className="input-responsive" 
-                       type='text' placeholder="Enter a Name" value={name} onChange={ e => setName(e.target.value) }
-                       />
-              
-                    <input name="user" id="user" className="input-responsive"
-                        type='text' placeholder="Enter a Username" value={user} onChange={ e => setUser(e.target.value) } />
-            
 
-                    <input name="class" id="class" className="input-responsive"
-                        type='text' placeholder="Enter an AI label" value={label} onChange={ e => setLabel(e.target.value) }
-                        />
+                <input name="name" id="name" className="input-responsive"
+                    type='text' placeholder="Enter a Name" value={name} onChange={e => setName(e.target.value)}
+                />
+
+                <input name="user" id="user" className="input-responsive"
+                    type='text' placeholder="Enter a Username" value={user} onChange={e => setUser(e.target.value)} />
+
+
+                <input name="class" id="class" className="input-responsive"
+                    type='text' placeholder="Enter an AI label" value={label} onChange={e => setLabel(e.target.value)}
+                />
 
 
             </form>
 
             <button className="btn-prominent btn-light mt-8 font-bold"
-                onClick={ buttonPress } > 
-                Search for Images 
-            </button>  
+                onClick={buttonPress} >
+                Search for Images
+            </button>
 
         </div>
     )

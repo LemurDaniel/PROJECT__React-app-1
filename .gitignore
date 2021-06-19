@@ -28,3 +28,4 @@ node_modules
 docker/mysql_data
 doodles/
 cache/
+Tailwind.css

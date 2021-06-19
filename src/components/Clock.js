@@ -8,7 +8,7 @@ const Clock = props => {
     useEffect(() => {
 
         // Only draw a canvas if the analog Clock is disabled.
-        if(props.analog) {
+        if (props.analog) {
             const canvas = canvasRef.current;
 
             // Note https://coderwall.com/p/vmkk6a/how-to-make-the-canvas-not-look-like-crap-on-retina
@@ -33,10 +33,10 @@ const Clock = props => {
 
     // Handle the drawing of the clock for every new timechange.
     const [date, setDate] = useState(new Date());
-    useEffect(() => {    
+    useEffect(() => {
         // Don't draw a canvas if the analog Clock is disabled.
-        if(!props.analog) return;
-        
+        if (!props.analog) return;
+
         // Basic method for drawing the clock.
         // if(!this.props.analog) return;
         const ctx = canvasRef.current.getContext('2d');
@@ -52,7 +52,7 @@ const Clock = props => {
 
     return (
         <div className="bg-transparent w-min mx-auto">
-            {!props.analog ? null  : <canvas height={props.size} width={props.size} ref={canvasRef}></canvas> }
+            {!props.analog ? null : <canvas height={props.size} width={props.size} ref={canvasRef}></canvas>}
             {!props.digital ? null : <h1 className="text-center text-white text-2xl">{date.toLocaleTimeString()}</h1>}
         </div>
     )

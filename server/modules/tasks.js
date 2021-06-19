@@ -81,6 +81,34 @@ routes.get('/tasks', auth, getTasks);
 routes.delete('/tasks', auth, deleteTask);
 
 
+
+
+
+async function postScore( req, res ) {
+
+    const score = { ...req.body }
+
+    try {
+
+        await sql.insertScore(sql.pool, score)
+        res.status(200).send();
+
+    } catch(err) {
+        return res.status(500).json(err)
+    }
+
+
+}
+
+routes.post('/score', auth, postScore );
+
+routes.get('/score', (req, res) => {
+    checkCache(req, res, 15, false, async () => await sql.getScores() );
+})
+
+
+
+
 module.exports = { 
     routes
 }

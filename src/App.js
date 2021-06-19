@@ -8,13 +8,13 @@ import { useEffect, useState } from 'react';
 import Nav from './components/website/Nav';
 import Footer from './components/website/Footer';
 
-import Tasktracking from './pages/Tasktracking';
 import Home from './pages/Home';
 
 import UserContext from './components/UserContext';
-import Imagegallery from './pages/Imagegallery';
+import TaskTracker from './components/tasks/TaskTracker';
+import Spacegame from './components/Spacegame';
 import Drawing from './components/images/Drawing';
-import Spacegame from './components/game/Spacegame';
+import Gallery from './components/images/Gallery';
 
 
 const navigations = [
@@ -68,8 +68,8 @@ function App() {
 
           <Route path='/' exact component={Home} />
           <Route path='/game' exact component={Spacegame} />
-          <Route path='/taskTracker' component={Tasktracking} />
-          <Route path='/gallery' component={Imagegallery} />
+          <Route path='/taskTracker' component={TaskTracker} />
+          <Route path='/gallery' component={Gallery} />
           <Route path='/drawing' component={Drawing} />
 
         </Router>

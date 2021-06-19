@@ -17,6 +17,10 @@ body {
 }
 
 
+.contentDiv {
+    @apply mx-10 md:mx-40 py-5 shadow-2xl
+}
+
 
 /* Header for Tasklist */
 

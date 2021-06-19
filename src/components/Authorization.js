@@ -47,8 +47,8 @@ const Authorization = ({ showModal }) => {
             && password !== passwordRepeat) return alert('Your Passwords do not match');
 
         const body = {
-            username: userName, 
-            password: password, 
+            username: userName,
+            password: password,
             userDisplayName: userDisplayName
         }
 

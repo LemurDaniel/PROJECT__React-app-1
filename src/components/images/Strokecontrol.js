@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import { BiEraser } from 'react-icons/bi'
 
 const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setColor, rubber, setRubber }) => {
-    
+
     const canvasRef = useRef(null);
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -35,15 +35,15 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
         ctx.fill();
 
     }, [width, color, size])
-    
+
     return (
         <div className="m-5 flex justify-evenly ">
-            <BiEraser className={ rubber ? "rounded-inactive" : "rounded-active" } onClick={ e => setRubber(!rubber) }  />
+            <BiEraser className={rubber ? "rounded-inactive" : "rounded-active"} onClick={e => setRubber(!rubber)} />
 
             <div className="relative">
                 <div className="bg-white rounded-full  hover:bg-blue-100 duration-300">
                     <canvas ref={canvasRef} height={size} width={size} />
-                    <input style= {{ height: size, width: size }} className="opacity-0 absolute top-0"
+                    <input style={{ height: size, width: size }} className="opacity-0 absolute top-0"
                         type="color" value={color} onChange={e => setColor(e.target.value)} />
                 </div>
             </div>

@@ -43,8 +43,8 @@ const Drawing = ({ size }) => {
     const [classifier, setClassifier] = useState(null);
     useEffect(() => {
         window.ml5.imageClassifier("DoodleNet")
-        .then( cl => setClassifier(cl) )
-        .catch( err => console.log(err) );
+            .then(cl => setClassifier(cl))
+            .catch(err => console.log(err));
     }, [])
 
 
@@ -53,27 +53,27 @@ const Drawing = ({ size }) => {
     const [translation, setTranslation] = useState({});
     useEffect(() => {
         const call = async () => {
-            const res = await fetch(meta.endpoint+'/translation');
+            const res = await fetch(meta.endpoint + '/translation');
             const data = await res.json();
             setTranslation(data);
         }
         call();
-    },[]);
+    }, []);
 
     // classify the drawn image.
     const [ml5, setMl5] = useState(new Array(10).fill({ label: '', confidence: 0 }));
     const [timeout, setTimeout] = useState(0);
     const classify = () => {
 
-        if(classifier === null) return;
+        if (classifier === null) return;
 
         const date = new Date().getTime();
-        if(date <= timeout) return;
+        if (date <= timeout) return;
         setTimeout(date + 1 * 500)
 
         classifier.predict(canvasHidden.current)
-        .then( res => setMl5(res.map( v => ({ ...v, label: translation[v.label] ?? v.label }))) )
-        .catch( err => console.log(err) )
+            .then(res => setMl5(res.map(v => ({ ...v, label: translation[v.label] ?? v.label }))))
+            .catch(err => console.log(err))
 
     }
 
@@ -81,9 +81,9 @@ const Drawing = ({ size }) => {
     // Disable and enable the rubber.
     const [rubber, setRubber] = useState(false);
     const handleRubber = e => {
-        if(e.button !== 2) return false;
-        else if(e.type === 'mousedown') setRubber(true);
-        else if(e.type === 'mouseup') setRubber(false);
+        if (e.button !== 2) return false;
+        else if (e.type === 'mousedown') setRubber(true);
+        else if (e.type === 'mouseup') setRubber(false);
     }
 
     // Set positioning for drawing.
@@ -100,13 +100,13 @@ const Drawing = ({ size }) => {
     const strokeBounds = [2, 25];
     const [strokeWidth, setStrokeWidth] = useState(15);
     const onScrollStroke = e => {
-        if(e.deltaY === -100) {
-            if(strokeWidth >= strokeBounds[1]) return;
-            setStrokeWidth(strokeWidth+1);
+        if (e.deltaY === -100) {
+            if (strokeWidth >= strokeBounds[1]) return;
+            setStrokeWidth(strokeWidth + 1);
         }
-        else if(e.deltaY === 100) {
-            if(strokeWidth <= strokeBounds[0]) return;
-            setStrokeWidth(strokeWidth-1);
+        else if (e.deltaY === 100) {
+            if (strokeWidth <= strokeBounds[0]) return;
+            setStrokeWidth(strokeWidth - 1);
         }
     }
     const [strokeColor, setStrokeColor] = useState('#000000');
@@ -124,7 +124,7 @@ const Drawing = ({ size }) => {
         ctxHidden.lineWidth = strokeWidth;
 
         // Erase with white on rightclick.
-        if(!rubber) {
+        if (!rubber) {
             ctxMain.strokeStyle = strokeColor;
             ctxHidden.strokeStyle = 'black';
         } else {
@@ -135,7 +135,7 @@ const Drawing = ({ size }) => {
         ctxMain.lineCap = 'round'
         ctxHidden.lineCap = 'round'
 
-        if(pos.x === null) updatePosition(e)
+        if (pos.x === null) updatePosition(e)
         ctxMain.moveTo(pos.x, pos.y);
         ctxHidden.moveTo(pos.x, pos.y);
         updatePosition(e);
@@ -199,12 +199,12 @@ const Drawing = ({ size }) => {
                     rubber={rubber} setRubber={setRubber}
                 />
 
-    
+
                 {/* The two canvas. */}
-                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel ={onScrollStroke} >
-                    <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0"  />
-                    <canvas ref={canvasMain} height={size} width={size}   className="relative rounded-sm bg-white"
-                        onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}  />
+                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
+                    <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
+                    <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
+                        onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify} />
 
 
                     {/* The classifications. */}
@@ -217,9 +217,9 @@ const Drawing = ({ size }) => {
                             </div>))
                         }
                     </div>
-                
+
                     <div className="pt-1 w-full font-bold  text-brand2-100 block md:hidden">
-                        {ml5.slice(0,3).map(({ label, confidence }, i) => (
+                        {ml5.slice(0, 3).map(({ label, confidence }, i) => (
                             <div key={i} className=" pb-1 mx-auto w-48" >
                                 <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
                                 <p className="inline-block">{label}</p>
@@ -227,9 +227,9 @@ const Drawing = ({ size }) => {
                         }
                     </div>
                 </div>
-              
 
-                 {/* The Button for sending the image to the server. */}
+
+                {/* The Button for sending the image to the server. */}
                 <button className="btn-decent btn-light font-bold mt-4"
                     onClick={sendToServer}  >Send Image</button>
 

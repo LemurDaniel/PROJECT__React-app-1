@@ -17,22 +17,22 @@ const Gallery = () => {
 
     const searchImages = async (name, user, label) => {
 
-        try {    
+        try {
             setLoading(true);
 
-            const res = await fetch(meta.endpoint+`/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
+            const res = await fetch(meta.endpoint + `/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
             const data = await res.json();
 
             setLoading(false);
-            
-            if(data.hash === hash) return;
+
+            if (data.hash === hash) return;
             setHash(data.hash);
 
-            for(let image of data.result) 
+            for (let image of data.result)
                 image.ml5_conf = Math.floor(image.ml5_conf * 10000) / 100 + ' %';
-            
+
             setImages(data.result);
-   
+
         } catch (err) {
             setLoading(false);
             console.log(err)
@@ -40,20 +40,20 @@ const Gallery = () => {
     }
 
     return (
-        <div className="shadow-2xl">
+        <div className="contentDiv">
 
             <Searchbar onSearch={searchImages} />
 
             <div className="pt-4 md:mx-0 md:flex flex-row flex-wrap justify-evenly relative">
 
-                { !loading ? null :
+                {!loading ? null :
                     <div className="bg-transparent rounded-full absolute top-2">
-                        <Loading  />
+                        <Loading />
                     </div>
                 }
 
-                { images.length > 0 ?
-                    images.map( image => <Image key={image.id}  image={image}/> )  
+                {images.length > 0 ?
+                    images.map(image => <Image key={image.id} image={image} />)
                     :
                     <div className="py-12 text-2xl text-center text-brand2-100">
                         <i> <BsInfoSquareFill className="inline" />  No Images found </i>
