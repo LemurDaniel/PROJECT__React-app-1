@@ -121,7 +121,7 @@ const TaskTracker = () => {
     }
 
     return (
-        <div className="contentDiv">
+        <div className="contentDiv select-none">
 
             {/* Header containing Clock, Dropdown and Button */}
             <header className="header border-b">

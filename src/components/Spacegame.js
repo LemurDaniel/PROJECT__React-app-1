@@ -1,14 +1,9 @@
-import React from 'react'
-import { useEffect, useRef, useState } from 'react/cjs/react.development';
+import React, { useEffect, useRef, useState } from 'react'
 
 import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
 import Asteroid from '../modulesJs/Asteroids';
 import ParticleManager, { Particle } from '../modulesJs/Particle';
-
-
-
-
 
 
 

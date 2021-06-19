@@ -44,21 +44,20 @@ const Gallery = () => {
 
             <Searchbar onSearch={searchImages} />
 
-            <div className="pt-4 md:mx-0 md:flex flex-row flex-wrap justify-evenly relative">
+            <div className="pt-4 md:mx-0 md:flex flex-row flex-wrap justify-evenly   ">
 
-                {!loading ? null :
-                    <div className="bg-transparent rounded-full absolute top-2">
+                {loading ?
+                    <div className="bg-transparent rounded-full mx-auto w-min">
                         <Loading />
                     </div>
-                }
-
-                {images.length > 0 ?
-                    images.map(image => <Image key={image.id} image={image} />)
                     :
-                    <div className="py-12 text-2xl text-center text-brand2-100">
-                        <i> <BsInfoSquareFill className="inline" />  No Images found </i>
-                    </div>
-                }
+                    (
+                        images.length > 0 ? images.map(image => <Image key={image.id} image={image} />)
+                            :
+                            <div className="py-12 text-2xl text-center text-brand2-100">
+                                <i> <BsInfoSquareFill className="inline" />  No Images found </i>
+                            </div>
+                    )}
             </div>
 
         </div>

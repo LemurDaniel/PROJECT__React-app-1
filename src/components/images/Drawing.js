@@ -100,6 +100,7 @@ const Drawing = ({ size }) => {
     const strokeBounds = [2, 25];
     const [strokeWidth, setStrokeWidth] = useState(15);
     const onScrollStroke = e => {
+        e.preventDefault();
         if (e.deltaY === -100) {
             if (strokeWidth >= strokeBounds[1]) return;
             setStrokeWidth(strokeWidth + 1);
@@ -185,56 +186,56 @@ const Drawing = ({ size }) => {
 
 
     return (
-        <div>
-            <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
-                {/* The input element for naming the drawing */}
-                <input className="input-light mx-auto text-center"
-                    type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
+        <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
-                {/* The component containing the rubber, strokewidth and strokecolor controls. */}
-                < Strokecontrol widthMin={strokeBounds[0]} widthMax={strokeBounds[1]}
-                    color={strokeColor} setColor={setStrokeColor}
-                    width={strokeWidth} setWidth={setStrokeWidth}
-                    rubber={rubber} setRubber={setRubber}
-                />
+            {/* The input element for naming the drawing */}
+            <input className="input-light mx-auto text-center"
+                type="text" placeholder={'Name your drawing'} defaultValue={title} onChange={e => setTitle(e.target.value)} />
 
-
-                {/* The two canvas. */}
-                <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
-                    <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
-                    <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
-                        onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify} />
+            {/* The component containing the rubber, strokewidth and strokecolor controls. */}
+            < Strokecontrol widthMin={strokeBounds[0]} widthMax={strokeBounds[1]}
+                color={strokeColor} setColor={setStrokeColor}
+                width={strokeWidth} setWidth={setStrokeWidth}
+                rubber={rubber} setRubber={setRubber}
+            />
 
 
-                    {/* The classifications. */}
+            {/* The two canvas. */}
+            <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
+                <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
+                <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
+                    onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify} />
 
-                    <div className=" font-bold text-brand2-100 absolute top-0 left-full hidden md:block">
-                        {ml5.map(({ label, confidence }, i) => (
-                            <div key={i} className="ml-5 pb-1 w-max" >
-                                <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
-                                <p className="inline-block">{label}</p>
-                            </div>))
-                        }
-                    </div>
 
-                    <div className="pt-1 w-full font-bold  text-brand2-100 block md:hidden">
-                        {ml5.slice(0, 3).map(({ label, confidence }, i) => (
-                            <div key={i} className=" pb-1 mx-auto w-48" >
-                                <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
-                                <p className="inline-block">{label}</p>
-                            </div>))
-                        }
-                    </div>
+                {/* The classifications. */}
+
+                <div className=" font-bold text-brand2-100 absolute top-0 left-full hidden md:block">
+                    {ml5.map(({ label, confidence }, i) => (
+                        <div key={i} className="ml-5 pb-1 w-max" >
+                            <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
+                            <p className="inline-block">{label}</p>
+                        </div>))
+                    }
                 </div>
 
-
-                {/* The Button for sending the image to the server. */}
-                <button className="btn-decent btn-light font-bold mt-4"
-                    onClick={sendToServer}  >Send Image</button>
-
+                <div className="pt-1 w-full font-bold  text-brand2-100 block md:hidden">
+                    {ml5.slice(0, 3).map(({ label, confidence }, i) => (
+                        <div key={i} className=" pb-1 mx-auto w-48" >
+                            <p className="w-16 inline-block">{(Math.floor(confidence * 10000) / 100)}%</p>
+                            <p className="inline-block">{label}</p>
+                        </div>))
+                    }
+                </div>
             </div>
+
+
+            {/* The Button for sending the image to the server. */}
+            <button className="btn-decent btn-light font-bold mt-4"
+                onClick={sendToServer}  >Send Image</button>
+
         </div>
+
     )
 }
 

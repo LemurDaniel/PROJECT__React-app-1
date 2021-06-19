@@ -55,8 +55,8 @@ async function postImage(req, res) {
         // Convert random 8_Bytes to a hex string: 2^64 or 16^16 possible permutations
         if (!flag_update) image.path = crypto.randomBytes(8).toString('hex') + '.png';
         const base64 = image.data.replace(/^data:image\/png;base64,/, '');
-        fs.writeFileSync(DOODLES + image.path, base64, 'base64');
-        processPng(DOODLES + image.path);
+        fs.writeFileSync(path.join(DOODLES, image.path), base64, 'base64');
+        processPng(path.join(DOODLES, image.path));
 
         if (flag_update) await sql.updateImage(sql.pool, image);
         else await sql.insertImage(sql.pool, image);

@@ -1,12 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import UserContext from '../UserContext'
 
 const Image = ({ key, image }) => {
 
+    const { meta } = useContext(UserContext)
+  
     return (
         <div key={key} className="image-card">
             <h1>{image.name}</h1>
 
-            <img alt={image.name} src={'http://localhost/doodles/' + image.path} />
+            <img alt={image.name} src={meta.endpoint + '/doodles/' + image.path} />
 
             <div>
                 <p>{image.userDisplayName}</p>

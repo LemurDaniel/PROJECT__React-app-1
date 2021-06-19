@@ -64,7 +64,7 @@ function App() {
 
         <Nav navigations={navigations} />
 
-        <div className="p-0 min-h-screen">
+        <div className="min-h-screen md:min-h-full pb-24 md:pb-16">
           <Router>
 
             <Route path='/' exact component={Home} />
