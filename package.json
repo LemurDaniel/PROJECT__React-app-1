@@ -20,7 +20,8 @@
     "build:Docker": "docker build -t daniellandau1998/node-webserver -f ./docker/df-webserver .",
     "build:React": "react-scripts build && rmdir /s/q \"./server/build\"  && move build server/build",
     "build": "npm run build:CSS && npm run build:React && npm run build:Docker",
-    "server": "docker-compose -f ./docker/dc-web-db.yaml up"
+    "server": "docker-compose -f ./docker/dc-web-db.yaml up",
+    "build:test": "npm run build && npm run server"
   },
   "eslintConfig": {
     "extends": [

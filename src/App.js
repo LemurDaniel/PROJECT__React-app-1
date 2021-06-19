@@ -41,12 +41,12 @@ function App() {
   const cookie2 = document.cookie.split(';').filter(v => v.includes('doodle_token='))[0];
   const currToken = !cookie2 ? null : cookie2.split('=')[1];
 
-  const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://localhost' });
+  const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://192.168.178.41' });
   useEffect(() => {
     const call = async () => {
-      if(!currToken) return;
-      const res = await fetch(meta.endpoint+`/user?token=${currToken}`);
-      if(res.status === 200) return;
+      if (!currToken) return;
+      const res = await fetch(meta.endpoint + `/user?token=${currToken}`);
+      if (res.status === 200) return;
       setMeta({ user: null, token: null });
       document.cookie = "user=null; max-age=0";
       document.cookie = "doodle_token=null; max-age=0";
@@ -64,15 +64,17 @@ function App() {
 
         <Nav navigations={navigations} />
 
-        <Router>
+        <div className="p-0 min-h-screen">
+          <Router>
 
-          <Route path='/' exact component={Home} />
-          <Route path='/game' exact component={Spacegame} />
-          <Route path='/taskTracker' component={TaskTracker} />
-          <Route path='/gallery' component={Gallery} />
-          <Route path='/drawing' component={Drawing} />
+            <Route path='/' exact component={Home} />
+            <Route path='/game' exact component={Spacegame} />
+            <Route path='/taskTracker' component={TaskTracker} />
+            <Route path='/gallery' component={Gallery} />
+            <Route path='/drawing' component={Drawing} />
 
-        </Router>
+          </Router>
+        </div>
 
         <Footer />
 

@@ -26,7 +26,7 @@ const types = {
 
 const Authorization = ({ showModal }) => {
 
-    const { setMeta } = useContext(UserContext);
+    const { meta, setMeta } = useContext(UserContext);
 
 
     const [activeType, setActiveType] = useState(Object.keys(types)[0])
@@ -52,7 +52,7 @@ const Authorization = ({ showModal }) => {
             userDisplayName: userDisplayName
         }
 
-        const res = await fetch('http://localhost' + type.api, {
+        const res = await fetch(meta.endpoint + type.api, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
