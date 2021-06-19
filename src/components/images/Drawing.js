@@ -100,7 +100,6 @@ const Drawing = ({ size }) => {
     const strokeBounds = [2, 25];
     const [strokeWidth, setStrokeWidth] = useState(15);
     const onScrollStroke = e => {
-        e.preventDefault();
         if (e.deltaY === -100) {
             if (strokeWidth >= strokeBounds[1]) return;
             setStrokeWidth(strokeWidth + 1);

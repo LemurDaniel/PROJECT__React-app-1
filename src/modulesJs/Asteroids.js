@@ -59,8 +59,8 @@ class Asteroid extends Particle {
         ctx.closePath();
         ctx.stroke();
 
-        ctx.arc(0, 0, this.radius, 0, Math.PI*2)
-        ctx.stroke();
+        // ctx.arc(0, 0, this.radius, 0, Math.PI*2)
+        // ctx.stroke();
 
     }
 

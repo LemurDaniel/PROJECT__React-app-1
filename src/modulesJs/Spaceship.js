@@ -43,6 +43,7 @@ class Ship extends Particle {
       new Vector(0, 0), 5,
     )
 
+    this.cursor = new Vector(0,0)
     this.friction = 0.05;
     this.maxV = 14;
 

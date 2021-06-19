@@ -9,15 +9,14 @@ import ParticleManager, { Particle } from '../modulesJs/Particle';
 
 const MAX_ASTEROIDS = 30;
 const SCALE = 2;
-const height = 500;
-const width = 800;
+const ship = new Ship(0, 0, 0)
+const asteroids = new ParticleManager();
+const mousePos = { x: 0, y: 0 }
 
 
-const Spacegame = () => {
+const Spacegame = ({ width, height }) => {
 
     const canvasRef = useRef(null);
-    const [ship, setShip] = useState(null);
-    const [asteroids, setAsteroids] = useState(null);
     useEffect(() => {
         const canvas = canvasRef.current;
 
@@ -28,12 +27,11 @@ const Spacegame = () => {
 
         // Scale and translate origin once.
         canvas.getContext('2d').scale(SCALE, SCALE);
-
-        setShip(new Ship(canvas.width / 2, canvas.height / 2, 0));
-        setAsteroids(new ParticleManager());
+        ship.x = width * SCALE / 2
+        ship.y = height * SCALE / 2;
 
         return () => canvas.getContext('2d').scale(-SCALE, -SCALE);
-    }, [canvasRef]);
+    }, [canvasRef, width, height]);
 
 
 
@@ -42,19 +40,35 @@ const Spacegame = () => {
     const [gameRunning, setGameRunning] = useState(true);
 
 
+
+    const [gameRunning, setGameRunning] = useState(true);
     const [cursor, setCursor] = useState(true);
-    const [mousePos, setMousePos] = useState(new Vector());
+
     const onMouseMove = e => {
         const canvas = canvasRef.current;
         mousePos.x = (e.clientX - canvas.offsetLeft) * SCALE;
         mousePos.y = (e.clientY - canvas.offsetTop) * SCALE;
-        setMousePos(mousePos);
     }
 
 
+
     const [astAmount, setAstAmount] = useState(0);
-    const [astTarget, setAstTarget] = useState(7);
-    const [score, setScore] = useState(7);
+    const [astTarget, setAstTarget] = useState(4);
+    useEffect(() => {
+        const add = () => {
+            if (asteroids.count() >= astTarget) return;
+            asteroids.push(Asteroid.getRandom(canvasRef.current, ship));
+            setAstAmount(asteroids.count());
+        };
+
+        setTimeout(add, Math.random() * 1000 + 75)
+    }, [astAmount, astTarget])
+
+
+    const [score, setScore] = useState(0);
+    useEffect(() => {
+        setAstTarget( Math.max(12, Math.ceil(score / 75)) );
+    }, [score])
     useEffect(() => {
         if (!ship || !asteroids || !gameRunning) return;
         let localScore = score;
@@ -66,11 +80,6 @@ const Spacegame = () => {
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
             ctx.clearRect(0, 0, canvas.width, canvas.height)
-
-            if (Math.round(Math.random() * 25) === 0 && asteroids.count() < astTarget) {
-                asteroids.push(Asteroid.getRandom(canvas, ship));
-                setAstAmount(asteroids.count());
-            }
 
             ctx.strokeStyle = 'white';
             ctx.fillStyle = 'white';
@@ -101,14 +110,11 @@ const Spacegame = () => {
             });
 
             cannon.particles.forEach(bullet => {
-                asteroids.particles.forEach(prt =>
-                    asteroids.calculateCollsision(bullet, result => {
-                        localScore += result;
-                        setScore(localScore);
-                        setAstAmount(asteroids.count());
-                        setAstTarget(Math.max(4, score / 200));
-                    })
-                );
+                asteroids.calculateCollsision(bullet, result => {
+                    localScore += result;
+                    setScore(localScore);
+                    setAstAmount(asteroids.count());
+                });
             })
 
         };
@@ -118,7 +124,7 @@ const Spacegame = () => {
 
         const ticker = setInterval(() => loop(), 1000 / 60);
         return () => clearInterval(ticker);
-    }, [ship, asteroids, cursor, gameRunning]);
+    }, [cursor, gameRunning]);
 
 
 
@@ -127,8 +133,10 @@ const Spacegame = () => {
         <div className="w-min mx-auto ">
 
 
-            <p>Highscore: {score}</p>
-            <p>Asteroids: {astAmount} / {astTarget}</p>
+            <div className="font-bold text-brand2-100  flex justify-evenly">
+                <p>Highscore: {score}</p>
+                <p>Asteroids: {astAmount} / {astTarget}</p>
+            </div>
 
             <div className="rounded-md border border-brand2-100">
                 <canvas
