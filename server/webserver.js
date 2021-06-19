@@ -78,7 +78,7 @@ async function checkForConnection() {
 checkForConnection();
 
 
-
+app.use( '/game', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/drawing', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/gallery', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/taskTracker', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
