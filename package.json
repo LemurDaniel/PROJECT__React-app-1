@@ -18,7 +18,8 @@
     "start": "react-scripts start",
     "build:CSS": "tailwindcss build ./src/css/Globals.css -o ./src/css/Tailwind.css",
     "build:Docker": "docker build -t daniellandau1998/node-webserver -f ./docker/df-webserver .",
-    "build": "npm run build:CSS && react-scripts build && move build server/build && npm run build:Docker",
+    "build:React": "react-scripts build && rmdir /s/q \"./server/build\"  && move build server/build",
+    "build": "npm run build:CSS && npm run build:React && npm run build:Docker",
     "server": "docker-compose -f ./docker/dc-web-db.yaml up"
   },
   "eslintConfig": {
