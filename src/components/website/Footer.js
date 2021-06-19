@@ -10,7 +10,7 @@ const Footer = () => {
 
     return (
 
-        <footer className="pt-1 w-full   absolute md:fixed bottom-0   flex flex-col md:flex-row justify-evenly   bg-dark-100 text-white text-xs font-bold">
+        <footer className="pt-1 w-full  absolute md:fixed bottom-0   flex flex-col md:flex-row justify-evenly   bg-dark-100 text-white text-xs font-bold">
 
             <div className="mx-auto mx:mx-0  pb-1">
                 <p className="px-2 inline "> <BiCopyright className="inline" /> <span className="font-extralight">copyright 2021 - </span> LemurDaniel</p>

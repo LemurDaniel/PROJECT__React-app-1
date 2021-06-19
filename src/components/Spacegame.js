@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
 import Asteroid from '../modulesJs/Asteroids';
-import ParticleManager, { Particle } from '../modulesJs/Particle';
+import ParticleManager from '../modulesJs/Particle';
 
 
 
@@ -11,7 +11,7 @@ const MAX_ASTEROIDS = 30;
 const SCALE = 2;
 const ship = new Ship(0, 0, 0)
 const asteroids = new ParticleManager();
-const mousePos = { x: 0, y: 0 }
+const mousePos = new Vector(0, 0)
 
 
 const Spacegame = ({ width, height }) => {
@@ -30,6 +30,9 @@ const Spacegame = ({ width, height }) => {
         ship.x = width * SCALE / 2
         ship.y = height * SCALE / 2;
 
+        ship.x = width * SCALE / 2;
+        ship.y = height * SCALE / 2;
+
         return () => canvas.getContext('2d').scale(-SCALE, -SCALE);
     }, [canvasRef, width, height]);
 
@@ -38,22 +41,28 @@ const Spacegame = ({ width, height }) => {
 
 
     const [gameRunning, setGameRunning] = useState(true);
-
-
-
-    const [gameRunning, setGameRunning] = useState(true);
     const [cursor, setCursor] = useState(true);
 
     const onMouseMove = e => {
         const canvas = canvasRef.current;
-        mousePos.x = (e.clientX - canvas.offsetLeft) * SCALE;
-        mousePos.y = (e.clientY - canvas.offsetTop) * SCALE;
+
+        if (e.type === 'touchmove') {
+            const touch = e.nativeEvent.touches[0]
+            mousePos.x = (touch.clientX - canvas.offsetLeft) * SCALE;
+            mousePos.y = (touch.clientY - canvas.offsetTop) * SCALE;
+            ship.setCursor(mousePos);
+            ship.thrust(true);
+        } else if (e.type === 'mousemove') {
+            mousePos.x = (e.clientX - canvas.offsetLeft) * SCALE;
+            mousePos.y = (e.clientY - canvas.offsetTop) * SCALE;
+            ship.setCursor(mousePos);
+        }
     }
 
 
 
     const [astAmount, setAstAmount] = useState(0);
-    const [astTarget, setAstTarget] = useState(4);
+    const [astTarget, setAstTarget] = useState(12);
     useEffect(() => {
         const add = () => {
             if (asteroids.count() >= astTarget) return;
@@ -67,7 +76,8 @@ const Spacegame = ({ width, height }) => {
 
     const [score, setScore] = useState(0);
     useEffect(() => {
-        setAstTarget( Math.max(12, Math.ceil(score / 75)) );
+        const amount = Math.max(12, Math.ceil(score / 75))
+        setAstTarget(Math.min(MAX_ASTEROIDS, amount));
     }, [score])
     useEffect(() => {
         if (!ship || !asteroids || !gameRunning) return;
@@ -89,7 +99,6 @@ const Spacegame = ({ width, height }) => {
             const cannon = ship.cannon;
             asteroids.render(canvas);
             cannon.render(canvas)
-            ship.setCursor(mousePos);
             ship.render(canvas)
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -114,7 +123,7 @@ const Spacegame = ({ width, height }) => {
                     localScore += result;
                     setScore(localScore);
                     setAstAmount(asteroids.count());
-                });
+                })
             })
 
         };
@@ -130,22 +139,27 @@ const Spacegame = ({ width, height }) => {
 
 
     return (
-        <div className="w-min mx-auto ">
+        <div className="overflow-hidden" >
 
-
-            <div className="font-bold text-brand2-100  flex justify-evenly">
-                <p>Highscore: {score}</p>
-                <p>Asteroids: {astAmount} / {astTarget}</p>
+            <div className="relative flex justify-evenly font-bold text-brand2-100" >
+                <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
+                <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
             </div>
 
-            <div className="rounded-md border border-brand2-100">
-                <canvas
-                    height={height} width={width} onMouseMove={onMouseMove}
+            <div className="rounded-md">
+                <canvas style={{ 'touch-action': 'none' }}
+                    height={height} width={width} onMouseMove={onMouseMove} onTouchMove={onMouseMove} onClick={e => ship.shoot()}
                     onMouseLeave={e => setCursor(false)} onMouseEnter={e => setCursor(true)}
-                    ref={canvasRef} className="bg-dark-800" ></canvas>
+                    ref={canvasRef} className=" " ></canvas>
             </div>
+
         </div>
     )
+}
+
+Spacegame.defaultProps = {
+    width: window.screen.width,
+    height: window.innerHeight - 35
 }
 
 export default Spacegame

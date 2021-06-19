@@ -12,53 +12,73 @@ class Vector {
         return new Vector(x, y);
     }
 
+    static sub(vec, vec2) {
+        return vec.copy().sub(vec2);
+    }
+
+    static add(vec, vec2) {
+        return vec.copy().add(vec2);
+    }
+
+    static mul(vec, vecOrMul, mul2) {
+        return vec.copy().mul(vecOrMul, mul2);
+    }
+
+
+    _round() {
+        if (Math.abs(this.x) < 10e-10) this.x = 0;
+        if (Math.abs(this.y) < 10e-10) this.y = 0;
+    }
+
+    copy() {
+        return new Vector(this.x, this.y);
+    }
+
     mag() {
         return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    dist(vec) {
+        return Vector.sub(this, vec).mag();
+    }
+
+    limit(limit) {
+        if (this.mag() > limit) return this.setMag(limit);
     }
 
     setMag(mag) {
         const angle = this.heading();
         this.x = Math.cos(angle) * mag;
         this.y = Math.sin(angle) * mag;
-
-        if(Math.abs(this.x) < 10e-10) this.x = 0;
-        if(Math.abs(this.y) < 10e-10) this.y = 0
+        this._round();
         return this;
     }
 
     heading() {
-        if (this.x === 0) {
-            if (this.y > 0) return Math.PI / 2;
-            else return Math.PI * 3 / 2;
-        }
-        if (this.x > 0) {
-            const angle = Math.atan(this.y / this.x);
-            return angle < 0 ? 2 * Math.PI + angle : angle;
-        }
-        if (this.x < 0) {
-            return Math.PI + Math.atan(this.y / this.x);
-        }
-    }
+        const TAU = Math.PI * 2;
 
-    limit(limit) {
-        if (this.mag() <= limit) return;
-        else this.setMag(limit);
-        return this;
+        if (this.x === 0)
+            return this.y > 0 ? (Math.PI / 2) : (Math.PI * 3 / 2);
+
+        if (this.x > 0)
+            return (TAU + Math.atan(this.y / this.x)) % TAU;
+
+        if (this.x < 0)
+            return Math.PI + Math.atan(this.y / this.x);
+
     }
 
     add(vec) {
         this.x += vec.x;
         this.y += vec.y;
-        if(Math.abs(this.x) < 10e-10) this.x = 0;
-        if(Math.abs(this.y) < 10e-10) this.y = 0
+        this._round();
         return this;
     }
 
     sub(vec) {
         this.x -= vec.x;
         this.y -= vec.y;
-        if(Math.abs(this.x) < 10e-10) this.x = 0;
-        if(Math.abs(this.y) < 10e-10) this.y = 0
+        this._round();
         return this;
     }
 
@@ -70,31 +90,11 @@ class Vector {
             this.x *= vec.x;
             this.y *= vec.y;
         }
-        if(Math.abs(this.x) < 10e-10) this.x = 0;
-        if(Math.abs(this.y) < 10e-10) this.y = 0
+        this._round();
         return this;
     }
 
-    static sub(vec, vec2) {
-        return new Vector(vec.x, vec.y).sub(vec2);
-    }
 
-    static add(vec, vec2) {
-        return new Vector(vec.x, vec.y).add(vec2);
-    }
-
-    static mul(vec, mul, mul2) {
-        return new Vector(vec.x, vec.y).mul(mul, mul2);
-    }
-
-    dist(vec) {
-        const dist = Vector.sub(this, vec);
-        return dist.mag();
-    }
-
-    copy() {
-        return new Vector(this.x, this.y);
-    }
 }
 
 

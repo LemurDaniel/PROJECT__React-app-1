@@ -4,6 +4,8 @@ import Strokecontrol from './Strokecontrol'
 import UserContext from '../UserContext'
 
 
+// Set positioning for drawing.
+const pos = { x: null, y: null }
 const Drawing = ({ size }) => {
 
     // The div containing the canvas elements is set to relative.
@@ -86,13 +88,14 @@ const Drawing = ({ size }) => {
         else if (e.type === 'mouseup') setRubber(false);
     }
 
-    // Set positioning for drawing.
-    const pos = { x: null, y: null }
+
     const updatePosition = e => {
 
         const frame = canvasFrame.current;
-        pos.x = e.clientX - frame.offsetLeft;
-        pos.y = e.clientY - frame.offsetTop;
+        let cursor = e;
+        if (e.type === 'touchmove' || e.type === 'touchstart') cursor = e.nativeEvent.touches[0]
+        pos.x = cursor.clientX - frame.offsetLeft;
+        pos.y = cursor.clientY - frame.offsetTop;
 
     }
 
@@ -112,7 +115,7 @@ const Drawing = ({ size }) => {
     const [strokeColor, setStrokeColor] = useState('#000000');
     const draw = e => {
 
-        if (e.buttons !== 1 && e.buttons !== 2) return;
+        if (e.buttons !== 1 && e.buttons !== 2 && e.type !== 'touchmove') return;
 
         const ctxMain = canvasMain.current.getContext('2d');
         const ctxHidden = canvasHidden.current.getContext('2d');
@@ -186,7 +189,7 @@ const Drawing = ({ size }) => {
 
     return (
 
-        <div className="w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
+        <div className="contentDiv shadow-none w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
             {/* The input element for naming the drawing */}
             <input className="input-light mx-auto text-center"
@@ -201,10 +204,13 @@ const Drawing = ({ size }) => {
 
 
             {/* The two canvas. */}
-            <div ref={canvasFrame} className="relative bg-transparent" onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
+            <div ref={canvasFrame} className="relative bg-transparent" style={{ 'touch-action': 'none' }}
+                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
                 <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
                 <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
-                    onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify} />
+                    onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}
+                    onTouchStart={updatePosition} onTouchMove={draw} onTouchEnd={classify}
+                />
 
 
                 {/* The classifications. */}

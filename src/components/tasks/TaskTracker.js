@@ -121,44 +121,46 @@ const TaskTracker = () => {
     }
 
     return (
-        <div className="contentDiv select-none">
+        <div className="mx-10 md:mx-40  mt-10  pb-24 md:pb-16">
+            <div className="pb-2 shadow-2xl select-none">
 
-            {/* Header containing Clock, Dropdown and Button */}
-            <header className="header border-b">
+                {/* Header containing Clock, Dropdown and Button */}
+                <header className="header border-b">
 
-                <div className="pr-4"> <Clock size={65} digital={false} /> </div>
+                    <div className="pr-4"> <Clock size={65} digital={false} /> </div>
 
-                <h1 className='my-2 font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
+                    <h1 className='my-2 font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
 
-                <div className="my-2 w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md ">
-                    <label htmlFor="sorting" className="px-2">Sort by </label>
-                    <select name="sorting" id="sorting" onChange={onSortChange}
-                        className="bg-dark-700 focus:outline-none" >
-                        {Object.keys(sortTypes).map(v => <option key={v} value={v}>{sortTypes[v].title}</option>)}
-                    </select>
+                    <div className="my-2 w-40 mx-auto text-white border-white bg-dark-700 border-2 rounded-md ">
+                        <label htmlFor="sorting" className="px-2">Sort by </label>
+                        <select name="sorting" id="sorting" onChange={onSortChange}
+                            className="bg-dark-700 focus:outline-none" >
+                            {Object.keys(sortTypes).map(v => <option key={v} value={v}>{sortTypes[v].title}</option>)}
+                        </select>
+                    </div>
+
+                    <button className="my-2 btn-prominent btn-light font-bold" onClick={e => setShowModal(!showModal)} >
+                        {!showModal ? 'Add new Task' : 'Close new Task'}
+                    </button>
+                </header>
+
+                {/* The Datepicker to switch between dates. */}
+                <Datepicker setDate={setDate} date={date} />
+
+                {/* The Modal for adding a new Task. */}
+                {showModal ? <AddTask showModal={setShowModal} onAdd={addTask} /> : null}
+
+                {/* The list containing all tasks of the current date. */}
+                <div className="flex flex-col justify-center px-10 pt-4 ">
+                    {tasks.length > 0 ? (
+                        tasks.map(task => (<Task key={task.id} task={task} onDelete={deleteTask} toggleDone={toggleDone} />))
+                    ) : (
+                        <i className="mx-auto py-10 text-xl md:text-2xl text-brand2-100"> <BsInfoSquareFill className="inline" />  No Tasks remaining </i>
+                    )
+                    }
                 </div>
 
-                <button className="my-2 btn-prominent btn-light font-bold" onClick={e => setShowModal(!showModal)} >
-                    {!showModal ? 'Add new Task' : 'Close new Task'}
-                </button>
-            </header>
-
-            {/* The Datepicker to switch between dates. */}
-            <Datepicker setDate={setDate} date={date} />
-
-            {/* The Modal for adding a new Task. */}
-            {showModal ? <AddTask showModal={setShowModal} onAdd={addTask} /> : null}
-
-            {/* The list containing all tasks of the current date. */}
-            <div className="flex flex-col justify-center px-10 pt-4 ">
-                {tasks.length > 0 ? (
-                    tasks.map(task => (<Task key={task.id} task={task} onDelete={deleteTask} toggleDone={toggleDone} />))
-                ) : (
-                    <i className="mx-auto py-10 text-2xl text-brand2-100"> <BsInfoSquareFill className="inline" />  No Tasks remaining </i>
-                )
-                }
             </div>
-
         </div>
     )
 }

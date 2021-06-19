@@ -29,7 +29,7 @@ class Bullet extends Particle {
     ast.alive = false
     this.alive = false;
 
-    return 20;
+    return Math.floor(ast.mass / (Math.random()*10+100));
   }
 
 }
@@ -43,7 +43,7 @@ class Ship extends Particle {
       new Vector(0, 0), 5,
     )
 
-    this.cursor = new Vector(0,0)
+    this.cursor = new Vector(1,1);
     this.friction = 0.05;
     this.maxV = 14;
 
@@ -51,17 +51,30 @@ class Ship extends Particle {
 
     document.addEventListener('keyup', e => {
       if (e.code === 'Space') {
-        this.cannon.push(new Bullet(
-          this.copy(), Vector.fromAngle(this.angle, 20)
-        ))
+        this.shoot();
       }
       if (e.code === 'KeyW') {
-        this.velocity = Vector.fromAngle(
-          this.angle, this.cursor.mag() * 0.035)
+        this.thrust();
       }
     })
 
 
+  }
+
+  thrust(gradual) {
+    if(gradual) {
+      this.velocity.add(Vector.fromAngle(
+        this.angle, this.cursor.mag() * 0.00055))
+    } else {
+      this.velocity = Vector.fromAngle(
+        this.angle, this.cursor.mag() * 0.035)
+    }
+  }
+
+  shoot() {
+    this.cannon.push(new Bullet(
+      this.copy(), Vector.fromAngle(this.angle, 20)
+    ))
   }
 
   setCursor(pos) {
@@ -112,6 +125,8 @@ class Ship extends Particle {
   }
 
 }
+
+
 
 
 export default Ship;

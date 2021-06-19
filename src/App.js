@@ -30,6 +30,10 @@ const navigations = [
     title: 'Doodle',
     url: '/drawing'
   },
+  {
+    title: 'Asteroids',
+    url: '/game'
+  },
 ]
 
 
@@ -64,7 +68,7 @@ function App() {
 
         <Nav navigations={navigations} />
 
-        <div className="min-h-screen md:min-h-full pb-24 md:pb-16">
+        <div className="min-h-screen md:min-h-full">
           <Router>
 
             <Route path='/' exact component={Home} />
