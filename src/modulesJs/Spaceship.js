@@ -28,6 +28,7 @@ class Bullet extends Particle {
 
     ast.alive = false
     this.alive = false;
+    this.died = true;
 
     return Math.floor(ast.mass / (Math.random() * 10 + 100));
   }
@@ -49,16 +50,6 @@ class Ship extends Particle {
     this.maxV = 14;
 
     this.cannon = new ParticleManager();
-
-    document.addEventListener('keyup', e => {
-      if (e.code === 'Space') {
-        this.shoot();
-      }
-      if (e.code === 'KeyW') {
-        this.thrust();
-      }
-    })
-
 
   }
 
@@ -147,7 +138,6 @@ class Ship extends Particle {
   }
 
   onCollision(ast) {
-    console.log('ass')
     ast.alive = false;
     this.alive--;
 

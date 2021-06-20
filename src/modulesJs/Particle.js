@@ -112,8 +112,10 @@ class ParticleManager {
             if(!prt.alive) {
                 particles[i--] = particles[end--];
                 particles.length = end+1;
-                this.dying.push(prt);
-                prt.hidden = true;
+                if(!prt.died) {
+                    this.dying.push(prt);
+                    prt.hidden = true;
+                }
             }
 
             if(afterCollision) afterCollision(result, collider, prt);
@@ -185,8 +187,10 @@ export class Particle extends Vector {
     }
 
     render(canvas) {
+        const ctx = canvas.getContext('2d')
         this.move(canvas);
-        this.draw(canvas.getContext('2d'));
+        this.draw(ctx);
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
     move(canvas) {
