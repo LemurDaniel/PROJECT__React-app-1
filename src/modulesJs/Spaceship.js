@@ -28,6 +28,7 @@ class Bullet extends Particle {
 
     ast.alive = false
     this.alive = false;
+    this.died = true;
 
     return Math.floor(ast.mass / (Math.random() * 10 + 100));
   }
@@ -49,16 +50,6 @@ class Ship extends Particle {
     this.maxV = 14;
 
     this.cannon = new ParticleManager();
-
-    document.addEventListener('keyup', e => {
-      if (e.code === 'Space') {
-        this.shoot();
-      }
-      if (e.code === 'KeyW') {
-        this.thrust();
-      }
-    })
-
 
   }
 
@@ -87,9 +78,9 @@ class Ship extends Particle {
   draw(ctx) {
     this.drawLives(ctx)
 
-    if(!this.faded) {
+    if (!this.faded) {
       this.fade();
-      if(this.hidden) return;
+      if (this.hidden) return;
     }
 
     super.draw(ctx);
@@ -97,20 +88,17 @@ class Ship extends Particle {
   }
 
   drawLives(ctx) {
-    
-    const canvas = ctx.canvas;
-    ctx.setTransform(1,0,0,1, canvas.width*0.05, canvas.height*0.035)
 
-    //ctx.font = 'bold 44px arial';
-    //ctx.fillText('Lives: ', x, 20);
+    const canvas = ctx.canvas;
+    ctx.setTransform(1, 0, 0, 1, canvas.width * 0.05, canvas.height * 0.035)
 
     const size = 0.8;
-    ctx.scale(size,size)
-    ctx.rotate(-Math.PI/4)
+    ctx.scale(size, size)
+    ctx.rotate(-Math.PI / 4)
 
-    for(let i=0; i<this.alive; i++) {
+    for (let i = 0; i < this.lives; i++) {
       this.drawShip(ctx);
-      ctx.translate(60*size, 60*size);
+      ctx.translate(60 * size, 60 * size);
     }
   }
 
@@ -147,14 +135,16 @@ class Ship extends Particle {
   }
 
   onCollision(ast) {
-    console.log('ass')
     ast.alive = false;
-    this.alive--;
+    if (--this.lives <= 0)
+      this.alive = false;
+    else {
+      this.faded = false;
+      this.hidden = true;
+      this.fadeTime = 12;
+      this.fadeEnd = 12;
+    }
 
-    this.faded = false;
-    this.hidden = true;
-    this.fadeTime = 12;
-    this.fadeEnd = 12;
   }
 
 }
