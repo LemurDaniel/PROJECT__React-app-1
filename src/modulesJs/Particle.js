@@ -4,83 +4,121 @@ import Vector from './Vector';
 class ParticleManager {
 
     constructor() {
+        this.limbo = [];
         this.particles = [];
+        this.dying = [];
     }
 
 
-    count() {
-        return this.particles.length;
+    count(includeLimbo) {
+        return this.particles.length + (includeLimbo ? this.limbo.length : 0);
     }
 
     push(prt) {
-        this.particles.push(prt)
+        if(prt.limbo > 0) this.limbo.push(prt)
+        else this.particles.push(prt)
     }
 
-    render(canvas) {
 
-        const particles = this.particles;
+    _checkLimbo() {
+
+        let end = this.limbo.length - 1;
+        for (let i = 0; i <= end; i++) {
+
+            const prt = this.limbo[i];
+
+            if(--prt.limbo <= 0) {
+                this.limbo[i--] = this.limbo[end--];
+                this.particles.push(prt);
+                prt.onActive();
+            }
+        }
+
+        this.limbo.length = end+1;
+    }
+
+    _checkDying(canvas) {
+
         const ctx = canvas.getContext('2d');
 
-        let end = particles.length;
-        for (let i = 0; i < end; i++) {
+        let end = this.dying.length - 1;
+        for (let i = 0; i <= end; i++) {
 
-            const prt = particles[i];
-            prt.collisions.length = 0;
+            const prt = this.dying[i];
 
-            if(prt.alive) {
-                prt.move(canvas);
-                prt.draw(ctx);
-            }
-            else {
-                particles[i] = particles[end - 1];
-                end--;
-                i--;
-            }
+            prt.fade();
+            prt.move(canvas)
+            if(!prt.hidden) prt.draw(ctx);
+
+            if(prt.faded) 
+                this.dying[i--] = this.dying[end--];
 
         }
 
-        particles.length = end;
+        this.dying.length = end+1;
+    }
 
+
+    render(canvas) {
+
+        this._checkLimbo();
+        this._checkDying(canvas);
+
+        let end = this.particles.length - 1;
+        for (let i = 0; i <= end; i++) {
+
+            const prt = this.particles[i];
+
+            prt.collisions = {}; // reset collisions for this frame.
+
+            if(prt.alive) prt.render(canvas);
+            else this.particles[i--] = this.particles[end--];
+
+        }
+
+        this.particles.length = end+1;
     }
 
     calculateCollsision(collider, afterCollision) {
 
         const particles = this.particles;
 
-        let end = particles.length;
-        for (let i = 0; i < end; i++) {
+        let end = particles.length-1;
+        for (let i = 0; i <= end; i++) {
 
             const prt = particles[i];
 
             if (!prt.alive) continue;
             if (prt === collider) continue;
             
-            // The array get reset after each render.
-            // This is to prevent doubly handling of the same collision in the same frame.
-            if(prt.collisions.includes(collider)) continue;
-
+            // Prevent double calculating and handling of collisions.
+            if(collider.id in prt.collisions) continue;
+            
             // Calculate distance.
             const dist = prt.dist(collider);
-            if (dist >= prt.radius + collider.radius) continue;
+            if (dist >= prt.radius + collider.radius) {
+                prt.collisions[collider.id] = false;
+                collider.collisions[prt.id] = false;
+                continue;
+            }
+            prt.collisions[collider.id] = true;
+            collider.collisions[prt.id] = true;
+
 
             // On Collision.
             const result = collider.onCollision(prt);
-            collider.collisions.push(prt);
-            prt.collisions.push(collider);
 
             // Remove dead particles.
             if(!prt.alive) {
-                particles[i] = particles[end-1];
-                particles.length = end-1;
-                end--;
-                i--;
+                particles[i--] = particles[end--];
+                particles.length = end+1;
+                this.dying.push(prt);
+                prt.hidden = true;
             }
 
             if(afterCollision) afterCollision(result, collider, prt);
-
-            if(!collider.alive) return;
+            if(!collider.alive) break;
         }
-
 
     }
 
@@ -89,13 +127,31 @@ class ParticleManager {
 
 export class Particle extends Vector {
 
-    constructor(pos, velocity, radius) {
+    static id = 0;
+
+    constructor(pos, velocity, radius, lives = 1) {
         super(pos.x, pos.y);
-        this.alive = true;
+        this.id = Particle.id++;
+
+        this.limbo = 0; // Time before Particle is active.
+        this.alive = lives;
+        this.died = false;
         this.angle = 0;
         this.radius = radius;
         this.velocity = velocity;
-        this.collisions = [];
+        this.collisions = {};
+
+ 
+        this.fadeTime =  8;
+        this.fadeEnd = 5;
+        this.hidden = false;
+        this.faded = false;
+        this.time = 0;
+    }
+
+    setLimbo(time, onActive) {
+        this.limbo = Math.round(time);
+        this.onActive = onActive ?? (() => null);
     }
 
     isOOB(canvas) {
@@ -116,6 +172,21 @@ export class Particle extends Vector {
             this.y = -this.radius * 2;
         else if (this.y < -this.radius * 2 - 5)
             this.y = canvas.height + this.radius * 2;
+    }
+
+    fade() {
+        if(this.time++ >= this.fadeTime) {
+            this.time = 0;
+            this.hidden = !this.hidden;
+            this.fadeTime = this.fadeTime*0.95;
+        }
+
+        if(this.fadeTime < this.fadeEnd) this.faded = true;
+    }
+
+    render(canvas) {
+        this.move(canvas);
+        this.draw(canvas.getContext('2d'));
     }
 
     move(canvas) {

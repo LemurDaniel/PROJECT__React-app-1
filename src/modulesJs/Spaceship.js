@@ -29,7 +29,7 @@ class Bullet extends Particle {
     ast.alive = false
     this.alive = false;
 
-    return Math.floor(ast.mass / (Math.random()*10+100));
+    return Math.floor(ast.mass / (Math.random() * 10 + 100));
   }
 
 }
@@ -40,10 +40,11 @@ class Ship extends Particle {
   constructor(x, y, angle) {
     super(
       new Vector(x, y),
-      new Vector(0, 0), 5,
+      new Vector(0, 0), 5, 3
     )
 
-    this.cursor = new Vector(1,1);
+    this.faded = true;
+    this.cursor = new Vector(1, 1);
     this.friction = 0.05;
     this.maxV = 14;
 
@@ -61,16 +62,6 @@ class Ship extends Particle {
 
   }
 
-  thrust(gradual) {
-    if(gradual) {
-      this.velocity.add(Vector.fromAngle(
-        this.angle, this.cursor.mag() * 0.00055))
-    } else {
-      this.velocity = Vector.fromAngle(
-        this.angle, this.cursor.mag() * 0.035)
-    }
-  }
-
   shoot() {
     this.cannon.push(new Bullet(
       this.copy(), Vector.fromAngle(this.angle, 20)
@@ -81,18 +72,49 @@ class Ship extends Particle {
     this.cursor = Vector.sub(pos, this);
   }
 
-  render(canvas) {
 
-    const ctx = canvas.getContext('2d')
-    this.move(canvas);
-    this.draw(ctx);
-
+  thrust(gradual) {
+    if (gradual) {
+      this.velocity.add(Vector.fromAngle(
+        this.angle, this.cursor.mag() * 0.00105))
+    } else {
+      this.velocity = Vector.fromAngle(
+        this.angle, this.cursor.mag() * 0.035)
+    }
   }
 
   // draw spaceship
   draw(ctx) {
+    this.drawLives(ctx)
+
+    if(!this.faded) {
+      this.fade();
+      if(this.hidden) return;
+    }
 
     super.draw(ctx);
+    this.drawShip(ctx);
+  }
+
+  drawLives(ctx) {
+    
+    const canvas = ctx.canvas;
+    ctx.setTransform(1,0,0,1, canvas.width*0.05, canvas.height*0.035)
+
+    //ctx.font = 'bold 44px arial';
+    //ctx.fillText('Lives: ', x, 20);
+
+    const size = 0.8;
+    ctx.scale(size,size)
+    ctx.rotate(-Math.PI/4)
+
+    for(let i=0; i<this.alive; i++) {
+      this.drawShip(ctx);
+      ctx.translate(60*size, 60*size);
+    }
+  }
+
+  drawShip(ctx) {
 
     ctx.beginPath();
     ctx.moveTo(20, 0);
@@ -122,6 +144,17 @@ class Ship extends Particle {
 
     super.move(canvas);
 
+  }
+
+  onCollision(ast) {
+    console.log('ass')
+    ast.alive = false;
+    this.alive--;
+
+    this.faded = false;
+    this.hidden = true;
+    this.fadeTime = 12;
+    this.fadeEnd = 12;
   }
 
 }

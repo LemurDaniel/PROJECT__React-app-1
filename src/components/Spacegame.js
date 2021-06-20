@@ -11,7 +11,10 @@ const MAX_ASTEROIDS = 30;
 const SCALE = 2;
 const ship = new Ship(0, 0, 0)
 const asteroids = new ParticleManager();
-const mousePos = new Vector(0, 0)
+const mousePos = {
+    vec: new Vector(0, 0),
+    draw: true,
+}
 
 
 const Spacegame = ({ width, height }) => {
@@ -41,44 +44,49 @@ const Spacegame = ({ width, height }) => {
 
 
     const [gameRunning, setGameRunning] = useState(true);
-    const [cursor, setCursor] = useState(true);
+    const [pause, setPause] = useState(false);
 
     const onMouseMove = e => {
         const canvas = canvasRef.current;
 
-        if (e.type === 'touchmove') {
+        if (e.type === 'touchmove' || e.type === 'touchstart') {
             const touch = e.nativeEvent.touches[0]
-            mousePos.x = (touch.clientX - canvas.offsetLeft) * SCALE;
-            mousePos.y = (touch.clientY - canvas.offsetTop) * SCALE;
-            ship.setCursor(mousePos);
+            mousePos.vec.x = (touch.clientX - canvas.offsetLeft) * SCALE;
+            mousePos.vec.y = (touch.clientY - canvas.offsetTop) * SCALE;
+            if(pause) setPause(false);
+            ship.setCursor(mousePos.vec);
             ship.thrust(true);
         } else if (e.type === 'mousemove') {
-            mousePos.x = (e.clientX - canvas.offsetLeft) * SCALE;
-            mousePos.y = (e.clientY - canvas.offsetTop) * SCALE;
-            ship.setCursor(mousePos);
+            mousePos.vec.x = (e.clientX - canvas.offsetLeft) * SCALE;
+            mousePos.vec.y = (e.clientY - canvas.offsetTop) * SCALE;
+            ship.setCursor(mousePos.vec);
         }
+
+        if(e.type === 'touchstart') mousePos.draw = true;
+        else if(e.type === 'touchend') mousePos.draw = false;
     }
 
 
 
     const [astAmount, setAstAmount] = useState(0);
-    const [astTarget, setAstTarget] = useState(12);
-    useEffect(() => {
-        const add = () => {
-            if (asteroids.count() >= astTarget) return;
-            asteroids.push(Asteroid.getRandom(canvasRef.current, ship));
-            setAstAmount(asteroids.count());
-        };
-
-        setTimeout(add, Math.random() * 1000 + 75)
-    }, [astAmount, astTarget])
-
-
+    const [astTarget, setAstTarget] = useState(0);
     const [score, setScore] = useState(0);
     useEffect(() => {
-        const amount = Math.max(12, Math.ceil(score / 75))
-        setAstTarget(Math.min(MAX_ASTEROIDS, amount));
+        const amount = Math.max(4, Math.ceil(score / 75))
+        setAstTarget(Math.min(MAX_ASTEROIDS, amount))
     }, [score])
+    useEffect(() => {
+        while (asteroids.count(true) < astTarget) {
+            const ast = Asteroid.getRandom(canvasRef.current, ship);
+            ast.setLimbo(Math.random() * 750 + 150, () => setAstAmount(asteroids.count()));
+            asteroids.push(ast);
+        }
+    }, [astTarget, astAmount]);
+
+
+
+
+
     useEffect(() => {
         if (!ship || !asteroids || !gameRunning) return;
         let localScore = score;
@@ -103,9 +111,9 @@ const Spacegame = ({ width, height }) => {
 
             ctx.setTransform(1, 0, 0, 1, 0, 0);
 
-            if (cursor) {
+            if (mousePos.draw) {
                 ctx.beginPath();
-                ctx.arc(mousePos.x, mousePos.y, 5, 0, Math.PI * 2)
+                ctx.arc(mousePos.vec.x, mousePos.vec.y, 5, 0, Math.PI * 2)
                 ctx.fill();
             }
 
@@ -114,6 +122,7 @@ const Spacegame = ({ width, height }) => {
             asteroids.particles.forEach(prt => {
                 asteroids.calculateCollsision(ship, () => {
                     // setGameRunning(false);
+                    setAstAmount(asteroids.count());
                 })
                 asteroids.calculateCollsision(prt);
             });
@@ -129,17 +138,17 @@ const Spacegame = ({ width, height }) => {
         };
 
         // Draw on frame to make cursor dissapear.
-        if (!cursor) return loop();
+        if (pause) return loop();
 
         const ticker = setInterval(() => loop(), 1000 / 60);
         return () => clearInterval(ticker);
-    }, [cursor, gameRunning]);
+    }, [pause, gameRunning]);
 
 
 
 
     return (
-        <div className="overflow-hidden" >
+        <div className="overflow-hidden select-none" >
 
             <div className="relative flex justify-evenly font-bold text-brand2-100" >
                 <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
@@ -148,8 +157,9 @@ const Spacegame = ({ width, height }) => {
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
-                    height={height} width={width} onMouseMove={onMouseMove} onTouchMove={onMouseMove} onClick={e => ship.shoot()}
-                    onMouseLeave={e => setCursor(false)} onMouseEnter={e => setCursor(true)}
+                    height={height} width={width} onMouseMove={onMouseMove} onClick={e => ship.shoot()}
+                    onTouchMove={onMouseMove} onTouchEnd={onMouseMove} onTouchStart={onMouseMove}
+                    onMouseLeave={e => setPause(true)} onMouseEnter={e => setPause(false)}
                     ref={canvasRef} className=" " ></canvas>
             </div>
 
@@ -158,7 +168,7 @@ const Spacegame = ({ width, height }) => {
 }
 
 Spacegame.defaultProps = {
-    width: window.screen.width,
+    width: window.innerWidth,
     height: window.innerHeight - 35
 }
 

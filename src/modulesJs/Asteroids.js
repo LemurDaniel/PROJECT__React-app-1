@@ -3,6 +3,8 @@ import Vector from './Vector'
 
 class Asteroid extends Particle {
 
+    static targetAmount = 0;
+
     constructor(pos, velocity, radius, verts) {
         super(pos, velocity, radius);
         this.mass = Math.PI * radius * radius;
@@ -21,6 +23,7 @@ class Asteroid extends Particle {
         this.velocity.limit(4);
         super.move(canvas);
         this.angle += this.velocity.heading() * 0.0055 * this.rotation;
+        if(this.velocity.mag() < 0.15) this.velocity.setMag(Math.random()*(canvas.width*0.0025))
     }
 
     static getRandom(canvas, ship) {
@@ -34,10 +37,10 @@ class Asteroid extends Particle {
 
 
         const direction = Vector.sub(ship, pos);
-        const obfuscateAngle = direction.heading() - (Math.random() * Math.PI/8  - Math.PI/16)
+        const obfuscateAngle = direction.heading() - (Math.random() * Math.PI/16  - Math.PI/32)
 
         const velocity = Vector.fromAngle(obfuscateAngle, Math.random()*(canvas.width*0.0025) )
-        const radius = Math.random()* (Math.min(canvas.width*0.035, 20)) + 8;
+        const radius = Math.random()* (Math.min(canvas.width*0.035, 55)) + 8;
 
         const verts = [];
         for( let i=Math.PI*2; i>=0; i -= Math.PI/8 ) {
@@ -88,8 +91,8 @@ class Asteroid extends Particle {
         this.setRotation();
         ast.setRotation();
 
-        this.velocity.setMag( this.velocity.mag() * -0.01 );
-        ast.velocity.setMag( ast.velocity.mag() * -0.01 );
+        this.velocity.setMag( this.velocity.mag() * -0.5 );
+        ast.velocity.setMag( ast.velocity.mag() * -0.5 );
 
         ast.applyForce(vel, this.mass);
         this.applyForce(vel2, ast.mass);
