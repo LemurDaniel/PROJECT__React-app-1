@@ -7,7 +7,7 @@ const Highscore = ({scores, onRestart}) => {
             < div className="absolute bg-white opacity-10 inset-0 " ></div >
 
             <div className="absolute inset-x-0 top-40 ">
-                <div className="w-60 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm">
+                <div className="w-60 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm shadow-2xl">
                     <header className="px-2 pb-1 rounded-t-sm  bg-dark-700 w-full text-brand2-100 font-bold text-center">
                         <p>Game Over</p>
                     </header>

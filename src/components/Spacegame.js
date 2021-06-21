@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import Highscore from './Highscore';
+import Modal from './Modal';
+import Timer from './Timer';
 
 import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
@@ -69,7 +70,6 @@ const Spacegame = () => {
             mousePos.vec.y = (touch.clientY - canvas.offsetTop) * SCALE;
             ship.setCursor(mousePos.vec);
             if (pause) setPause(false);
-
             ship.thrust(true);
         } else if (e.type === 'mousemove') {
             mousePos.vec.x = (e.clientX - canvas.offsetLeft) * SCALE;
@@ -101,25 +101,34 @@ const Spacegame = () => {
     }, [astTarget, astAmount]);
 
 
+
     const [gameRunning, setGameRunning] = useState(true);
+    const [ticks, setTicks] = useState(0);
+    const onTick = tick => {
+        if (tick % (60 * 5) === 0) setScore(score + 125);
+        else if (tick % 60 === 0) setScore(score + 25);
+    }
+
     useEffect(() => {
         if (gameRunning) return;
         scores.push(score);
         scores.sort((a, b) => b - a)
         scores.length = 10;
         setScores(scores);
+        setTicks(0);
     }, [gameRunning])
     const onRestart = () => {
 
         const c = canvasRef.current;
-        ship.velocity = new Vector(0, 0)
-        ship.x = c.width / 2
-        ship.y = c.height / 2
+        ship.velocity = new Vector(0, 0);
+        ship.x = c.width / 2;
+        ship.y = c.height / 2;
         ship.alive = true;
         ship.lives = 3;
         asteroids.reset();
         setAstAmount(0);
         setScore(0);
+        setTicks(0);
         setGameRunning(true);
         setPause(false);
     }
@@ -190,9 +199,12 @@ const Spacegame = () => {
             <div className="relative flex justify-evenly font-bold text-brand2-100" >
                 <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
                 <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
+                <div className="absolute right-4 md:right-12 top-2 md:top-2">
+                    <Timer ticks={ticks} setTicks={setTicks} pause={pause} onTick={onTick} />
+                </div>
             </div>
 
-            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart} />}
+            {gameRunning ? null : <Modal scores={scores} onRestart={onRestart} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
@@ -201,6 +213,7 @@ const Spacegame = () => {
                     onMouseLeave={e => setPause(true)} onMouseEnter={e => setPause(false)}
                     ref={canvasRef} className="" ></canvas>
             </div>
+
 
         </div>
     )
