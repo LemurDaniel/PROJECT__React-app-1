@@ -69,6 +69,7 @@ const Spacegame = () => {
             mousePos.vec.y = (touch.clientY - canvas.offsetTop) * SCALE;
             ship.setCursor(mousePos.vec);
             if (pause) setPause(false);
+
             ship.thrust(true);
         } else if (e.type === 'mousemove') {
             mousePos.vec.x = (e.clientX - canvas.offsetLeft) * SCALE;
@@ -102,16 +103,16 @@ const Spacegame = () => {
 
     const [gameRunning, setGameRunning] = useState(true);
     useEffect(() => {
-        if(gameRunning) return;
+        if (gameRunning) return;
         scores.push(score);
-        scores.sort((a,b) => b-a)
+        scores.sort((a, b) => b - a)
         scores.length = 10;
         setScores(scores);
-    },[gameRunning])
+    }, [gameRunning])
     const onRestart = () => {
 
         const c = canvasRef.current;
-        ship.velocity = new Vector(0,0)
+        ship.velocity = new Vector(0, 0)
         ship.x = c.width / 2
         ship.y = c.height / 2
         ship.alive = true;
@@ -156,7 +157,7 @@ const Spacegame = () => {
             asteroids.particles.forEach(prt => {
                 asteroids.calculateCollsision(ship, () => {
                     setAstAmount(asteroids.count());
-                    if(ship.alive) return;
+                    if (ship.alive) return;
                     setGameRunning(false);
                     setPause(true);
                 })
@@ -191,7 +192,7 @@ const Spacegame = () => {
                 <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
             </div>
 
-            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart}/>}
+            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
