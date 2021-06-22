@@ -27,9 +27,9 @@
 
     "build:local": "npm run build:CSS && rmdir /s/q \"./server/build\" && npm run build:React && npm run build:Docker",
 
-    "server:deploy": "docker-compose -f ./docker/deploy/dc-web-db.yaml up",
+    "server:deploy": "docker pull daniellandau1998/node-server && docker-compose -f ./docker/deploy/dc-web-db.yaml up",
 
-    "server": "docker pull daniellandau1998/node-server && docker-compose -f ./docker/dc-web-db.yaml up",
+    "server": "docker-compose -f ./docker/dc-web-db.yaml up",
 
     "build:test": "npm run build && npm run server"
   },
