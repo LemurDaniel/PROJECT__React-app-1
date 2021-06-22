@@ -122,7 +122,7 @@ routes.post('/images/delete', auth2, (req, res) => {
 })
 
 // Send back all database entries encoded in json //
-routes.get('/export', auth, async (req, res) => {
+routes.get('/export', auth2, async (req, res) => {
     
     sql.exportData().then(
         data => res.status(200).json(data)

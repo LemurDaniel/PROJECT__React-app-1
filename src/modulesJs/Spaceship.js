@@ -17,6 +17,7 @@ class Bullet extends Particle {
     // super.move(canvas);
     this.add(this.velocity)
     this.alive = !this.isOOB(canvas);
+    this.died = !this.alive;
   }
 
   draw(ctx) {

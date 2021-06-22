@@ -10,7 +10,7 @@ import ParticleManager from '../modulesJs/Particle';
 
 
 
-const MAX_ASTEROIDS = 35;
+const MAX_ASTEROIDS = 40;
 const SCALE = 2;
 const ship = new Ship(0, 0, 0)
 const asteroids = new ParticleManager();
@@ -89,8 +89,8 @@ const Spacegame = () => {
     const [scores, setScores] = useState([]);
     const [score, setScore] = useState(0);
     useEffect(() => {
-        const amount = Math.max(8, Math.ceil(score / 750))
-        setAstTarget(Math.min(MAX_ASTEROIDS, amount))
+        const amount = Math.floor(score / Math.pow(2, 13)  * 40);
+        setAstTarget(Math.max(4, amount));
     }, [score])
     useEffect(() => {
         while (asteroids.count(true) < astTarget) {
@@ -104,15 +104,17 @@ const Spacegame = () => {
 
     const [gameRunning, setGameRunning] = useState(true);
     const [ticks, setTicks] = useState(0);
-    const onTick = tick => {
-        if (tick % (60 * 5) === 0) setScore(score + 125);
-        else if (tick % 60 === 0) setScore(score + 25);
-    }
+    useEffect(() => {
+        if(ticks === 0) return;
+        else if (ticks % (60 * 5) === 0) setScore(score + 125);
+        else if (ticks % 60 === 0) setScore(score + 25);
+        else if (ticks % 30 === 0) setScore(score + 5);
+    },[ticks]);
 
     useEffect(() => {
         if (gameRunning) return;
-        scores.push(score);
-        scores.sort((a, b) => b - a)
+        scores.push({ score: score, ticks: ticks });
+        scores.sort((a, b) => b.score - a.score)
         scores.length = 10;
         setScores(scores);
         setTicks(0);
@@ -175,7 +177,7 @@ const Spacegame = () => {
 
             cannon.particles.forEach(bullet => {
                 asteroids.calculateCollsision(bullet, result => {
-                    localScore += result;
+                    localScore += Math.round( result * (1/canvas.width*1000) );
                     setScore(localScore);
                     setAstAmount(asteroids.count());
                 })
@@ -200,7 +202,7 @@ const Spacegame = () => {
                 <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
                 <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
                 <div className="absolute right-4 md:right-12 top-2 md:top-2">
-                    <Timer ticks={ticks} setTicks={setTicks} pause={pause} onTick={onTick} />
+                    <Timer ticks={ticks} setTicks={setTicks} pause={pause}/>
                 </div>
             </div>
 

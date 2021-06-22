@@ -1,5 +1,17 @@
 import React from 'react'
 
+function ticksToString(ticks) {
+    const sec = ticks % 60;
+    const min = Math.floor(ticks / 60) % 60;
+    const h   = Math.floor(ticks / 3600);
+
+    let str = h <= 0 ? '' : (h+':');
+    str += (min < 10 ? '0' : '') + min + ':';
+    str += (sec < 10 ? '0' : '') + sec;
+
+    return str;
+}
+
 const Highscore = ({scores, onRestart}) => {
     return (
         <>
@@ -15,7 +27,7 @@ const Highscore = ({scores, onRestart}) => {
                         
                         <h1 className="border-b-2 border-gray-200 rounded-sm">Highscores:</h1>
                         <ol className="list-decimal px-6">
-                            {scores.map( (v, i) => <li key={i}>Score: {v} Points</li>) }
+                        {scores.map( ({score, ticks}, i) => <li key={i}>{score} Points --- {ticksToString(ticks)}</li>) }
                         </ol>
 
                     </div>
