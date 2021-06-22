@@ -45,7 +45,8 @@ function App() {
   const cookie2 = document.cookie.split(';').filter(v => v.includes('doodle_token='))[0];
   const currToken = !cookie2 ? null : cookie2.split('=')[1];
 
-  const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://192.168.178.41' });
+  // const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: 'http://192.168.178.41' });
+  const [meta, setMeta] = useState({ user: currUser, token: currToken, endpoint: window.location.origin });
   useEffect(() => {
     const call = async () => {
       if (!currToken) return;
