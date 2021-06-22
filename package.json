@@ -19,8 +19,9 @@
     "start": "react-scripts start",
     "build:CSS": "tailwindcss build ./src/css/Globals.css -o ./src/css/Tailwind.css",
     "build:Docker": "docker build -t daniellandau1998/node-webserver -f ./docker/df-webserver .",
-    "build:React": "react-scripts build && rmdir /s/q \"./server/build\"  && move build server/build",
-    "build": "npm run build:CSS && npm run build:React && npm run build:Docker",
+    "build:React": "react-scripts build && move build server/build",
+    "build:local": "npm run build:CSS && rmdir /s/q \"./server/build\" && npm run build:React && npm run build:Docker",
+    "build:deploy": "npm run build:CSS && npm run build:React",
     "server": "docker-compose -f ./docker/dc-web-db.yaml up",
     "build:test": "npm run build && npm run server"
   },
