@@ -23,7 +23,7 @@
 
     "build:Docker": "docker build -t daniellandau1998/node-server -f ./docker/df-webserver . && docker push daniellandau1998/node-server",
     "build:React": "react-scripts build && npx move-file ./build ./server/build",
-    "build:deploy": "react-scripts build",
+    "build:deploy": "npm run build:CSS && react-scripts build",
 
     "build:local": "npm run build:CSS && rmdir /s/q \"./server/build\" && npm run build:React && npm run build:Docker",
 
