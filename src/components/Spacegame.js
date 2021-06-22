@@ -89,7 +89,7 @@ const Spacegame = () => {
     const [scores, setScores] = useState([]);
     const [score, setScore] = useState(0);
     useEffect(() => {
-        const amount = Math.floor(score / Math.pow(2, 13)  * 40);
+        const amount = Math.floor(score / Math.pow(2, 13)  * MAX_ASTEROIDS);
         setAstTarget(Math.max(4, amount));
     }, [score])
     useEffect(() => {
