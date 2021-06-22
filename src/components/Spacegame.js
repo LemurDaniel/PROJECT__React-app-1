@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 
-import Modal from './Modal';
 import Timer from './Timer';
+import Highscore from './Highscore';
 
 import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
@@ -206,7 +206,7 @@ const Spacegame = () => {
                 </div>
             </div>
 
-            {gameRunning ? null : <Modal scores={scores} onRestart={onRestart} />}
+            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
