@@ -129,19 +129,20 @@ async function loginGuest (req, res) {
 
 function validateToken (req) {
 
-    let token = req.query.token;
+    // Deny access if no cookie present
+    let cookies = req.headers.cookie;
 
-    if(!token) {
-        // Deny access if no cookie present
-        let cookies = req.headers.cookie;
-        if(!cookies) return false;
+    let token = null;
+    if(cookies) {
 
         // Split cookies to array and deny access if no doodle_token is present.
         cookies = cookies.split(';').filter( v => v.includes('doodle_token') );
-        if(cookies.length == 0) return false;
-
-        token = cookies[0].split('=')[1].trim();
+        if(cookies.length > 0)
+            token = cookies[0].split('=')[1].trim(); 
     }
+
+    if(token == null) token = req.query.token;
+    if(token == null) return;
 
     try {
 
@@ -173,7 +174,7 @@ routes.post('/user/register', register );
 routes.post('/user/login', login );
 routes.post('/user/guest', loginGuest );
 
-routes.get('/user', auth, (req, res) => res.status(200).send());
+routes.get('/user', auth, (req, res) => res.status(200).json({ userDisplayName: req.body.user.userDisplayName }));
 
 routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; secure; max-age=0');

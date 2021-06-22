@@ -61,11 +61,11 @@ const Authorization = ({ showModal }) => {
         })
 
         const data = await res.json();
-        setMeta({ user: userDisplayName, token: data.token });
+        setMeta({ ...meta, user: data.userDisplayName, token: data.token });
 
-        // temporary
-        document.cookie = "user=" + data.userDisplayName;
-        document.cookie = "doodle_token=" + data.token;
+        // temporary TODO
+        // document.cookie = "user=" + data.userDisplayName;
+        // document.cookie = "doodle_token=" + data.token;
     }
 
 
