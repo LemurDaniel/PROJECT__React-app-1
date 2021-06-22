@@ -8,7 +8,7 @@
 
 #### Spin up Container with localfolder mounted:
 
-    docker run -v "C:\Users\Daniel Notebook\Documents\Git\Projekt\docker\gen-certs:/var/project/cert" -it gen_ssl:v1 bash
+    docker run -v "\root\PROJECT__React-app-1\docker\gen-certs:/var/project/cert" -it gen_ssl:v1 bash
 
 #### Enter following command:
 
