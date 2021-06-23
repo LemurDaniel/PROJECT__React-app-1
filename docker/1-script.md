@@ -4,11 +4,11 @@
 
 #### Create docker image with openssl installed:
 
-    docker build -t gen_ssl:v1 -f df-ssl .
+    docker build -t gen_ssl:v1 -f "${pwd}\docker\df-ssl" .
 
 #### Spin up Container with localfolder mounted:
 
-    docker run -v "\root\PROJECT__React-app-1\docker\gen-certs:/var/project/cert" -it gen_ssl:v1 bash
+    docker run -v "${pwd}\docker\gen-certs:/var/project/cert" -it gen_ssl:v1 bash
 
 #### Enter following command:
 
@@ -29,6 +29,12 @@
 
 ___
 
+https://gist.github.com/kekru/974e40bb1cd4b947a53cca5ba4b0bbe5
+
+
+alias dockerx="docker --tlsverify -H daniel-testing.cloud:2376 --tlscacert=./ca.pem --tlscert=./client-cert.pem --tlskey=./client-key.pem ps"
+
+___
 
 
 ## Generate Private / Public Key pair for JWT signing

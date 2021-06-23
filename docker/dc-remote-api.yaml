@@ -1,0 +1,9 @@
+version: "3.4"
+services:
+  remote-api:
+    image: kekru/docker-remote-api-tls:v0.3.0
+    ports:
+     - 2376:2376
+    volumes:
+     - /root/certs:/data/certs:ro
+     - /var/run/docker.sock:/var/run/docker.sock:ro
