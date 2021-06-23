@@ -2,6 +2,11 @@
 version: '3.1'
 
 services:
+    redis:
+      restart: always
+      image: redis:6.2.4-alpine
+      volumes:
+        - "./deploy/redis:/data"
     webserver:
         depends_on: 
             - db
@@ -16,16 +21,13 @@ services:
             - "443:443"
             - "80:80"
         environment: 
-            AUTH2_USER: 'd.landau,admin'
             SQL_HOST: db
             SQL_PORT: 3306
-            SQL_DATABASE: node_db
-            SQL_TABLE_NAME: deploy_1
-            SQL_USER: node-webserver
-            SQL_PASSWORD: WPi8tQ(_rWOI{BKqI<wsRDSLxtmiqeVMn7L[{S9juWkE}6wt
+            REDIS_HOST: redis
             HTTPS_ENABLE: 'true'
             JWT_ENCRYPTION_ENABLE: 'true'
         env_file:
+            - ./env/sql-config.env
             - ./env/jwt-config.env
             - ./env/https-config.env
 
@@ -37,11 +39,8 @@ services:
                 - "./mysql_data:/var/lib/mysql"
         ports:
             - "3001:3306"
-        environment:
-            MYSQL_ROOT_PASSWORD: M_MWeaX(3hPcDhU8Feg]hVS6NIiuKvwr66(]6b9eYRGkHZvb
-            MYSQL_PASSWORD: WPi8tQ(_rWOI{BKqI<wsRDSLxtmiqeVMn7L[{S9juWkE}6wt
-            MYSQL_USER: node-webserver
-            MYSQL_DATABASE: node_db
+        env_file:
+            - ./env/sql-config.env
 volumes:
     src_data:
     db_data:
