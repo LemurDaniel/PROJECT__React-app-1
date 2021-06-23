@@ -23,7 +23,8 @@ jobs:
       
       - uses: docker-practice/actions-setup-docker@v1
       - run: docker version
-      - run: alias dockerx="docker --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secret.CA }} --tlscert=${{ secret.CLIENT_CERT }} --tlskey=${{ secret.CLIENT_KEY }} ps"
+      - run: alias dockerx="docker --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secrets.CA }} --tlscert=${{ secrets.CLIENT_CERT }} --tlskey=${{ secrets.CLIENT_KEY }} ps"
+      - run: dockerx
       
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
