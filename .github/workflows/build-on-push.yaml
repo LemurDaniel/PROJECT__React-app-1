@@ -7,6 +7,7 @@ on:
     branches: [ main ]
     
 env:
+  HOST: daniel-testing.cloud:2376
   USERNAME: daniellandau1998
   IMAGE_NAME: node-server
   IMAGE_TAG: latest
@@ -19,6 +20,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      
+      - uses: docker-practice/actions-setup-docker@v1
+      - run: docker version
+      - run: alias dockerx="docker --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secret.CA }} --tlscert=${{ secret.CLIENT_CERT }} --tlskey=${{ secret.CLIENT_KEY }} ps"
       
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
