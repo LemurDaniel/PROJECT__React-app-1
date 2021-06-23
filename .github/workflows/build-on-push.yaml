@@ -7,7 +7,7 @@ on:
     branches: [ main ]
     
 env:
-  HOST: daniel-testing.cloud:2376
+  HOST: daniel-testing.cloud
   USERNAME: daniellandau1998
   IMAGE_NAME: node-server
   IMAGE_TAG: latest
