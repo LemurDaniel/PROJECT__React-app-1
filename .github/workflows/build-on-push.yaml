@@ -12,10 +12,6 @@ env:
   IMAGE_NAME: node-server
   IMAGE_TAG: latest
   CI: false
-  
-  CA_FILE: ${{secrets.CA}}
-  CLIENT_CERT_FILE: ${{secrets.CLIENT_CERT}}
-  CLIENT_KEY_FILE: ${{secrets.CLIENT_KEY}}
 
 jobs:
   build:
@@ -24,19 +20,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - run: echo CA_FILE > ./ca.pem
-      - run: echo CLIENT_CERT_FILE > ./cert.pem
-      - run: echo CLIENT_KEY_FILE > ./key.pem
-         
-         
-      - uses: docker-practice/actions-setup-docker@v1
-      - run: docker version
-      - run: env
-
-      - run: docker --tlsverify -H ${{ env.HOST }} --tlscacert=./ca.pem --tlscert=./cert.pem --tlskey=./key.pem ps
-      - run: docker-compose --tlsverify -H ${{ env.HOST }} --tlscacert=./ca.pem --tlscert=./cert.pem --tlskey=./key.pem -f /root/PROJECT__React-app-1/docker/dc-web-db.yaml pull 
-      - run: dockerx
       
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
