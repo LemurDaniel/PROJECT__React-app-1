@@ -75,7 +75,7 @@ schemas.task = joi.object({
         .allow('', null),
 
     date: joi.string().pattern(new RegExp('^[\\d]{4}-[\\d]{2}-[\\d]{2}$')).required(),
-    time: joi.string().pattern(new RegExp('^([\\d]{2}:){2}[\\d]{2}$')).required(),
+    time: joi.string().pattern(new RegExp('^[\\d]{2}:[\\d]{2}(:[\\d]{2}){0,1}$')).required(),
 
     done: joi.boolean().required(),
 

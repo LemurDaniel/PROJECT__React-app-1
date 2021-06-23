@@ -1,16 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
-
-
-// Constants
-const REDIS = process.env.REDIS_HOST;
-const CACHE = path.join(__dirname, '..', 'cache')
-const CACHE_TTL = process.env.CACHE_TTL || 10; //seconds
-
-
-// create chache folder if non-existant
-if(!fs.existsSync(CACHE)) fs.mkdirSync(CACHE);
+const redis = require('./redis');
 
 
 async function checkCache(req, res, TTL, userSpecific, resolve) {
@@ -28,14 +19,25 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
 
     try {
 
-        const read = readCache(key);
-        if(read) return sendData(read);
+        // Read redis cache and sent back if present.
+        const read = await redis.get(key);
+        if(read) return sendData(JSON.parse(read));
 
+        // Reslove data for cache when no cache present.
         const params = req.method === 'GET' ? req.query : req.body
         const data = await resolve( params, req.body.user );
 
-        const written = writeCache(key, data, req, TTL ?? CACHE_TTL, userSpecific);
-        return sendData(written);
+
+        // Create a hash over the data, save both in an object and stringify it for caching.
+        const hash = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex'); 
+        const object = { hash: hash, result: data };
+        const cache = JSON.stringify(object, null, 4);
+
+        // Set the cache value for the key and add a time to live.
+        await redis.set(key, cache);
+        await redis.expire(key, TTL);
+
+        return sendData(object);
 
     } catch (err) {
         console.log(err)
@@ -48,8 +50,7 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
 async function deleteCache(method, path, query, body, userSpecific) {
 
     const key = getCachKey(method, path, query ?? {}, body ?? {}, userSpecific);
-    fs.unlink(key, err => {});
-
+    await redis.del(key);
 }
 
 
@@ -59,23 +60,16 @@ function getCachKey(method, path, query, body, userSpecific) {
     delete params.token;
     delete params.hash;
     delete params.user;
-
-    let folder = CACHE + '/' + (userSpecific ? body.user.id+'/' : '')
-    if(!fs.existsSync(folder)) fs.mkdirSync(folder);
     
     const preHash = [path.split('/').join('#'), Object.values(params) ].join('#');
     const hashedParams = crypto.createHash('md5').update(JSON.stringify(preHash)).digest('hex'); 
-    const key = folder + method + '#' + hashedParams + '.json';
-
-    // console.log(query)
-    // console.log(params)
-    // console.log(key)
+    const key = (userSpecific ? body.user.id+':' : '') + method + '#' + hashedParams;
 
     return key;
 }
 
 
-function readCache(key) {
+async function readCache(key) {
 
     // read existing cache and check if it's expired
     if(!fs.existsSync(key)) return null;
@@ -84,33 +78,6 @@ function readCache(key) {
 
 }
 
-// Write to cache file in folder
-// conditions like one container writing shortly after another container has read its content
-// which causes it to therefore operate on stale data and then search the database again
-// can be ignored. Regardless of that the cache file will always be overwritten with a valid entry.
-function writeCache(key, data, req, TTL, userSpecific) {
-
-    // Hash identifies changes in result
-    const hash = crypto.createHash('md5').update(JSON.stringify(data)).digest('hex'); 
-    const object = { hash: hash, result: data };
-    const expiration = Date.now()+(TTL*1000);
-
-    const temp = {
-        exp: expiration, 
-        query: req.query, 
-        body: req.body,
-        content: object
-    }
-
-    delete temp.query.token;
-    delete temp.body.user;
-    
-    const cache = JSON.stringify(temp, null, 4);
-    fs.writeFileSync(key, cache);
-
-    return object;
-
-}
 
 module.exports = {
     checkCache,

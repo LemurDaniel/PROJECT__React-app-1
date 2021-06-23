@@ -84,7 +84,7 @@ function processPng(file) {
                 const idx = (this.width * y + x) << 2;
 
                 const rgb = [this.data[idx], this.data[idx + 1], this.data[idx + 2]]
-                const erase = rgb.every(data => data >= 225);
+                const erase = rgb.every(data => data >= 215);
 
                 const px = y * this.height + x;
                 // if(px % 1000 == 0) console.log( (px / pixels * 100) + '% Done')

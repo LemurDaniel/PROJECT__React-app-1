@@ -7,6 +7,7 @@ services:
       image: redis:6.2.4-alpine
       volumes:
         - "./deploy/redis:/data"
+        
     webserver:
         depends_on: 
             - db
@@ -22,6 +23,7 @@ services:
             - "80:80"
         environment: 
             REDIS_HOST: redis
+            REDIS_PORT: 6379
             SQL_HOST: db
             SQL_PORT: 3306
             SQL_USER: nodeServer
