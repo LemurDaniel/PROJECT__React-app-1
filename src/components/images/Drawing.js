@@ -189,7 +189,7 @@ const Drawing = ({ size }) => {
 
     return (
 
-        <div className="contentDiv shadow-none w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
+        <div className="mt-10 shadow-none w-min mx-auto flex flex-col " onMouseDown={handleRubber} onMouseUp={handleRubber}>
 
             {/* The input element for naming the drawing */}
             <input className="input-light mx-auto text-center"

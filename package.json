@@ -21,18 +21,13 @@
   "scripts": {
     "start": "react-scripts start",
     "build:CSS": "tailwindcss build ./src/css/Globals.css -o ./src/css/Tailwind.css",
-
     "build:Docker": "docker build -t daniellandau1998/node-server -f ./docker/df-webserver . && docker push daniellandau1998/node-server",
-    "build:React": "react-scripts build && npx move-file ./build ./server/build",
-    "build:deploy": "npm run build:CSS && react-scripts build",
 
-    "build:local": "npm run build:CSS && rmdir /s/q \"./server/build\" && npm run build:React && npm run build:Docker",
+    "build": "npm run build:CSS && react-scripts build",
 
-    "server:deploy": "docker pull daniellandau1998/node-server && docker-compose -f ./docker/deploy/dc-web-db.yaml up",
+    "server:deploy": "docker pull daniellandau1998/node-server && docker-compose -f ./docker/deploy/dc-web-db.yaml up -d",
 
     "server": "docker-compose -f ./docker/dc-web-db.yaml up",
-
-    "build:test": "npm run build && npm run server"
   },
   "eslintConfig": {
     "extends": [

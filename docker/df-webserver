@@ -10,4 +10,6 @@ WORKDIR /var/project/src
 
 COPY ./server/ ./
 
+COPY ./build/ ./build
+
 CMD ["node", "webserver.js"]
