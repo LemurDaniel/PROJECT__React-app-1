@@ -74,10 +74,21 @@ schemas.task = joi.object({
         .trim()
         .allow('', null),
 
-    date: joi.string().required(),
-    time: joi.string().required(),
+    date: joi.string().pattern(new RegExp('^[\\d]{4}-[\\d]{2}-[\\d]{2}$')).required(),
+    time: joi.string().pattern(new RegExp('^([\\d]{2}:){2}[\\d]{2}$')).required(),
 
     done: joi.boolean().required(),
+
+})
+
+schemas.score = joi.object({
+
+    score: joi.number().required(),
+    ticks: joi.number().required(),
+    timestamp: joi.string().
+        pattern(new RegExp('^[\\d]{4}-[\\d]{2}-[\\d]{2}T([\\d]{2}:){2}[\\d]{2}$')).required(),
+
+    user: schemas.user
 
 })
 

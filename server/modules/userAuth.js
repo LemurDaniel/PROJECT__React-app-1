@@ -68,7 +68,6 @@ function createJwt(userRaw, res) {
 
 async function register ({ body }, res, validate = true) {
 
-    console.log(body)
     const user = { ...body, username: body.username.toLowerCase() };
     if(validate) {
         const validated = schema.user_register.validate(user);
@@ -83,7 +82,7 @@ async function register ({ body }, res, validate = true) {
 
         // Insert new user into database
         await sql.insertUser(sql.pool, user);
-
+        
         createJwt(user, res);
 
     } catch (err) {
@@ -166,21 +165,19 @@ function auth2 (req, res, next) {
     res.status(401).send();
 }
 
-routes.get('/cookie', (req, res) => {
-    createJwt({ username: 'test' }, res)
-} );
+
 
 routes.post('/user/register', register );
 routes.post('/user/login', login );
 routes.post('/user/guest', loginGuest );
-
-routes.get('/user', auth, (req, res) => res.status(200).json({ userDisplayName: req.body.user.userDisplayName }));
 
 routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
     else res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; max-age=0');
     res.status(300).redirect('/user');
 });
+
+routes.get('/user', auth, (req, res) => res.status(200).json({ userDisplayName: req.body.user.userDisplayName }));
 
 
 module.exports = {

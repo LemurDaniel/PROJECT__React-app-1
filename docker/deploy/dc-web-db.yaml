@@ -48,5 +48,6 @@ services:
         env_file:
             - ./env/sql-config.env
 volumes:
+    cache:
     src_data:
     db_data:

@@ -4,6 +4,7 @@ const crypto = require('crypto');
 
 
 // Constants
+const REDIS = process.env.REDIS_HOST;
 const CACHE = path.join(__dirname, '..', 'cache')
 const CACHE_TTL = process.env.CACHE_TTL || 10; //seconds
 
@@ -32,7 +33,7 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
 
         const params = req.method === 'GET' ? req.query : req.body
         const data = await resolve( params, req.body.user );
-        console.log(data)
+
         const written = writeCache(key, data, req, TTL ?? CACHE_TTL, userSpecific);
         return sendData(written);
 
@@ -43,10 +44,10 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
 
 }
 
+// Deletes a cache on update.
 async function deleteCache(method, path, query, body, userSpecific) {
 
     const key = getCachKey(method, path, query ?? {}, body ?? {}, userSpecific);
-    console.log('DELETE   ' +key)
     fs.unlink(key, err => {});
 
 }
@@ -66,15 +67,14 @@ function getCachKey(method, path, query, body, userSpecific) {
     const hashedParams = crypto.createHash('md5').update(JSON.stringify(preHash)).digest('hex'); 
     const key = folder + method + '#' + hashedParams + '.json';
 
-    console.log(query)
-    console.log(params)
-    console.log(key)
+    // console.log(query)
+    // console.log(params)
+    // console.log(key)
 
     return key;
 }
 
-// Read cache from folder
-// Each search request consisting of 'image class', 'image name' and 'user name' is encoded in one filename
+
 function readCache(key) {
 
     // read existing cache and check if it's expired
@@ -97,17 +97,15 @@ function writeCache(key, data, req, TTL, userSpecific) {
 
     const temp = {
         exp: expiration, 
-        user: userSpecific ? req.body.user.userDisplayName : null,
         query: req.query, 
-        body: { ...req.body, user: null }, 
+        body: req.body,
         content: object
     }
 
+    delete temp.query.token;
     delete temp.body.user;
-    if(!userSpecific) delete temp.user;
     
     const cache = JSON.stringify(temp, null, 4);
-
     fs.writeFileSync(key, cache);
 
     return object;
