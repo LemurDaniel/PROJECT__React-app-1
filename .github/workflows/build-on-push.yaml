@@ -8,7 +8,7 @@ on:
     
 env:
   USERNAME: daniellandau1998
-  IMAGE_TAGE: latest
+  IMAGE_TAG: latest
   IMG_NAME: node-server
   CI: false
 
@@ -41,7 +41,7 @@ jobs:
          context: .
          file: ./docker/df-webserver     # Path to the Dockerfile
          push: ${{ github.event_name != 'pull_request' }}
-         tags: ${{ env.IMAGE_TAGE }}
+         tags: ${{ env.USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
          
           
     
