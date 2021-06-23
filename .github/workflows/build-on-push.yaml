@@ -24,6 +24,7 @@ jobs:
       - uses: docker-practice/actions-setup-docker@v1
       - run: docker version
       - run: alias dockerx="docker --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secrets.CA }} --tlscert=${{ secrets.CLIENT_CERT }} --tlskey=${{ secrets.CLIENT_KEY }} ps"
+      - run: alias
       - run: dockerx
       
       - name: Login Docker Account
