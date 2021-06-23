@@ -27,15 +27,12 @@ jobs:
           host: ${{ env.HOST }}
           pass: ${{ secrets.SSH_PASS }}
           user: root
-          script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull && docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
-  
-      - name: Start compose
-        uses: cross-the-world/ssh-pipeline@v1.2.0
-        with:
-          host: ${{ env.HOST }}
-          pass: ${{ secrets.SSH_PASS }}
-          user: root
-          script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
+          connect_timeout: 10s
+          script: |
+            ls
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull 
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
           
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
