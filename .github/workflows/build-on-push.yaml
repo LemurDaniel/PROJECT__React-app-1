@@ -13,7 +13,7 @@ env:
   IMAGE_TAG: latest
   CI: false
   
-  CA_FILE : ${{secrets.CA}}
+  CA_FILE: ${{secrets.CA}}
   CLIENT_CERT_FILE: ${{secrets.CLIENT_CERT}}
   CLIENT_KEY_FILE: ${{secrets.CLIENT_KEY}}
 
