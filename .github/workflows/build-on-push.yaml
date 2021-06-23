@@ -8,8 +8,8 @@ on:
     
 env:
   USERNAME: daniellandau1998
+  IMGAGE_NAME: node-server
   IMAGE_TAG: latest
-  IMG_NAME: node-server
   CI: false
 
 jobs:
