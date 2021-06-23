@@ -11,7 +11,10 @@
 # production
 /build
 build
-deploy
+env
+cache
+server
+mysql_data
 
 # misc
 .DS_Store
