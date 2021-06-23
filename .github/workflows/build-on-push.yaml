@@ -32,7 +32,7 @@ jobs:
           node-version: '16.x'
   
       - run: npm install
-      - run: npm run build:deploy --if-present
+      - run: npm run build --if-present
       
       
       - name: Build and push Docker images
