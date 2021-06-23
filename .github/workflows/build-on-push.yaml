@@ -21,6 +21,20 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - name: Pull Image and stop compose
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: ${{ env.HOST }}
+          pass: ${{ secrets.SSH_PASS }}
+          script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull && docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
+  
+      - name: Start compose
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: ${{ env.HOST }}
+          pass: ${{ secrets.SSH_PASS }}
+          script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
+          
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
         with:
