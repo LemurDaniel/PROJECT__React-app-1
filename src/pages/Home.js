@@ -18,7 +18,7 @@ const Home = () => {
 
         <>
           <div className="mt-4">
-            <Clock size={250} digital={false} />
+            <Clock size={200} digital={false} />
           </div>
 
           <div className="pt-4 mx-auto text-white text-4xl text-center">

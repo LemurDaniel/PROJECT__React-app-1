@@ -29,13 +29,6 @@
 
 ___
 
-https://gist.github.com/kekru/974e40bb1cd4b947a53cca5ba4b0bbe5
-
-
-alias dockerx="docker --tlsverify -H daniel-testing.cloud:2376 --tlscacert=./ca.pem --tlscert=./client-cert.pem --tlskey=./client-key.pem ps"
-
-___
-
 
 ## Generate Private / Public Key pair for JWT signing
 
@@ -50,3 +43,11 @@ ___
         openssl rsa -in jwt.private.pem -outform PEM -pubout -out jwt.public.pem
 
 </details>
+
+
+___
+
+https://gist.github.com/kekru/974e40bb1cd4b947a53cca5ba4b0bbe5
+
+
+alias dockerx="docker --tlsverify -H daniel-testing.cloud:2376 --tlscacert=./ca.pem --tlscert=./client-cert.pem --tlskey=./client-key.pem ps"
