@@ -11,7 +11,12 @@
 # production
 /build
 build
-deploy
+certs/
+redis/
+env/
+cache/
+deploy/server/
+mysql_data/
 
 # misc
 .DS_Store
@@ -26,8 +31,6 @@ yarn-error.log*
 
 # other
 node_modules
-docker/mysql_data
 doodles/
 cache/
 Tailwind.css
-certs

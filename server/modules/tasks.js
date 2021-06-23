@@ -12,7 +12,6 @@ const { checkCache, deleteCache } = require('./caching');
 async function addTask( req, res) {
 
     let flag_update = false;
-    console.log(req.body)
     if(req.body.id) flag_update = true;
     else req.body.id = crypto.randomBytes(8).toString('hex');
 
@@ -87,6 +86,8 @@ routes.delete('/tasks', auth, deleteTask);
 async function postScore( req, res ) {
 
     const score = { ...req.body }
+    const validated = schema.score.validate(score);
+    if(validated.error) return res.status(400).json(schema.error(validated.error));
 
     try {
 
@@ -96,7 +97,6 @@ async function postScore( req, res ) {
     } catch(err) {
         return res.status(500).json(err)
     }
-
 
 }
 

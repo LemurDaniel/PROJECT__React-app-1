@@ -46,6 +46,7 @@ const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
 
 const SQL_CREATE_SCORE = 'create table ' + TABLE_SCORE + ' ( ' +
                         'score int NOT NULL, ' +
+                        'ticks int NOT NULL, ' +
                         'userId nchar(16) NOT NULL, ' +
                         'timestamp timestamp NOT NULL, ' +
                         'PRIMARY KEY (userId, score), ' +
@@ -100,10 +101,10 @@ const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
                         ' where id = ? AND userId = ? ';
 
 const SQL_INSERT_SCORE = 'Insert into '+TABLE_SCORE+
-                        ' (score, userId, timestamp) '+
-                        ' values( ?, ?, ? ) ';
+                        ' (score, ticks, userId, timestamp) '+
+                        ' values( ?, ?, ?, ? ) ';
 
-const SQL_GET_SCORE = 'Select score, userDisplayName from '+TABLE_SCORE+
+const SQL_GET_SCORE = 'Select score, ticks, timestamp, userDisplayName from '+TABLE_SCORE+
                         ' join '+TABLE_USER+' as usr on usr.id = userId '+
                         ' order by score DESC '+
                         ' limit 10 ';
@@ -296,6 +297,7 @@ func.insertScore = (con, score) => {
 
         con.query(SQL_INSERT_SCORE, [
             score.score,
+            score.ticks,
             score.user.id,
             score.timestamp
         ], (error, data) => {
@@ -334,16 +336,12 @@ func.getPasswordHash = (con, user) => {
 
     return new Promise((resolve, reject) => {
 
-        console.log('STARTING QUERY')
         con.query(SQL_GET_HASH, [user.username], (err, res) => {
-            console.log(res)
-            console.log(res.length > 0)
             if (err) return reject(err);
             else if( res.length <= 0 ) return reject('No User Found');
 
             user.id = res[0].id;
             user.userDisplayName = res[0].userDisplayName;
-            console.log(user)
             resolve(res[0].bcrypt.toString());
         });
 

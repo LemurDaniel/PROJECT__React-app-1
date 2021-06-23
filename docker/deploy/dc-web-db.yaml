@@ -7,17 +7,17 @@ services:
       image: redis:6.2.4-alpine
       volumes:
         - "./deploy/redis:/data"
-
+        
     webserver:
         depends_on: 
             - db
-            - redis
         image: daniellandau1998/node-server
         command: node webserver.js
         container_name: nodejs
         restart: always
         volumes:
-            - ".././server:/var/project/src"
+            - "./doodles:/var/project/src/public/doodles"
+            - "./cache:/var/project/src/cache"
         ports:
             - "443:443"
             - "80:80"
@@ -26,29 +26,29 @@ services:
             REDIS_PORT: 6379
             SQL_HOST: db
             SQL_PORT: 3306
-            SQL_USER: node-webserver
+            SQL_USER: nodeServer
             SQL_DATABASE: node_db
-            SQL_TABLE_NAME: dev2
-            HTTPS_ENABLE: 'false'
-            JWT_ENCRYPTION_ENABLE: 'false'
+            SQL_TABLE_NAME: deploy2
+            HTTPS_ENABLE: 'true'
+            JWT_ENCRYPTION_ENABLE: 'true'
         env_file:
-            - sql-config.env
-            - jwt-config.env
-            - https-config.env
+            - ./env/sql-config.env
+            - ./env/jwt-config.env
+            - ./env/https-config.env
 
     db:
         image: mysql:5.7
         container_name: database
         restart: always
         volumes:
-            - "./deploy/mysql_data:/var/lib/mysql"
+                - "./mysql_data:/var/lib/mysql"
         ports:
             - "3001:3306"
         environment:
-           MYSQL_USER: node-webserver
+           MYSQL_USER: nodeServer
            MYSQL_DATABASE: node_db
         env_file:
-            - sql-config.env
+            - ./env/sql-config.env
 volumes:
     cache:
     src_data:
