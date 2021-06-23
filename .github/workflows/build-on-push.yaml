@@ -21,12 +21,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - run: echo CA_FILE > ./ca.pem
+        env:
+         CA_FILE : ${{secrets.CA}}
       - uses: docker-practice/actions-setup-docker@v1
       - run: docker version
       - run: env
       - run: echo CA_FILE > ./ca.pem
         env:
-         CA_FILE : ${{secrets.CA}
+         CA_FILE : ${{secrets.CA}}
       - run: cat ./ca.pem
       - run: docker --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secrets.CA }} --tlscert=${{ secrets.CLIENT_CERT }} --tlskey=${{ secrets.CLIENT_KEY }} ps
       - run: docker-compose --tlsverify -H ${{ env.HOST }} --tlscacert=${{ secrets.CA }} --tlscert=${{ secrets.CLIENT_CERT }} --tlskey=${{ secrets.CLIENT_KEY }} -f /root/PROJECT__React-app-1/docker/dc-web-db.yaml pull 
