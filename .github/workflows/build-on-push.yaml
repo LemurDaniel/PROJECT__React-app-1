@@ -26,6 +26,7 @@ jobs:
         with:
           host: ${{ env.HOST }}
           pass: ${{ secrets.SSH_PASS }}
+          user: root
           script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull && docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
   
       - name: Start compose
@@ -33,6 +34,7 @@ jobs:
         with:
           host: ${{ env.HOST }}
           pass: ${{ secrets.SSH_PASS }}
+          user: root
           script: docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
           
       - name: Login Docker Account
