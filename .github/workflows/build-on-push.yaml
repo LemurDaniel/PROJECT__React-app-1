@@ -20,25 +20,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      
-      - name: Pull Image and stop compose
-        uses: cross-the-world/ssh-pipeline@v1.2.0
-        with:
-          host: ${{ env.HOST }}
-          pass: ${{ secrets.SSH_PASS }}
-          user: root
-          connect_timeout: 10s
-          script: |
-            ls
-            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull 
-            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
-            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
           
       - name: Login Docker Account
         uses: docker/login-action@v1.9.0
         with:
           username: ${{ env.USERNAME }}
           password: ${{ secrets.DOCKER_ACCESS_TOKEN }}
+      
       
       - name: Use Node.js
         uses: actions/setup-node@v1
@@ -56,6 +44,25 @@ jobs:
          file: ./docker/df-webserver     # Path to the Dockerfile
          push: ${{ github.event_name != 'pull_request' }}
          tags: ${{ env.USERNAME }}/${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+         
+         
+      - name: Wait a bit before pulling image
+        uses: jakejarvis/wait-action@v0.1.1
+        with:
+          time: 5s
+            
+            
+      - name: Stop, Pull Image and Start compose again
+        uses: cross-the-world/ssh-pipeline@v1.2.0
+        with:
+          host: ${{ env.HOST }}
+          pass: ${{ secrets.SSH_PASS }}
+          user: root
+          connect_timeout: 10s
+          script: |
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml pull 
+            docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d
          
           
     
