@@ -83,16 +83,9 @@ app.use( '/drawing', (req, res) => res.sendFile(path.join(__dirname, 'build', 'i
 app.use( '/gallery', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/taskTracker', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 
-// GET //
-app.get('/draw', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
+
 app.get('/space', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
-
-app.get('/credits', (req,res) =>  res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
 app.get('/rocket', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
-
-// Only for testing, shows all certificates, passwords and other environment variables//
-app.get('/info', auth, (req,res) =>  res.json(process.env) );
-
 
 
 
