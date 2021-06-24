@@ -9,6 +9,7 @@ import Nav from './components/website/Nav';
 import Footer from './components/website/Footer';
 
 import Home from './pages/Home';
+import Impressum from './pages/Impressum';
 
 import UserContext from './components/UserContext';
 import TaskTracker from './components/tasks/TaskTracker';
@@ -72,6 +73,7 @@ function App() {
             <Route path='/taskTracker' component={TaskTracker} />
             <Route path='/gallery' component={Gallery} />
             <Route path='/drawing' component={Drawing} />
+            <Route path='/impressum' component={Impressum} />
 
           </Router>
         </div>
