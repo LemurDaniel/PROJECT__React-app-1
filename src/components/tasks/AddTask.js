@@ -3,6 +3,8 @@ import React, { useState } from 'react'
 import { MdCancel } from 'react-icons/md'
 import { ImCross, ImCheckmark } from 'react-icons/im'
 
+const MAX_LEN_DESCRIPTION = 200;
+
 const AddTask = ({ showModal, onAdd }) => {
 
 
@@ -73,11 +75,11 @@ const AddTask = ({ showModal, onAdd }) => {
                             />
                         </div>
                         <div className="border-b-2 p-2">
-                            <label htmlFor="task_desc" className="block">Description</label>
+                            <label htmlFor="task_desc" className="block">Description <span className="font-normal float-right">{description.length}/{MAX_LEN_DESCRIPTION}</span></label>
                             <textarea name="task_desc" rows="4"
                                 className="focus:outline-none w-full"
                                 placeholder='Add a description' value={description}
-                                onChange={e => setDescription(e.target.value)}
+                                onChange={e => setDescription(e.target.value.substr(0, MAX_LEN_DESCRIPTION)) }
                             />
                         </div >
                     </form>

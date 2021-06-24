@@ -81,6 +81,7 @@ const TaskTracker = () => {
             body: JSON.stringify(task)
         })
 
+        if(res.status !== 200) return;
         const data = await res.json();
         const newTasks = [...tasks, data];
         newTasks.sort(sortType.func)
