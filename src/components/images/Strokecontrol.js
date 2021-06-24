@@ -14,8 +14,6 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
         canvas.style.width = size + 'px'
         canvas.style.height = size + 'px';
 
-        // Scale  once.
-        canvas.getContext('2d').scale(2, 2);
     }, [canvasRef, size])
 
     useEffect(() => {
@@ -36,9 +34,18 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
 
     }, [width, color, size])
 
+    console.log(rubber)
+
+    // Detects and disables hovereffect on touchscreens to fix bug with rubber button.
+    const isTouchDevice = navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+
     return (
         <div className="m-5 flex justify-evenly ">
-            <BiEraser className={rubber ? "rounded-inactive" : "rounded-active"} onClick={e => setRubber(!rubber)} />
+            { rubber ? 
+                <BiEraser className={"rounded-active " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => { setRubber(false); console.log(e); } } />
+                :
+                <BiEraser className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => { setRubber(true); console.log(e); } } />
+            }
 
             <div className="relative">
                 <div className="bg-white rounded-full  hover:bg-blue-100 duration-300">

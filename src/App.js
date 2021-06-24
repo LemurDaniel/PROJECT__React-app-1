@@ -39,12 +39,6 @@ const navigations = [
 
 function App() {
 
- //const cookie = document.cookie.split(';').filter(v => v.includes('user='))[0];
-  //const currUser = !cookie ? null : cookie.split('=')[1];
-
-  //const cookie2 = document.cookie.split(';').filter(v => v.includes('doodle_token='))[0];
-  //const currToken = !cookie2 ? null : cookie2.split('=')[1];
-
   // const [meta, setMeta] = useState({ user: 'testing', endpoint: window.location.origin });
   const [meta, setMeta] = useState({ endpoint: window.location.origin });
   useEffect(() => {
@@ -54,9 +48,7 @@ function App() {
 
       const data = await res.json();
       setMeta( { ...meta, user: data.userDisplayName } );
-      console.log( { ...meta, user: data.userDisplayName } )
-      // document.cookie = "user=null; max-age=0";
-      // document.cookie = "doodle_token=null; max-age=0";
+      
     }
     call();
   }, []);
