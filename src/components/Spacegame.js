@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import Timer from './Timer';
 import Highscore from './Highscore';
@@ -7,8 +7,6 @@ import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
 import Asteroid from '../modulesJs/Asteroids';
 import ParticleManager from '../modulesJs/Particle';
-import UserContext from './UserContext';
-
 
 
 const MAX_ASTEROIDS = 40;
@@ -44,7 +42,7 @@ const Spacegame = () => {
         const width = dimension[0]
         const height = dimension[1]
 
-        if (ship.x == 0 && ship.y == 0) {
+        if (ship.x === 0 && ship.y === 0) {
             ship.x = width * SCALE / 2
             ship.y = height * SCALE / 2
         }
@@ -106,9 +104,9 @@ const Spacegame = () => {
     const [ticks, setTicks] = useState(0);
     useEffect(() => {
         if(ticks === 0) return;
-        else if (ticks % (60 * 5) === 0) setScore(score + 125);
-        else if (ticks % 60 === 0) setScore(score + 25);
-        else if (ticks % 30 === 0) setScore(score + 5);
+        else if (ticks % (60 * 5) === 0) setScore(s => s + 125);
+        else if (ticks % 60 === 0) setScore(s => s + 25);
+        else if (ticks % 30 === 0) setScore(s => s + 5);
     },[ticks]);
 
 

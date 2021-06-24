@@ -187,7 +187,7 @@ const Drawing = ({ size }) => {
 
             const data = await res.json();
             
-            setText(path == '' ? 'Image has been sent' : 'Image has been updated');
+            setText(path === '' ? 'Image has been sent' : 'Image has been updated');
             setPath(data.path);
             setTitle(image.name);
         } catch (err) {

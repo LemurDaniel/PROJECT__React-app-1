@@ -43,7 +43,6 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                 res = await fetch(meta.endpoint + `/score?token=${meta.token}`);
                 const data = await res.json();
 
-                console.log(data)
                 const scores = data.result;
                 scores.length = 5;
                 scores.sort((a, b) => b.score - a.score)

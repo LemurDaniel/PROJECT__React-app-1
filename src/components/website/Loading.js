@@ -8,9 +8,9 @@ const Loading = ({style, text, loading, fadeTime, onFinished}) => {
     }, [loading])
     useEffect(() => {
         if(loading) return;
-        else if(opacity == 0) return onFinished();
+        else if(opacity === 0) return onFinished();
         else setTimeout(() => setOpacity(opacity-1), Math.floor(fadeTime/100) )
-    }, [loading, opacity])
+    }, [loading, opacity, fadeTime, onFinished])
 
     console.log(loading)
     return (
