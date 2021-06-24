@@ -100,7 +100,7 @@ const Spacegame = () => {
 
 
 
-    const [gameRunning, setGameRunning] = useState(false);
+    const [gameRunning, setGameRunning] = useState(true);
     const [ticks, setTicks] = useState(0);
     useEffect(() => {
         if(ticks === 0) return;

@@ -67,7 +67,7 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
             < div className="absolute bg-white opacity-10 inset-0 " ></div >
 
             <div className="absolute inset-x-0 top-28">
-                <div className="w-11/12 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm shadow-2xl">
+                <div className="w-11/12 sm:w-9/12 md:w-7/12 lg:w-5/12 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm shadow-2xl">
                     <header className="px-2 pb-1 rounded-t-sm  bg-dark-700 w-full text-brand2-100 font-bold text-center">
                         <p>Highscores</p>
                     </header>
