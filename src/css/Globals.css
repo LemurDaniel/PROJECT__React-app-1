@@ -31,7 +31,7 @@ body {
 /* Header for Tasklist */
 
 .header {
-    @apply py-5 px-12 text-center md:text-left md:flex justify-between items-center
+    @apply py-5 px-12 text-center lg:text-left lg:flex justify-between items-center
 }
 
 

@@ -34,17 +34,15 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
 
     }, [width, color, size])
 
-    console.log(rubber)
-
     // Detects and disables hovereffect on touchscreens to fix bug with rubber button.
     const isTouchDevice = navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
 
     return (
         <div className="m-5 flex justify-evenly ">
             { rubber ? 
-                <BiEraser className={"rounded-active " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => { setRubber(false); console.log(e); } } />
+                <BiEraser className={"rounded-active " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => setRubber(false) } />
                 :
-                <BiEraser className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => { setRubber(true); console.log(e); } } />
+                <BiEraser className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '') } onClick={e => setRubber(true) } />
             }
 
             <div className="relative">

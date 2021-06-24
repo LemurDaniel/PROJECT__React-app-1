@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 
 import Timer from './Timer';
 import Highscore from './Highscore';
@@ -7,6 +7,7 @@ import Vector from '../modulesJs/Vector';
 import Ship from '../modulesJs/Spaceship';
 import Asteroid from '../modulesJs/Asteroids';
 import ParticleManager from '../modulesJs/Particle';
+import UserContext from './UserContext';
 
 
 
@@ -86,7 +87,6 @@ const Spacegame = () => {
 
     const [astAmount, setAstAmount] = useState(0);
     const [astTarget, setAstTarget] = useState(0);
-    const [scores, setScores] = useState([]);
     const [score, setScore] = useState(0);
     useEffect(() => {
         const amount = Math.floor(score / Math.pow(2, 13)  * MAX_ASTEROIDS);
@@ -111,14 +111,7 @@ const Spacegame = () => {
         else if (ticks % 30 === 0) setScore(score + 5);
     },[ticks]);
 
-    useEffect(() => {
-        if (gameRunning) return;
-        scores.push({ score: score, ticks: ticks });
-        scores.sort((a, b) => b.score - a.score)
-        scores.length = 10;
-        setScores(scores);
-        setTicks(0);
-    }, [gameRunning])
+
     const onRestart = () => {
 
         const c = canvasRef.current;
@@ -206,7 +199,7 @@ const Spacegame = () => {
                 </div>
             </div>
 
-            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart} />}
+            {gameRunning ? null : <Highscore score={score} ticks={ticks} gameRunning={gameRunning} onRestart={onRestart} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}

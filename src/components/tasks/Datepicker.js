@@ -13,7 +13,7 @@ const Datepicker = ({ date, setDate }) => {
 
 
     return (
-        <div className="px-14 pt-5 flex justify-between border-white ">
+        <div className="px-4 md:px-14 pt-5 flex justify-between border-white ">
             <BsArrowLeft key='test' className="rounded-light w-8 h-8 "
                 onClick={e => moveDate(-1)} />
 

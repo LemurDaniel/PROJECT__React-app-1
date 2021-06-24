@@ -175,7 +175,7 @@ const Drawing = ({ size }) => {
                 meta: ml5,
             }
         }
-        console.log(image)
+        
         try {
             const res = await fetch(meta.endpoint + `/images?token=${meta.token}`, {
                 method: 'POST',

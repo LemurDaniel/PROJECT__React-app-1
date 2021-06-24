@@ -39,11 +39,11 @@ const navigations = [
 
 function App() {
 
-  // const [meta, setMeta] = useState({ user: 'testing', endpoint: window.location.origin });
+  // const [meta, setMeta] = useState({ user: 'testing', endpoint: 'http://localhost', token: '' });
   const [meta, setMeta] = useState({ endpoint: window.location.origin });
   useEffect(() => {
     const call = async () => {
-      const res = await fetch(meta.endpoint + `/user`);
+      const res = await fetch(meta.endpoint + `/user?token=${meta.token}`);
       if (res.status !== 200) setMeta({ ...meta, user: null, token: null });
 
       const data = await res.json();
