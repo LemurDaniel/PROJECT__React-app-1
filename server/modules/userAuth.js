@@ -59,7 +59,7 @@ function createJwt(userRaw, res) {
     if(ENCRYPTION_ENABLE) token = encrypt(token);
 
     const cookieMeta = '; Path=/; HttpOnly; '+ ( HTTPS_ENABLE ? 'secure; ' : '' ) +' max-age='+ (JWT_LIFESPAN*60*60) + '; ';
-    res.cookie('user='+user.userDisplayName + cookieMeta);
+    // res.cookie('user='+user.userDisplayName + cookieMeta);
     res.cookie('doodle_token='+token + cookieMeta);
     
     return res.status(200).json({ userDisplayName: user.userDisplayName, token: token });
@@ -172,9 +172,9 @@ routes.post('/user/login', login );
 routes.post('/user/guest', loginGuest );
 
 routes.get('/user/logout', (req, res) => { 
-    if(HTTPS_ENABLE) res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
-    else res.setHeader('Set-Cookie', 'doodle_token=nix; path=/; HttpOnly; max-age=0');
-    res.status(300).redirect('/user');
+    if(HTTPS_ENABLE) res.cookie('doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
+    else res.cookie('doodle_token=nix; path=/; HttpOnly; max-age=0');
+    res.status(200).redirect('/');
 });
 
 routes.get('/user', auth, (req, res) => res.status(200).json({ userDisplayName: req.body.user.userDisplayName }));

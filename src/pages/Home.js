@@ -9,8 +9,6 @@ const Home = () => {
 
   const { meta } = useContext(UserContext)
 
-  console.log(meta)
-  console.log(!meta.user)
   return (
     <div className="flex-col flex">
 

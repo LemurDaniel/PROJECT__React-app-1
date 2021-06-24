@@ -13,7 +13,7 @@ const Nav = ({ navigations }) => {
 
             {navigations.map( (nav,i) => (
                 <a key={i} href={ !meta.user ? '/' : nav.url } 
-                    className={"py-1 hover:underline " + (nav.active ? "text-brand2-100" : "") } >
+                    className={"py-1 hover:underline " + (nav.active ? "text-brand2-100" : "")  } >
                     {nav.title}
                 </a>
             ))}
