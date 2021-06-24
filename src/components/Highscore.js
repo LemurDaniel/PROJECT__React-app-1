@@ -32,6 +32,7 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                 timestamp: new Date().toISOString().split('.')[0]
             }
             try {
+                console.log(meta.endpoint)
                 let res = await fetch(meta.endpoint + `/score?token=${meta.token}`, {
                     method: 'POST',
                     headers: {
@@ -65,8 +66,8 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
             {/* Modal on gameover */}
             < div className="absolute bg-white opacity-10 inset-0 " ></div >
 
-            <div className="absolute inset-x-0 top-40 ">
-                <div className="w-72 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm shadow-2xl">
+            <div className="absolute inset-x-0 top-28">
+                <div className="w-11/12 mx-auto flex flex-col justify-center items-center   border border-brand2-100 rounded-sm shadow-2xl">
                     <header className="px-2 pb-1 rounded-t-sm  bg-dark-700 w-full text-brand2-100 font-bold text-center">
                         <p>Highscores</p>
                     </header>
@@ -89,14 +90,15 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                         <ol className="list-decimal px-6">
                             {scores.map(({ userDisplayName, timestamp, score, ticks }, i) => {
                                 return <li key={i} className="border-b-2 rounded-sm">
-                                    <div className="flex justify-between">
-                                        <p>{userDisplayName}</p>
-                                        <p className="font-semibold"> <IoMdCalendar className="inline mb-1" /> {new Date(timestamp).toLocaleDateString()} </p>
-                                    </div>
+                                    
+                                    <p >{userDisplayName}</p>                     
 
-                                    <div className="font-semibold flex justify-between">
+                                    <div className="font-semibold flex justify-between items-center">
                                         <p>{score} Points</p>
-                                        <p> <BiTimer className="inline mb-1" /> {ticksToString(ticks)} </p>
+                                        <div>
+                                            <p> <BiTimer className="inline mb-1" /> {ticksToString(ticks)} </p>
+                                            <p className="font-semibold"> <IoMdCalendar className="inline mb-1" /> {new Date(timestamp).toLocaleDateString()} </p>
+                                        </div>
                                     </div>
                                 </li>
                             })
