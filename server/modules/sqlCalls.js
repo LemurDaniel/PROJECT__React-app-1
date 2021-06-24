@@ -19,7 +19,8 @@ const TABLE_SCORE = TABLE_NAME + '_score';
 const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
                         'id nchar(16) PRIMARY KEY,' +
                         'username nvarchar(50) NOT NULL unique,' +
-                        'userDisplayName nvarchar(50) NOT NULL ,' +
+                        'userDisplayName nvarchar(50) NOT NULL, ' +
+                        'isGuest BOOLEAN, '+
                         'bcrypt BINARY(60) NOT NULL ) ';
 
 const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
@@ -73,11 +74,11 @@ const SQL_GET_IMG = 'Select path, userDisplayName, img.name, ml5, ml5_conf ' +
 const SQL_DELETE_IMG = 'Delete From ' + TABLE_IMG + ' where img_path = ?';
 
 const SQL_INSERT_USER = 'Insert Into ' + TABLE_USER +
-                        ' (id, username, userDisplayName, bcrypt) ' +
-                        ' Values ( ?, ?, ?, ? )';
+                        ' (id, username, userDisplayName, bcrypt, isGuest) ' +
+                        ' Values ( ?, ?, ?, ?, ? )';
 
 const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
-                        ' where username = ?';
+                        ' where username = ? AND isGuest = false ';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
                         ' (id, userId, title, description, date, time, done) ' +
@@ -313,16 +314,18 @@ func.getScores = () => {
     return func.call(func.pool, SQL_GET_SCORE);
 }
 
-func.insertUser = (con, user) => {
+func.insertUser = (con, user, isGuest=false) => {
 
     return new Promise((resolve, reject) => {
-
+        console.log(isGuest)
         con.query(SQL_INSERT_USER, [
             user.id,
             user.username,
             user.userDisplayName,
-            user.bcrypt
+            user.bcrypt,
+            isGuest,
         ], (error, data) => {
+            console.log(error, data)
             if (error) reject(error);
             else resolve(data);
         });

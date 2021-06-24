@@ -66,10 +66,10 @@ function createJwt(userRaw, res) {
 }
 
 
-async function register ({ body }, res, validate = true) {
+async function register ({ body }, res, next, isGuest = false) {
 
     const user = { ...body, username: body.username.toLowerCase() };
-    if(validate) {
+    if(!isGuest) {
         const validated = schema.user_register.validate(user);
         if(validated.error) return res.json(schema.error(validated.error));
     }
@@ -81,8 +81,7 @@ async function register ({ body }, res, validate = true) {
         delete user.password;
 
         // Insert new user into database
-        await sql.insertUser(sql.pool, user);
-        
+        await sql.insertUser(sql.pool, user, isGuest);     
         createJwt(user, res);
 
     } catch (err) {
@@ -117,12 +116,12 @@ async function login ({ body }, res) {
 
 }
 
-async function loginGuest (req, res) {
+async function loginGuest (req, res, next) {
 
     req.body.username = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
-    req.body.password = req.body.username;
+    req.body.password = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
     req.body.userDisplayName += ' (Guest - ' + crypto.randomBytes(2).toString('hex') + ')' 
-    register(req, res, false);
+    register(req, res, next, true);
 
 }
 

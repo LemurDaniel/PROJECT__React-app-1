@@ -14,11 +14,8 @@ const Searchbar = ({ onSearch, timeout }) => {
 
         // Only allow for a repeated call of the search function after a timeout.
         const now = new Date().getTime();
-
-        console.log(now - timestamp)
         if (now - timestamp <= timeout) return;
 
-        console.log('Search')
         setTimestamp(new Date().getTime());
         if (onSearch) onSearch(name, user, label);
 
