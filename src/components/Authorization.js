@@ -34,7 +34,7 @@ const Authorization = ({ showModal }) => {
     const [userDisplayName, setUserDisplayName] = useState('')
     const [password, setPassword] = useState('')
     const [passwordRepeat, setPasswordRepeat] = useState('')
-    const [error, setError] = useState('Error Message\ndassssssssssssss sss adsads a adawd aw adwadwawd')
+    const [error, setError] = useState('')
 
     const sendRequest = async e => {
 
@@ -62,12 +62,8 @@ const Authorization = ({ showModal }) => {
         })
 
         const data = await res.json();
-        if(res.status !== '200') return setError(data.err)
+        if(res.status !== 200) return setError(data.err)
         setMeta({ ...meta, user: data.userDisplayName, token: data.token });
-
-        // temporary TODO
-        // document.cookie = "user=" + data.userDisplayName;
-        // document.cookie = "doodle_token=" + data.token;
     }
 
 
