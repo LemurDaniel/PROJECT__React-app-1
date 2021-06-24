@@ -85,6 +85,7 @@ const TaskTracker = () => {
         const newTasks = [...tasks, data];
         newTasks.sort(sortType.func)
 
+        setHash('');
         setDate(task.date);
         setTasks(newTasks);
 
