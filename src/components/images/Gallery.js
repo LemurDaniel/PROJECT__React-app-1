@@ -23,12 +23,12 @@ const Gallery = () => {
             const res = await fetch(meta.endpoint + `/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
             const data = await res.json();
 
-            if (data.hash === hash) return;
-            setHash(data.hash);
+            if (data.hash === hash) return setLoading(false);
 
             for (let image of data.result)
                 image.ml5_conf = Math.floor(image.ml5_conf * 10000) / 100 + ' %';
 
+            setHash(data.hash);
             setImages(data.result);
 
         } catch (err) {;
