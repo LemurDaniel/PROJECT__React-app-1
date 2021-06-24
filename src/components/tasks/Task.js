@@ -7,6 +7,8 @@ import { ImCross, ImCheckmark } from 'react-icons/im'
 
 const Task = ({ task, onDelete, toggleDone }) => {
 
+    const date = new Date(task.date + 'T' + task.time);
+
     return (
 
         <div className={'p-2 my-1  rounded-sm   flex items-center justify-start  border hover:opacity-80 duration-300 relative text-md  text-white ' + (task.done ? 'bg-brand2-400' : 'bg-brand2-350')} key={task.id} >
@@ -27,7 +29,7 @@ const Task = ({ task, onDelete, toggleDone }) => {
                 <h1 className='font-bold underline' >{task.title} </h1>
                 <p className='flex justify-start items-center'>
                     <i className='pr-2'><FaCalendarDay /></i>
-                    {task.date + ' at ' + task.time}
+                    {date.toLocaleDateString() + ', ' + date.toLocaleTimeString().substr(0,5)}
                 </p>
             </div>
 
