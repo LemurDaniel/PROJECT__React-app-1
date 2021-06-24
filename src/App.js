@@ -48,7 +48,7 @@ function App() {
   useEffect(() => {
     const call = async () => {
       const res = await fetch(meta.endpoint + `/user?token=${meta.token}`);
-      if (res.status !== 200 || res.status !== 304) return setMeta({ ...meta, user: null, token: null });
+      if (res.status !== 200 && res.status !== 304) return setMeta({ ...meta, user: null, token: null });
 
       const data = await res.json();
       setMeta( { ...meta, user: data.userDisplayName } );
