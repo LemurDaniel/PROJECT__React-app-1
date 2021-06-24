@@ -28,7 +28,7 @@ services:
             SQL_PORT: 3306
             SQL_USER: node-webserver
             SQL_DATABASE: node_db
-            SQL_TABLE_NAME: dev4
+            SQL_TABLE_NAME: dev5
             HTTPS_ENABLE: 'false'
             JWT_ENCRYPTION_ENABLE: 'false'
         env_file:

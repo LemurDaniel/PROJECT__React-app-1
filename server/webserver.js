@@ -82,10 +82,12 @@ app.use( '/game', (req, res) => res.sendFile(path.join(__dirname, 'build', 'inde
 app.use( '/drawing', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/gallery', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 app.use( '/taskTracker', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
+app.use( '/impressum', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 
-
-app.get('/space', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
-app.get('/rocket', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'draw.html')) );
+// Stuff from old project still lef in.
+app.get('/space', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'asteriods_game.html')) );
+app.get('/rocket', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'rocket_game.html')) );
+app.get('/credits', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'credits.html')) );
 
 
 

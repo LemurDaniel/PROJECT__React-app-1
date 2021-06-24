@@ -317,7 +317,6 @@ func.getScores = () => {
 func.insertUser = (con, user, isGuest=false) => {
 
     return new Promise((resolve, reject) => {
-        console.log(isGuest)
         con.query(SQL_INSERT_USER, [
             user.id,
             user.username,
@@ -325,7 +324,6 @@ func.insertUser = (con, user, isGuest=false) => {
             user.bcrypt,
             isGuest,
         ], (error, data) => {
-            console.log(error, data)
             if (error) reject(error);
             else resolve(data);
         });
