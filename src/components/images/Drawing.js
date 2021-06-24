@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 
 import Strokecontrol from './Strokecontrol'
 import UserContext from '../UserContext'
+import Loading from '../website/Loading'
 
 
 // Set positioning for drawing.
@@ -126,7 +127,7 @@ const Drawing = ({ size }) => {
         ctxMain.lineWidth = strokeWidth;
         ctxHidden.lineWidth = strokeWidth;
 
-        // Erase with white on rightclick.
+        // Erase with white when rubber active.
         if (!rubber) {
             ctxMain.strokeStyle = strokeColor;
             ctxHidden.strokeStyle = 'black';
@@ -151,10 +152,18 @@ const Drawing = ({ size }) => {
 
 
     // Methods and states for sending picutre to server.
-    const [title, setTitle] = useState('');
     const [path, setPath] = useState('');
+    const [title, setTitle] = useState('');
+
+    const [text, setText] = useState('')
+    const [sending, setSending] = useState(false);
+    const [loaderHidden, setLoaderHidden] = useState(true);
 
     const sendToServer = async e => {
+
+        if (sending || !loaderHidden) return;
+        setSending(true);
+        setLoaderHidden(false);
 
         const image = {
             data: canvasMain.current.toDataURL('image/png'),
@@ -166,7 +175,7 @@ const Drawing = ({ size }) => {
                 meta: ml5,
             }
         }
-
+        
         try {
             const res = await fetch(meta.endpoint + `/images?token=${meta.token}`, {
                 method: 'POST',
@@ -177,15 +186,16 @@ const Drawing = ({ size }) => {
             })
 
             const data = await res.json();
+            
+            setText(path === '' ? 'Image has been sent' : 'Image has been updated');
             setPath(data.path);
             setTitle(image.name);
-
         } catch (err) {
-
+            setText('Something went wrong');
         }
 
+        setSending(false)
     }
-
 
     return (
 
@@ -201,6 +211,12 @@ const Drawing = ({ size }) => {
                 width={strokeWidth} setWidth={setStrokeWidth}
                 rubber={rubber} setRubber={setRubber}
             />
+
+            <div className={"z-50 relative " + (loaderHidden ? 'hidden' : '')} >
+                <div className="w-28 mx-auto inset-x-0 top-10 absolute bg-white rounded-sm border border-brand2-100">
+                    <Loading text={text} loading={sending} onFinished={() => setLoaderHidden(true)} />
+                </div>
+            </div>
 
 
             {/* The two canvas. */}

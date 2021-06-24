@@ -37,24 +37,23 @@ const TaskTracker = () => {
     const [tasks, setTasks] = useState([]);
     const [hash, setHash] = useState(null);
 
-    // Fetch Tasks from server
-    const fetchTasks = async date => {
-
-        const res = await fetch(meta.endpoint + `/tasks?date=${date}&hash=${hash}&token=${meta.token}`)
-        const data = await res.json();
-
-        if (data.hash === hash) return;
-
-        data.result.sort(sortType.func);
-        setTasks(data.result);
-        setHash(data.hash)
-
-    }
-
-
 
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-    useEffect(() => fetchTasks(date), [date]);
+    useEffect(() => {
+        // Fetch Tasks from server
+        const fetchTasks = async date => {
+
+            const res = await fetch(meta.endpoint + `/tasks?date=${date}&hash=${hash}&token=${meta.token}`)
+            const data = await res.json();
+
+            if (data.hash === hash) return;
+
+            data.result.sort(sortType.func);
+            setTasks(data.result);
+            setHash(data.hash)
+        }
+        fetchTasks(date)
+    }, [date]);
 
     // Delete Task
     const deleteTask = async id => {
@@ -82,10 +81,12 @@ const TaskTracker = () => {
             body: JSON.stringify(task)
         })
 
+        if(res.status !== 200) return;
         const data = await res.json();
         const newTasks = [...tasks, data];
         newTasks.sort(sortType.func)
 
+        setHash('');
         setDate(task.date);
         setTasks(newTasks);
 
@@ -127,7 +128,7 @@ const TaskTracker = () => {
                 {/* Header containing Clock, Dropdown and Button */}
                 <header className="header border-b">
 
-                    <div className="pr-4"> <Clock size={65} digital={false} /> </div>
+                    <div className="pr-4 hidden lg:block"> <Clock size={65} digital={false} /> </div>
 
                     <h1 className='my-2 font-bold text-2xl lg:text-4xl text-brand2-300'> Task Tracker </h1>
 

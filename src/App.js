@@ -39,24 +39,16 @@ const navigations = [
 
 function App() {
 
- //const cookie = document.cookie.split(';').filter(v => v.includes('user='))[0];
-  //const currUser = !cookie ? null : cookie.split('=')[1];
-
-  //const cookie2 = document.cookie.split(';').filter(v => v.includes('doodle_token='))[0];
-  //const currToken = !cookie2 ? null : cookie2.split('=')[1];
-
-  // const [meta, setMeta] = useState({ user: 'testing', endpoint: window.location.origin });
+  // const [meta, setMeta] = useState({ user: 'testing', endpoint: 'http://localhost', token: '' });
   const [meta, setMeta] = useState({ endpoint: window.location.origin });
   useEffect(() => {
     const call = async () => {
-      const res = await fetch(meta.endpoint + `/user`);
+      const res = await fetch(meta.endpoint + `/user?token=${meta.token}`);
       if (res.status !== 200) setMeta({ ...meta, user: null, token: null });
 
       const data = await res.json();
       setMeta( { ...meta, user: data.userDisplayName } );
-      console.log( { ...meta, user: data.userDisplayName } )
-      // document.cookie = "user=null; max-age=0";
-      // document.cookie = "doodle_token=null; max-age=0";
+      
     }
     call();
   }, []);

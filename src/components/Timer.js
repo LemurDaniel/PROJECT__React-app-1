@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 
 const Timer = ({ticks, setTicks, pause}) => {
 
-    const [ticker, setTicker] = useState(null);
     useEffect(() => {
-        // Should prevent a bug from occuring.
-        if(ticker !== null) clearTimeout(ticker);
-        if(!pause) setTicker(setTimeout(() => setTicks(ticks+1), 1000));
+        if(pause) return;
+        const ticker = setInterval( () => setTicks(t => t+1), 1000)
+        return () => clearInterval(ticker);
     },[ticks, pause])
     
     const sec = ticks % 60;

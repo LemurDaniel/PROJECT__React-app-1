@@ -23,8 +23,6 @@ const Gallery = () => {
             const res = await fetch(meta.endpoint + `/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
             const data = await res.json();
 
-            setLoading(false);
-
             if (data.hash === hash) return;
             setHash(data.hash);
 
@@ -33,10 +31,11 @@ const Gallery = () => {
 
             setImages(data.result);
 
-        } catch (err) {
-            setLoading(false);
+        } catch (err) {;
             console.log(err)
         }
+        setLoading(false)
+
     }
 
     return (
@@ -49,7 +48,7 @@ const Gallery = () => {
 
                     {loading ?
                         <div className="bg-transparent rounded-full mx-auto w-min">
-                            <Loading />
+                            <Loading loading={loading} />
                         </div>
                         :
                         (

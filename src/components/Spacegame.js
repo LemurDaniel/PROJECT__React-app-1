@@ -9,7 +9,6 @@ import Asteroid from '../modulesJs/Asteroids';
 import ParticleManager from '../modulesJs/Particle';
 
 
-
 const MAX_ASTEROIDS = 40;
 const SCALE = 2;
 const ship = new Ship(0, 0, 0)
@@ -43,7 +42,7 @@ const Spacegame = () => {
         const width = dimension[0]
         const height = dimension[1]
 
-        if (ship.x == 0 && ship.y == 0) {
+        if (ship.x === 0 && ship.y === 0) {
             ship.x = width * SCALE / 2
             ship.y = height * SCALE / 2
         }
@@ -86,7 +85,6 @@ const Spacegame = () => {
 
     const [astAmount, setAstAmount] = useState(0);
     const [astTarget, setAstTarget] = useState(0);
-    const [scores, setScores] = useState([]);
     const [score, setScore] = useState(0);
     useEffect(() => {
         const amount = Math.floor(score / Math.pow(2, 13)  * MAX_ASTEROIDS);
@@ -106,19 +104,12 @@ const Spacegame = () => {
     const [ticks, setTicks] = useState(0);
     useEffect(() => {
         if(ticks === 0) return;
-        else if (ticks % (60 * 5) === 0) setScore(score + 125);
-        else if (ticks % 60 === 0) setScore(score + 25);
-        else if (ticks % 30 === 0) setScore(score + 5);
+        else if (ticks % (60 * 5) === 0) setScore(s => s + 125);
+        else if (ticks % 60 === 0) setScore(s => s + 25);
+        else if (ticks % 30 === 0) setScore(s => s + 5);
     },[ticks]);
 
-    useEffect(() => {
-        if (gameRunning) return;
-        scores.push({ score: score, ticks: ticks });
-        scores.sort((a, b) => b.score - a.score)
-        scores.length = 10;
-        setScores(scores);
-        setTicks(0);
-    }, [gameRunning])
+
     const onRestart = () => {
 
         const c = canvasRef.current;
@@ -206,7 +197,7 @@ const Spacegame = () => {
                 </div>
             </div>
 
-            {gameRunning ? null : <Highscore scores={scores} onRestart={onRestart} />}
+            {gameRunning ? null : <Highscore score={score} ticks={ticks} gameRunning={gameRunning} onRestart={onRestart} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
