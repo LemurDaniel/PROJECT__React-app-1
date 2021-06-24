@@ -137,7 +137,7 @@ schemas.error = (message) => {
 
     if(label == 'password')
         err.err = 'Password must be between 7 and 30 Characters '+
-                    'and must include each once: <br>Number, Lowercase and Uppercase Character';
+                    'and must include each once: Number, Lowercase and Uppercase Character';
 
     return err;
 }
