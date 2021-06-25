@@ -44,7 +44,7 @@ async function postImage(req, res) {
       // Get json body from post request
       const image = req.body;
       const flag_update = image.path == null || image.path.length > 0;
-
+      if(image.path == null) image.path = '';
       // validate json body
       const validated = schema.image.validate(image);
       if(validated.error) return res.status(400).json(schema.error(validated.error));
