@@ -68,7 +68,6 @@ schemas.task = joi.object({
         .required(),
 
     description: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z-_.,\\s]+$'))
         .min(0)
         .max(200)
         .trim()
