@@ -1,7 +1,7 @@
 // Load Modules //
 const fs = require('fs');
 const path = require('path');
-const cors = require('cors'); 
+// const cors = require('cors'); 
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -23,7 +23,7 @@ const PORT = process.env.PORT || (HTTPS_ENABLE ? 443:80);
 
 //Create Server//
 const app = express();
-app.use(cors())
+// app.use(cors())
 
 // Make everything in /public  publicly accessible
 app.use( express.static(path.join(__dirname, 'public')) );
@@ -85,9 +85,9 @@ app.use( '/taskTracker', (req, res) => res.sendFile(path.join(__dirname, 'build'
 app.use( '/impressum', (req, res) => res.sendFile(path.join(__dirname, 'build', 'index.html')) );
 
 // Stuff from old project still lef in.
-app.get('/space', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'asteriods_game.html')) );
-app.get('/rocket', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'rocket_game.html')) );
-app.get('/credits', auth, (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'credits.html')) );
+app.get('/space', (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'asteriods_game.html')) );
+app.get('/rocket', (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'rocket_game.html')) );
+app.get('/credits', (req,res) => res.sendFile(path.join(__dirname, 'public', 'html', 'credits.html')) );
 
 
 
