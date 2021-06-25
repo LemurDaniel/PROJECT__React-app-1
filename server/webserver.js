@@ -78,7 +78,7 @@ async function checkForConnection() {
 checkForConnection();
 
 app.use( '/', (req, res, next) => {
-    if(req.path === '/') return res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    if(req.path === '/' || req.path === '/index') return res.sendFile(path.join(__dirname, 'build', 'index.html'));
  
     res.set('X-Robots-Tag', 'noindex');
     next();
