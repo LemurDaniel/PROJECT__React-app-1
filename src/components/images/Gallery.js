@@ -23,18 +23,21 @@ const Gallery = () => {
             const res = await fetch(meta.endpoint + `/images?name=${name}&user=${user}&ml5=${label}&hash=${hash}`)
             const data = await res.json();
 
-            if (data.hash === hash) return setLoading(false);
+            if (data.hash !== hash) {
+                for (let image of data.result)
+                    image.ml5_conf = Math.floor(image.ml5_conf * 10000) / 100 + ' %';
 
-            for (let image of data.result)
-                image.ml5_conf = Math.floor(image.ml5_conf * 10000) / 100 + ' %';
+                setHash(data.hash);
+                setImages(data.result);
+            };
 
-            setHash(data.hash);
-            setImages(data.result);
-
-        } catch (err) {;
+        } catch (err) {
+            ;
             console.log(err)
         }
-        setLoading(false)
+
+        // Some fake time for a nice spinning circle animation.
+        window.setTimeout(() => setLoading(false), 750);
 
     }
 
