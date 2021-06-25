@@ -156,6 +156,7 @@ const Drawing = ({ size }) => {
     const [title, setTitle] = useState('');
 
     const [text, setText] = useState('')
+    const [error, setError] = useState('')
     const [sending, setSending] = useState(false);
     const [loaderHidden, setLoaderHidden] = useState(true);
 
@@ -187,14 +188,16 @@ const Drawing = ({ size }) => {
 
             const data = await res.json();
             
+            setError('');
             setText(path === '' ? 'Image has been sent' : 'Image has been updated');
             setPath(data.path);
             setTitle(image.name);
         } catch (err) {
-            setText('Something went wrong');
+            setError(err.toString());
         }
 
-        setSending(false)
+        // Some fake time for a nice spinning circle.
+        window.setTimeout(() => setSending(false), 750);
     }
 
     return (
@@ -213,8 +216,8 @@ const Drawing = ({ size }) => {
             />
 
             <div className={"z-50 relative " + (loaderHidden ? 'hidden' : '')} >
-                <div className="w-28 mx-auto inset-x-0 top-10 absolute bg-white rounded-sm border border-brand2-100">
-                    <Loading text={text} loading={sending} onFinished={() => setLoaderHidden(true)} />
+                <div className="w-28 mx-auto inset-x-0 top-10 absolute">
+                    <Loading text={text} error={error} loading={sending} onFinished={() => setLoaderHidden(true)} />
                 </div>
             </div>
 
