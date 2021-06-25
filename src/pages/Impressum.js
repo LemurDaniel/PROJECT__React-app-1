@@ -4,7 +4,7 @@ import React from 'react'
 const Impressum = () => {
 
   return (
-    <div className="p-10 md:p-20">
+    <div className="p-10 md:p-20 py-24">
 
 
       <div className="text-white mx-auto">
