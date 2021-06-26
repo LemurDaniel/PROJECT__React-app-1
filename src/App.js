@@ -69,6 +69,7 @@ function App() {
           <Router>
 
             <Route path='/' exact component={Home} />
+            <Route path='/index' exact component={Home} />
             <Route path='/game' exact component={Spacegame} />
             <Route path='/taskTracker' component={TaskTracker} />
             <Route path='/gallery' component={Gallery} />
