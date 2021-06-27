@@ -12,7 +12,6 @@ const Loading = ({ style, text, error, loading, fadeTime, onFinished }) => {
         else setTimeout(() => setOpacity(opacity - 1), Math.floor(fadeTime / 100))
     }, [loading, opacity, fadeTime, onFinished])
 
-    console.log(loading)
     return (
         <div style={{ opacity: opacity / 100 }} className="font-bold text-lg text-center">
 
