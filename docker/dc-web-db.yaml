@@ -3,10 +3,10 @@ version: '3.1'
 
 services:
     redis:
-      restart: always
-      image: redis:6.2.4-alpine
-      volumes:
-        - "./deploy/redis:/data"
+        restart: always
+        image: redis:6.2.4-alpine
+        volumes:
+            - "./deploy/redis:/data"
 
     webserver:
         depends_on: 
@@ -29,7 +29,7 @@ services:
             SQL_USER: node-webserver
             SQL_DATABASE: node_db
             SQL_TABLE_NAME: dev5
-            HTTPS_ENABLE: 'false'
+            HTTPS_ENABLE: 'true'
             JWT_ENCRYPTION_ENABLE: 'false'
         env_file:
             - sql-config.env
