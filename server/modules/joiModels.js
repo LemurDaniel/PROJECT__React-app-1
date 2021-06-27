@@ -4,7 +4,7 @@ schemas = {};
 schemas.user_register = joi.object({
 
     userDisplayName: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
+        // .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)
         .trim()
@@ -37,7 +37,7 @@ schemas.user = joi.object({
         .required(),
 
     userDisplayName: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z()-_\\s]+$'))
+        // .pattern(new RegExp('^[0-9a-zA-Z()-_\\s]+$'))
         .min(2)
         .max(50)
         .trim()
@@ -61,7 +61,6 @@ schemas.task = joi.object({
         .required(),
 
     title: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)
         .trim()
@@ -104,7 +103,6 @@ schemas.image = joi.object({
         .required(),
 
     name: joi.string()
-        .pattern(new RegExp('^[0-9a-zA-Z-_\\s]+$'))
         .min(2)
         .max(50)
         .trim()

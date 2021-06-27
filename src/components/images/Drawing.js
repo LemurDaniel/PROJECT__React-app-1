@@ -187,6 +187,7 @@ const Drawing = ({ size }) => {
             })
 
             const data = await res.json();
+            if(res.status !== 200) throw 'Something went wrong: ' + data.err;
             
             setError('');
             setText(path === '' ? 'Image has been sent' : 'Image has been updated');

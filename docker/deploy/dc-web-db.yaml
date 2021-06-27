@@ -6,7 +6,7 @@ services:
       restart: always
       image: redis:6.2.4-alpine
       volumes:
-        - "./deploy/redis:/data"
+        - "./redis:/data"
         
     webserver:
         depends_on: 
@@ -17,7 +17,6 @@ services:
         restart: always
         volumes:
             - "./doodles:/var/project/src/public/doodles"
-            - "./cache:/var/project/src/cache"
         ports:
             - "443:443"
             - "80:80"
@@ -41,7 +40,7 @@ services:
         container_name: database
         restart: always
         volumes:
-                - "./mysql_data:/var/lib/mysql"
+            - "./mysql_data:/var/lib/mysql"
         ports:
             - "3001:3306"
         environment:
