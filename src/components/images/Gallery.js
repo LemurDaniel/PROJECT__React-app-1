@@ -32,7 +32,6 @@ const Gallery = () => {
             };
 
         } catch (err) {
-            ;
             console.log(err)
         }
 

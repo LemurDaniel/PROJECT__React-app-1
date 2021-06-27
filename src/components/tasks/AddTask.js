@@ -27,7 +27,7 @@ const AddTask = ({ showModal, onAdd }) => {
             time: date.split('T')[1],
             done: done
         }
-        console.log(task)
+        
         onAdd(task)
         showModal(false);
 

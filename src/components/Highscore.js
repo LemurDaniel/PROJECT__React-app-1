@@ -32,7 +32,6 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                 timestamp: new Date().toISOString().split('.')[0]
             }
             try {
-                console.log(meta.endpoint)
                 let res = await fetch(meta.endpoint + `/score?token=${meta.token}`, {
                     method: 'POST',
                     headers: {
