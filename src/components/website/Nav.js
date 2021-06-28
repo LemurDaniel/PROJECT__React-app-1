@@ -19,10 +19,6 @@ const navigations = [
         title: 'Asteroids',
         url: '/game'
     },
-    {
-        title: 'Logout',
-        url: '/user/logout'
-    },
 ]
 
 
@@ -41,6 +37,8 @@ const Nav = () => {
                     {nav.title}
                 </Link>
             ))}
+
+            <a className="py-1 hover:underline" href="/user/logout">Logout</a>
 
         </nav>
 
