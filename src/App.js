@@ -18,29 +18,6 @@ import Drawing from './components/images/Drawing';
 import Gallery from './components/images/Gallery';
 
 
-const navigations = [
-  {
-    title: 'Tasks',
-    url: '/taskTracker'
-  },
-  {
-    title: 'Gallery',
-    url: '/gallery'
-  },
-  {
-    title: 'Doodle',
-    url: '/drawing'
-  },
-  {
-    title: 'Asteroids',
-    url: '/game'
-  },
-  {
-    title: 'Logout',
-    url: '/user/logout'
-  },
-]
-
 
 function App() {
 
@@ -52,8 +29,8 @@ function App() {
       if (res.status !== 200 && res.status !== 304) return setMeta({ ...meta, user: null, token: null });
 
       const data = await res.json();
-      setMeta( { ...meta, user: data.userDisplayName } );
-      
+      setMeta({ ...meta, user: data.userDisplayName });
+
     }
     call();
   }, []);
@@ -63,11 +40,11 @@ function App() {
     <>
       <UserContext.Provider value={{ meta, setMeta }}>
 
-        <Nav navigations={navigations} />
+        <Router>
 
-        <div className="min-h-screen md:min-h-full">
-          <Router>
+          <Nav />
 
+          <div className="min-h-screen md:min-h-full">
             <Route path='/' exact component={Home} />
             <Route path='/index' exact component={Home} />
             <Route path='/game' exact component={Spacegame} />
@@ -75,9 +52,9 @@ function App() {
             <Route path='/gallery' component={Gallery} />
             <Route path='/drawing' component={Drawing} />
             <Route path='/impressum' component={Impressum} />
+          </div>
 
-          </Router>
-        </div>
+        </Router>
 
         <Footer />
 
