@@ -314,7 +314,7 @@ func.getScores = () => {
     return func.call(func.pool, SQL_GET_SCORE);
 }
 
-func.insertUser = (con, user, isGuest=false) => {
+func.insertUser = (con, user) => {
 
     return new Promise((resolve, reject) => {
         con.query(SQL_INSERT_USER, [
@@ -322,7 +322,7 @@ func.insertUser = (con, user, isGuest=false) => {
             user.username,
             user.userDisplayName,
             user.bcrypt,
-            isGuest,
+            user.isGuest,
         ], (error, data) => {
             if (error) reject(error);
             else resolve(data);

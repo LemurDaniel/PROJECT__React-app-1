@@ -66,13 +66,9 @@ function createJwt(userRaw, res) {
 }
 
 
-async function register ({ body }, res, next, isGuest = false) {
+async function register (req, res) {
 
-    const user = { ...body, username: body.username.toLowerCase() };
-    if(!isGuest) {
-        const validated = schema.user_register.validate(user);
-        if(validated.error) return res.json(schema.error(validated.error));
-    }
+    const user = req.body;
 
     try {
 
@@ -81,7 +77,7 @@ async function register ({ body }, res, next, isGuest = false) {
         delete user.password;
 
         // Insert new user into database
-        await sql.insertUser(sql.pool, user, isGuest);     
+        await sql.insertUser(sql.pool, user);     
         createJwt(user, res);
 
     } catch (err) {
@@ -96,9 +92,9 @@ async function register ({ body }, res, next, isGuest = false) {
 
 }
 
-async function login ({ body }, res) {
+async function login (req, res) {
 
-    const user = { ...body, username: body.username.toLowerCase() };
+    const user = req.body;
 
     try {
 
@@ -113,15 +109,6 @@ async function login ({ body }, res) {
         console.log(err)
         res.status(401).json({err: err});
     }
-
-}
-
-async function loginGuest (req, res, next) {
-
-    req.body.username = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
-    req.body.password = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
-    req.body.userDisplayName += ' (Guest - ' + crypto.randomBytes(2).toString('hex') + ')' 
-    register(req, res, next, true);
 
 }
 
@@ -165,10 +152,9 @@ function auth2 (req, res, next) {
 }
 
 
-
-routes.post('/user/register', register );
-routes.post('/user/login', login );
-routes.post('/user/guest', loginGuest );
+routes.post('/user/register', schema.validateUser, register );
+routes.post('/user/guest', schema.validateUser, register );
+routes.post('/user/login', schema.validateUser, login );
 
 routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.cookie('doodle_token=nix; path=/; HttpOnly; secure; max-age=0');
