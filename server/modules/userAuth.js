@@ -152,10 +152,9 @@ function auth2 (req, res, next) {
 }
 
 
-routes.use('/user', schema.validateUser);
-routes.post('/user/register', register );
-routes.post('/user/guest', register );
-routes.post('/user/login', login );
+routes.post('/user/register', schema.validateUser, register );
+routes.post('/user/guest', schema.validateUser, register );
+routes.post('/user/login', schema.validateUser, login );
 
 routes.get('/user/logout', (req, res) => { 
     if(HTTPS_ENABLE) res.cookie('doodle_token=nix; path=/; HttpOnly; secure; max-age=0');

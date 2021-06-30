@@ -6,7 +6,6 @@ const userDisplayName = joi.string()
     .min(2)
     .max(50)
     .trim()
-    .required();
 
 const username = joi.string()
     .pattern(new RegExp('^[0-9a-zA-Z\-_\.]+$'))
@@ -14,12 +13,10 @@ const username = joi.string()
     .max(50)
     .lowercase()
     .trim()
-    .required();
 
 const password = joi.string()
     //.pattern(new RegExp('^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])([a-zA-Z0-9]{7,30})$'))
     .pattern(new RegExp('^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(.{7,30})$'))
-    .required();
 
 /*
     Muss eine Zahl haben: (?=.*[0-9])
@@ -31,15 +28,16 @@ const password = joi.string()
 const UserRegisterModel = joi.object({
 
     isGuest: joi.boolean().required(),
-    userDisplayName: userDisplayName,
-    username: username,
-    password: password,
+    userDisplayName: userDisplayName.required(),
+    username: username.required(),
+    password: password.required(),
 
 })
 
 const UserLoginModel = joi.object({
-    username: username,
-    password: password,
+    userDisplayName: userDisplayName.allow(''),
+    username: username.required(),
+    password: password.required(),
 })
 
 
@@ -49,7 +47,7 @@ const UserModel = joi.object({
         .pattern(new RegExp('^[0-9a-f]{16}$'))
         .required(),
 
-    userDisplayName: userDisplayName,
+    userDisplayName: userDisplayName.required(),
 
     pass: joi.string(),
     iat: joi.number(),
@@ -193,7 +191,7 @@ schemas.validateTask = (req, res, next) => {
 schemas.validateUser = (req, res, next) => {
 
     const user = req.body;
-    if (user.username) user.username = user.username.toLowerCase()
+    if (user.username) user.username = user.username.toLowerCase().trim();
 
     if (req.path === '/user/guest') {
         user.username = crypto.randomBytes(16).toString('hex').toLocaleLowerCase();
