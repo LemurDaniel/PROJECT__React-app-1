@@ -40,25 +40,18 @@ fs.readFile(TRANSLATION, 'utf8', (err, data) => {
 
 
 async function postImage(req, res) {
-
-      // Get json body from post request
-      const image = req.body;
-      const flag_update = image.path == null || image.path.length > 0;
-      if(image.path == null) image.path = '';
-      // validate json body
-      const validated = schema.image.validate(image);
-      if(validated.error) return res.status(400).json(schema.error(validated.error));
-        
+    
+    const image = req.body;
   
     try {
 
         // Convert random 8_Bytes to a hex string: 2^64 or 16^16 possible permutations
-        if (!flag_update) image.path = crypto.randomBytes(8).toString('hex') + '.png';
+        if (!image.update) image.path = crypto.randomBytes(8).toString('hex') + '.png';
         const base64 = image.data.replace(/^data:image\/png;base64,/, '');
         fs.writeFileSync(path.join(DOODLES, image.path), base64, 'base64');
         processPng(path.join(DOODLES, image.path));
 
-        if (flag_update) await sql.updateImage(sql.pool, image);
+        if (image.update) await sql.updateImage(sql.pool, image);
         else await sql.insertImage(sql.pool, image);
 
         return res.status(200).json({ path: image.path });
@@ -106,7 +99,7 @@ routes.get('/images', (req,res) => {
     checkCache(req, res, 10, false, async query => await sql.queryImages(sql.pool, query));
 });
 
-routes.post('/images', auth, postImage);
+routes.post('/images', auth, schema.validateImage, postImage);
 
 
 

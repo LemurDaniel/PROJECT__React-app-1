@@ -10,7 +10,8 @@ async function checkCache(req, res, TTL, userSpecific, resolve) {
         if(req.query[label] === 'undefined' || req.query[label] === 'null') req.query[label] = '';
 
     const hash = req.query.hash;
-    const key = getCachKey(req.method, req.path, req.query, req.body, userSpecific);
+    const user = req.body.user;
+    const key = getCachKey(req.method, req.path, req.query, req.body, (user ? user.id: null));
 
     const sendData = cache => {
         if( !hash || cache.hash !== hash ) res.status(200).json( cache );
@@ -54,7 +55,7 @@ async function deleteCache(method, path, query, body, userSpecific) {
 }
 
 
-function getCachKey(method, path, query, body, userSpecific) {
+function getCachKey(method, path, query, body, id) {
 
     const params = { ...query, ...body };
     delete params.token;
@@ -63,19 +64,9 @@ function getCachKey(method, path, query, body, userSpecific) {
     
     const preHash = [path.split('/').join('#'), Object.values(params) ].join('#');
     const hashedParams = crypto.createHash('md5').update(JSON.stringify(preHash)).digest('hex'); 
-    const key = (userSpecific ? body.user.id+':' : '') + method + '#' + hashedParams;
+    const key = (id ? id+':' : '') + method + '#' + hashedParams;
 
     return key;
-}
-
-
-async function readCache(key) {
-
-    // read existing cache and check if it's expired
-    if(!fs.existsSync(key)) return null;
-    cachedVal = JSON.parse(fs.readFileSync(key));
-    if (cachedVal && cachedVal.exp > Date.now()) return cachedVal.content;
-
 }
 
 

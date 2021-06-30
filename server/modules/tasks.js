@@ -11,21 +11,15 @@ const { checkCache, deleteCache } = require('./caching');
 
 async function addTask( req, res) {
 
-    let flag_update = false;
-    if(req.body.id) flag_update = true;
-    else req.body.id = crypto.randomBytes(8).toString('hex');
-
-    const task = { ...req.body, user: req.body.user.id  };
-    const validated = schema.task.validate(task);
-    if(validated.error) return res.status(400).json(schema.error(validated.error));
+    const task = req.body;
 
     try {
 
-        if(flag_update) await sql.updateTask(sql.pool, task);
+        if(task.update) await sql.updateTask(sql.pool, task);
         else await sql.insertTask(sql.pool, task);
 
         const date = new Date(task.date).toISOString().split('T')[0];
-        await deleteCache('GET', '/tasks', { date: date }, { user: req.body.user }, true); 
+        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user); 
 
         delete task.user;
         res.status(200).json(task);
@@ -51,19 +45,15 @@ async function getTasks(req, res) {
 
 async function deleteTask(req, res) {
 
-    const params = { ...req.body, user: req.body.user.id };
-
     try {
 
         const id = req.query.id;
-        console.log(params)
 
         const date = await sql.getTaskDate(sql.pool, id, req.body.user);
-        await deleteCache('GET', '/tasks', { date: date }, { user: req.body.user }, true); 
+        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user.id); 
 
         const data = await sql.deleteTask(sql.pool, id, req.body.user);
     
-        console.log(data)
         res.status(200).json(data);
 
     } catch (err) {
@@ -75,7 +65,7 @@ async function deleteTask(req, res) {
 
 
 // POSTS //
-routes.post('/tasks', auth, addTask);
+routes.post('/tasks', auth, schema.validateTask, addTask);
 routes.get('/tasks', auth, getTasks);
 routes.delete('/tasks', auth, deleteTask);
 
@@ -84,10 +74,6 @@ routes.delete('/tasks', auth, deleteTask);
 
 
 async function postScore( req, res ) {
-
-    const score = { ...req.body }
-    const validated = schema.score.validate(score);
-    if(validated.error) return res.status(400).json(schema.error(validated.error));
 
     try {
 
@@ -100,7 +86,7 @@ async function postScore( req, res ) {
 
 }
 
-routes.post('/score', auth, postScore );
+routes.post('/score', auth, schema.validateScore, postScore );
 
 routes.get('/score', (req, res) => {
     checkCache(req, res, 15, false, async () => await sql.getScores() );
