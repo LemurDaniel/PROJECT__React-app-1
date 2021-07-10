@@ -23,7 +23,7 @@
     "build:Docker": "docker build -t daniellandau1998/node-server -f ./docker/df-webserver . && docker push daniellandau1998/node-server",
     "build": "npm run build:CSS && react-scripts build",
     "server:deploy": "docker pull daniellandau1998/node-server && docker-compose -f ./docker/deploy/dc-web-db.yaml up -d",
-    "server": "docker-compose -f ./docker/dc-web-db.yaml up"
+    "server": "docker-compose -f ./docker/deploy/dc-web-db.yaml up"
   },
   "eslintConfig": {
     "extends": [

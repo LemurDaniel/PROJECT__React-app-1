@@ -1,5 +1,6 @@
 const fs = require('fs');
-var crypto = require('crypto');
+const path = require('path');
+const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 const routes =  require('express').Router();
 const jwt = require('jsonwebtoken');
@@ -10,14 +11,14 @@ const schema = require('./joiModels');
 
 // Constants
 const JWT_LIFESPAN = process.env.JWT_LIFESPAN ?? 12; // hours
-const SIGNING_KEY = process.env.JWT_SIGNING_KEY || process.env['jwt.private.pem'];;
-const VERIFY_KEY = process.env.JWT_VERIFY_KEY || process.env['jwt.public.pem'];
+const SIGNING_KEY = process.env.JWT_SIGNING_KEY || fs.readFileSync(path.join(__dirname, '..', 'certs', 'jwt.private.key'));
+const VERIFY_KEY = process.env.JWT_VERIFY_KEY || fs.readFileSync(path.join(__dirname, '..', 'certs', 'jwt.public.key'));
 const SIGNING_ALGO = process.env.JWT_SIGNING_ALGO ?? 'RS256';
 const ENCRYPTION_KEY = process.env.JWT_ENCRYPTION_KEY;
 const ENCRYPTION_IV = process.env.JWT_ENCRYPTION_IV;
 const ENCRYPTION_ALGO = process.env.JWT_ENCRYPTION_ALGO ?? 'aes-256-cbc';
-const ENCRYPTION_ENABLE = (process.env.JWT_ENCRYPTION_ENABLE == 'true' ? true:false);
-const HTTPS_ENABLE = (process.env.HTTPS_ENABLE == 'true' ? true:false);
+const ENCRYPTION_ENABLE = process.env.JWT_ENCRYPTION_ENABLE === 'true';
+const HTTPS_ENABLE = process.env.HTTPS_ENABLE === 'true';
 
 
 

@@ -16,8 +16,8 @@ const { routes: auth_routes, auth } = require('./modules/userAuth');
 
 // Get environment variables
 const HTTPS_ENABLE = (process.env.HTTPS_ENABLE == 'true' ? true:false);
-const SSL_KEY = process.env.SSL_KEY || process.env['ssl.key.pem'];
-const SSL_CERT = process.env.SSL_CERT || process.env['ssl.cert.pem'];
+const SSL_KEY = process.env.SSL_KEY || fs.readFileSync(path.join(__dirname, 'certs', 'ssl.key'));
+const SSL_CERT = process.env.SSL_CERT || fs.readFileSync(path.join(__dirname, 'certs', 'ssl.crt'));
 const PORT = process.env.PORT || (HTTPS_ENABLE ? 443:80);
 
 
