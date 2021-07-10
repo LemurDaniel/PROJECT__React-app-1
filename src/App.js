@@ -13,7 +13,7 @@ import Impressum from './pages/Impressum';
 
 import UserContext from './components/UserContext';
 import TaskTracker from './components/tasks/TaskTracker';
-import Spacegame from './components/Spacegame';
+import Spacegame from './components/game/Spacegame';
 import Drawing from './components/images/Drawing';
 import Gallery from './components/images/Gallery';
 
@@ -47,7 +47,7 @@ function App() {
           <div className="min-h-screen md:min-h-full">
             <Route path='/' exact component={Home} />
             <Route path='/index' exact component={Home} />
-            <Route path='/game' exact component={Spacegame} />
+            <Route path='/game' component={Spacegame} />
             <Route path='/taskTracker' component={TaskTracker} />
             <Route path='/gallery' component={Gallery} />
             <Route path='/drawing' component={Drawing} />

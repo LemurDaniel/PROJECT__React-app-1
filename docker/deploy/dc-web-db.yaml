@@ -6,7 +6,7 @@ services:
       restart: always
       image: redis:6.2.4-alpine
       volumes:
-        - "./redis:/data"
+        - ./redis:/data
         
     webserver:
         depends_on: 
@@ -16,7 +16,8 @@ services:
         container_name: nodejs
         restart: always
         volumes:
-            - "./doodles:/var/project/src/public/doodles"
+            - ./doodles:/var/project/src/public/doodles
+            - ./certs:/var/project/src/certs
         ports:
             - "443:443"
             - "80:80"
@@ -33,14 +34,13 @@ services:
         env_file:
             - ./env/sql-config.env
             - ./env/jwt-config.env
-            - ./env/https-config.env
 
     db:
         image: mysql:5.7
         container_name: database
         restart: always
         volumes:
-            - "./mysql_data:/var/lib/mysql"
+            - ./mysql_data:/var/lib/mysql
         ports:
             - "3001:3306"
         environment:
