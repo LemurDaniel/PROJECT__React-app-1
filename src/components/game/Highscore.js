@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { BiTimer } from 'react-icons/bi'
 import { IoMdCalendar } from 'react-icons/io';
 
-import UserContext from './UserContext';
+import UserContext from '../UserContext';
 
 function ticksToString(ticks) {
     const sec = ticks % 60;

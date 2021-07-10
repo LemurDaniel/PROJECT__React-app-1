@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState } from 'react'
 import Timer from './Timer';
 import Highscore from './Highscore';
 
-import Vector from '../modulesJs/Vector';
-import Ship from '../modulesJs/Spaceship';
-import Asteroid from '../modulesJs/Asteroids';
-import ParticleManager from '../modulesJs/Particle';
+import Vector from './modulesJs/Vector';
+import Ship from './modulesJs/Spaceship';
+import Asteroid from './modulesJs/Asteroids';
+import ParticleManager from './modulesJs/Particle';
 
 
 const MAX_ASTEROIDS = 40;
