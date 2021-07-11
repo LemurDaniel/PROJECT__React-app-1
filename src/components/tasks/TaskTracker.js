@@ -122,7 +122,7 @@ const TaskTracker = () => {
     }
 
     return (
-        <div className="mx-10 md:mx-40  mt-10  pb-24 md:pb-16">
+        <div className="mx-5 sm:mx-10 md:mx-20 2xl:mx-40     mt-10  pb-24 md:pb-16">
             <div className="pb-2 shadow-2xl select-none">
 
                 {/* Header containing Clock, Dropdown and Button */}
