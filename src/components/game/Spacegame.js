@@ -128,9 +128,7 @@ const Spacegame = () => {
 
 
     useEffect(() => {
-        if (!ship || !asteroids) return;
-        let localScore = score;
-
+        if (!ship || !asteroids || !gameRunning) return;
         const loop = () => {
 
             const canvas = canvasRef.current;
@@ -168,8 +166,8 @@ const Spacegame = () => {
 
             cannon.particles.forEach(bullet => {
                 asteroids.calculateCollsision(bullet, result => {
-                    localScore += Math.round( result * (1/canvas.width*1000) );
-                    setScore(localScore);
+                    const points = Math.round( result * (1/canvas.width*1000) );
+                    setScore( sc => sc + points);
                     setAstAmount(asteroids.count());
                 })
             })
@@ -193,7 +191,7 @@ const Spacegame = () => {
                 <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
                 <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
                 <div className="absolute right-4 md:right-12 top-2 md:top-2">
-                    <Timer ticks={ticks} setTicks={setTicks} pause={pause}/>
+                    <Timer ticks={ticks} setTicks={setTicks} pause={pause || !gameRunning} />
                 </div>
             </div>
 
