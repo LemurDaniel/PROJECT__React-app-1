@@ -1,25 +1,23 @@
-const fs = require('fs');
-const crypto = require('crypto');
-const routes =  require('express').Router();
 
+const routes = require('express').Router();
 const sql = require('./sqlCalls');
 const schema = require('./joiModels');
-const { auth, validate_token } = require('./userAuth');
+const { auth } = require('./userAuth');
 const { checkCache, deleteCache } = require('./caching');
 
 
 
-async function addTask( req, res) {
+async function addTask(req, res) {
 
     const task = req.body;
 
     try {
 
-        if(task.update) await sql.updateTask(sql.pool, task);
+        if (task.update) await sql.updateTask(sql.pool, task);
         else await sql.insertTask(sql.pool, task);
 
         const date = new Date(task.date).toISOString().split('T')[0];
-        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user); 
+        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user);
 
         delete task.user;
         res.status(200).json(task);
@@ -27,9 +25,9 @@ async function addTask( req, res) {
     } catch (err) {
         console.log(err)
         // Id could be duplicate but with 2^64 or 16^16 possibilities it is a rare case.
-        if(err.code && err.code === 'ER_DUP_ENTRY' && err.sqlMessage.includes("key 'PRIMARY'")) 
+        if (err.code && err.code === 'ER_DUP_ENTRY' && err.sqlMessage.includes("key 'PRIMARY'"))
             return addTask(req, res);
-        else 
+        else
             return res.status(500).json(err)
     }
 
@@ -50,10 +48,10 @@ async function deleteTask(req, res) {
         const id = req.query.id;
 
         const date = await sql.getTaskDate(sql.pool, id, req.body.user);
-        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user.id); 
+        await deleteCache('GET', '/tasks', { date: date }, null, req.body.user.id);
 
         const data = await sql.deleteTask(sql.pool, id, req.body.user);
-    
+
         res.status(200).json(data);
 
     } catch (err) {
@@ -73,28 +71,28 @@ routes.delete('/tasks', auth, deleteTask);
 
 
 
-async function postScore( req, res ) {
+async function postScore(req, res) {
 
     try {
 
-        await sql.insertScore(sql.pool, score)
+        await sql.insertScore(sql.pool, req.body)
         res.status(200).send();
 
-    } catch(err) {
+    } catch (err) {
         return res.status(500).json(err)
     }
 
 }
 
-routes.post('/score', auth, schema.validateScore, postScore );
+routes.post('/score', auth, schema.validateScore, postScore);
 
 routes.get('/score', (req, res) => {
-    checkCache(req, res, 15, false, async () => await sql.getScores() );
+    checkCache(req, res, 15, false, async () => await sql.getScores());
 })
 
 
 
 
-module.exports = { 
+module.exports = {
     routes
 }
