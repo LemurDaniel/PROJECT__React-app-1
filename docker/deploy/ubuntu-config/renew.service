@@ -1,9 +1,0 @@
-[Unit]
-Description=Renew certificate
-
-[Service]
-Type=simple
-ExecStart=/root/PROJECT__React-app-1/docker/deploy/unbuntu-config/renew.sh
-
-[Install]
-WantedBy=multi-user.target

@@ -7,6 +7,8 @@ services:
         image: nginx:1.21.1
         volumes:
             - ./nginx:/etc/nginx
+        ports:
+            - 80:80
 
     redis:
         restart: always
@@ -17,7 +19,7 @@ services:
     webserver:
         depends_on: 
             - db
-            - certbot
+            - nginx
         image: daniellandau1998/node-server
         command: node webserver.js
         container_name: nodejs

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-file=$(cat /root/PROJECT__React-app-1/docker/deploy/unbuntu-config/lastCertDate.txt)
+file=$(cat /root/PROJECT__React-app-1/docker/deploy/ubuntuConfig/lastCertDate.txt)
 
 echo $(date -d $file '+%Y/%m/%d')
 echo $(date -d '80 days ago' '+%Y/%m/%d')
@@ -13,11 +13,12 @@ then
     echo 'YES'
     docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml stop
 
+    docker-compose -f /root/PROJECT__React-app-1/docker/deploy/certbot.yaml up
     docker-compose -f /root/PROJECT__React-app-1/docker/deploy/certbot.yaml stop
 
-    docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml start
+    echo $(date '+%Y/%m/%d') > /root/PROJECT__React-app-1/docker/deploy/ubuntuConfig/lastCertDate.txt
 else
     echo 'NO'
 fi  
 
-echo $(date '+%Y/%m/%d') > /root/PROJECT__React-app-1/docker/deploy/unbuntu-config/lastCertDate.txt
+docker-compose -f /root/PROJECT__React-app-1/docker/deploy/dc-web-db.yaml up -d

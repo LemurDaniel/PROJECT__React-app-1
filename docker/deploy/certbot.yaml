@@ -4,7 +4,7 @@ services:
     certbot:
       restart: always
       image: certbot/certbot
-      command: certbot certonly -v --standalone --agree-tos -m landau.daniel.1998@gmail.com -d www.daniel-testing.cloud,daniel-testing.cloud
+      command: certonly -v --standalone --agree-tos -m landau.daniel.1998@gmail.com -d www.daniel-testing.cloud,daniel-testing.cloud
       ports:
         - 80:80
       volumes:

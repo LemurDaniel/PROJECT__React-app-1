@@ -1,0 +1,9 @@
+[Unit]
+Description=Renew certificate
+
+[Service]
+Type=forking
+ExecStart=/bin/bash -c 'sh /root/PROJECT__React-app-1/docker/deploy/ubuntuConfig/renew.sh'
+
+[Install]
+WantedBy=multi-user.target
