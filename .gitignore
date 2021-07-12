@@ -15,8 +15,7 @@ certs/
 redis/
 env/
 cache/
-deploy/server/
-mysql_data/
+mysql/
 
 # misc
 .DS_Store

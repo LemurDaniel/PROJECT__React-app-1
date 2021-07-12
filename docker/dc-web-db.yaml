@@ -6,7 +6,7 @@ services:
         restart: always
         image: redis:6.2.4-alpine
         volumes:
-            - "./deploy/redis:/data"
+            - ./deploy/redis:/data
 
     webserver:
         depends_on: 
@@ -17,39 +17,49 @@ services:
         container_name: nodejs
         restart: always
         volumes:
-            - ".././server:/var/project/src"
+            - ./deploy/certs:/var/project/src/certs
+            - ../server:/var/project/src
         ports:
-            - "443:443"
-            - "80:80"
+            - 443:443
+            - 80:80
+
         environment: 
             REDIS_HOST: redis
             REDIS_PORT: 6379
             SQL_HOST: db
             SQL_PORT: 3306
-            SQL_USER: node-webserver
+            SQL_USER: nodeServer
             SQL_DATABASE: node_db
-            SQL_TABLE_NAME: dev5
+            SQL_TABLE_NAME: deploy2
+
             HTTPS_ENABLE: 'true'
-            JWT_ENCRYPTION_ENABLE: 'false'
+            SSL_KEY:  /certs/ssl.key
+            SSL_CERT: /certs/ssl.crt
+
+            JWT_ENCRYPTION_ENABLE: 'true'
+            JWT_SIGNING_KEY: /certs/jwt.private.key
+            JWT_VERIFY_KEY: /certs/jwt.public.key
         env_file:
-            - sql-config.env
-            - jwt-config.env
-            - https-config.env
+            - ./deploy/env/sql-config.env
+            - ./deploy/env/jwt-config.env
 
     db:
         image: mysql:5.7
         container_name: database
         restart: always
         volumes:
-            - "./deploy/mysql_data:/var/lib/mysql"
+            - ./deploy/mysql:/var/lib/mysql
         ports:
-            - "3001:3306"
+            - 3001:3306
+
         environment:
-           MYSQL_USER: node-webserver
+           MYSQL_USER: nodeServer
            MYSQL_DATABASE: node_db
         env_file:
-            - sql-config.env
+            - ./deploy/env/sql-config.env
+
 volumes:
     cache:
+    certs:
     src_data:
     db_data:
