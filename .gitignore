@@ -15,8 +15,7 @@ certs/
 redis/
 env/
 cache/
-deploy/server/
-mysql_data/
+mysql/
 
 # misc
 .DS_Store
@@ -34,3 +33,4 @@ node_modules
 doodles/
 cache/
 Tailwind.css
+lastCertDate.txt

@@ -16,8 +16,6 @@ const { routes: auth_routes, auth } = require('./modules/userAuth');
 
 // Get environment variables
 const HTTPS_ENABLE = (process.env.HTTPS_ENABLE == 'true' ? true : false);
-const SSL_KEY = !HTTPS_ENABLE ? '' : (process.env.SSL_KEY || fs.readFileSync(path.join(__dirname, 'certs', 'ssl.key')));
-const SSL_CERT = !HTTPS_ENABLE ? '' : (process.env.SSL_CERT || fs.readFileSync(path.join(__dirname, 'certs', 'ssl.crt')));
 const PORT = process.env.PORT || (HTTPS_ENABLE ? 443 : 80);
 
 
@@ -41,16 +39,26 @@ app.use(task_routes);
 app.set('json spaces', 2)
 
 
+
 // Create http or https server depending on environment Variable
 var server;
 if (!HTTPS_ENABLE)
     server = http.createServer(app);
 else {
+
     server = https.createServer({
-        key: SSL_KEY,
-        cert: SSL_CERT
+        key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY)).toString(),
+        cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT)).toString(),
     }, app);
+
+    /* Testing
+        setInterval(() => {
+            const complete = fs.readFileSync(path.join(__dirname, 'certs', 'certbot', 'COMPLETE.txt'))
+            console.log(complete);
+        }, Math.floor(Math.random()*5000));
+        */
 }
+
 
 // Initialize DB
 var tries = 0;
@@ -77,6 +85,9 @@ async function checkForConnection() {
 }
 checkForConnection();
 
+
+
+
 app.use('/', (req, res, next) => {
     if (req.path === '/' || req.path === '/index') return res.sendFile(path.join(__dirname, 'build', 'index.html'));
 
@@ -100,7 +111,12 @@ app.get('/credits', (req, res) => res.sendFile(path.join(__dirname, 'public', 'h
 // Catch 404's and send user to the 404 page //
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'codepenTemplate', '404.html')));
 
+
+
+
 // If https is enabled then create a second http server that automatically redirects all traffic to https //
+
+/*
 if (HTTPS_ENABLE) {
     const app_http = express();
     const http_server = http.createServer(app_http);
@@ -108,8 +124,7 @@ if (HTTPS_ENABLE) {
 
     app_http.use((req, res, next) => {
         if (res.secure) return next();
-        else if (PORT == 443) return res.redirect('https://' + req.headers.host + req.url);
-        else return res.redirect('https://' + req.headers.host + ':' + PORT + req.url);
+        else res.redirect('https://' + req.headers.host + req.url);
     })
 }
-
+*/

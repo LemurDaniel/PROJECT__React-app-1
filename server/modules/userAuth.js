@@ -11,8 +11,8 @@ const schema = require('./joiModels');
 
 // Constants
 const JWT_LIFESPAN = process.env.JWT_LIFESPAN ?? 12; // hours
-const SIGNING_KEY = process.env.JWT_SIGNING_KEY || fs.readFileSync(path.join(__dirname, '..', 'certs', 'jwt.private.key'));
-const VERIFY_KEY = process.env.JWT_VERIFY_KEY || fs.readFileSync(path.join(__dirname, '..', 'certs', 'jwt.public.key'));
+const SIGNING_KEY = fs.readFileSync(path.join(__dirname, '..', process.env.JWT_SIGNING_KEY));
+const VERIFY_KEY = fs.readFileSync(path.join(__dirname, '..', process.env.JWT_VERIFY_KEY));
 const SIGNING_ALGO = process.env.JWT_SIGNING_ALGO ?? 'RS256';
 const ENCRYPTION_KEY = process.env.JWT_ENCRYPTION_KEY;
 const ENCRYPTION_IV = process.env.JWT_ENCRYPTION_IV;
