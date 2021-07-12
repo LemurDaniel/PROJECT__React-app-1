@@ -1,0 +1,15 @@
+version: '3.1'
+
+services:
+    certbot:
+      restart: always
+      image: certbot/certbot
+      command: certonly -v --standalone --agree-tos -m landau.daniel.1998@gmail.com -d www.daniel-testing.cloud,daniel-testing.cloud
+      ports:
+        - 80:80
+      volumes:
+        - ./certs/certbot:/etc/letsencrypt/
+
+volumes:
+    nginx:
+    letsencrypt:

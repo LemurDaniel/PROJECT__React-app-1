@@ -2,26 +2,24 @@
 version: '3.1'
 
 services:
-    certbot:
-      restart: always
-      image: daniellandau1998/nginx-server:certbot
-      command: sh /etc/nginx/startup.sh
-      ports:
-        - 80:80
-      volumes:
-        - ./nginx:/etc/nginx/
-        - ./certs/certbot:/etc/letsencrypt/
+    nginx:
+        restart: always
+        image: nginx:1.21.1
+        volumes:
+            - ./nginx:/etc/nginx
+        ports:
+            - 80:80
 
     redis:
-      restart: always
-      image: redis:6.2.4-alpine
-      volumes:
-        - ./redis:/data
+        restart: always
+        image: redis:6.2.4-alpine
+        volumes:
+            - ./redis:/data
         
     webserver:
         depends_on: 
             - db
-            - certbot
+            - nginx
         image: daniellandau1998/node-server
         command: node webserver.js
         container_name: nodejs
@@ -44,6 +42,7 @@ services:
             HTTPS_ENABLE: 'true'
             SSL_KEY:  /certs/certbot/live/www.daniel-testing.cloud/privkey.pem
             SSL_CERT: /certs/certbot/live/www.daniel-testing.cloud/cert.pem
+            SSL_STATUS: /certs/certbot/Completed.txt
 
             JWT_ENCRYPTION_ENABLE: 'true'
             JWT_SIGNING_KEY: /certs/jwt.private.key
@@ -67,9 +66,9 @@ services:
            MYSQL_DATABASE: node_db
         env_file:
             - ./env/sql-config.env
+            
 volumes:
     nginx:
-    letsencrypt:
     cache:
     doodles:
     certs:
