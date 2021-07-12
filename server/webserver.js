@@ -51,12 +51,6 @@ else {
         cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT)).toString(),
     }, app);
 
-    /* Testing
-        setInterval(() => {
-            const complete = fs.readFileSync(path.join(__dirname, 'certs', 'certbot', 'COMPLETE.txt'))
-            console.log(complete);
-        }, Math.floor(Math.random()*5000));
-        */
 }
 
 
