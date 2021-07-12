@@ -42,8 +42,8 @@ services:
             SQL_TABLE_NAME: deploy2
 
             HTTPS_ENABLE: 'true'
-            SSL_KEY:  /certs/certbot/live/www.daniel-testing.cloud/cert.pem
-            SSL_CERT: /certs/certbot/live/www.daniel-testing.cloud/privkey.pem
+            SSL_KEY:  /certs/certbot/live/www.daniel-testing.cloud/privkey.pem
+            SSL_CERT: /certs/certbot/live/www.daniel-testing.cloud/cert.pem
 
             JWT_ENCRYPTION_ENABLE: 'true'
             JWT_SIGNING_KEY: /certs/jwt.private.key
