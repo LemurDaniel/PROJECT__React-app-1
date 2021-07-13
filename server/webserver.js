@@ -109,8 +109,6 @@ app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'c
 
 
 // If https is enabled then create a second http server that automatically redirects all traffic to https //
-
-/*
 if (HTTPS_ENABLE) {
     const app_http = express();
     const http_server = http.createServer(app_http);
@@ -121,4 +119,3 @@ if (HTTPS_ENABLE) {
         else res.redirect('https://' + req.headers.host + req.url);
     })
 }
-*/
