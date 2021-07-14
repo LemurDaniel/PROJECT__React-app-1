@@ -1,4 +1,5 @@
 const mysql = require('mysql');
+const path = require('path');
 const fs = require('fs');
 
 const SQL_HOST = process.env.SQL_HOST;
@@ -17,98 +18,98 @@ const TABLE_TASK = TABLE_NAME + '_task';
 const TABLE_SCORE = TABLE_NAME + '_score';
 
 const SQL_CREATE_USER = 'create table ' + TABLE_USER + ' ( ' +
-                        'id nchar(16) PRIMARY KEY,' +
-                        'username nvarchar(50) NOT NULL unique,' +
-                        'userDisplayName nvarchar(50) NOT NULL, ' +
-                        'isGuest BOOLEAN, '+
-                        'bcrypt BINARY(60) NOT NULL ) ';
+    'id nchar(16) PRIMARY KEY,' +
+    'username nvarchar(50) NOT NULL unique,' +
+    'userDisplayName nvarchar(50) NOT NULL, ' +
+    'isGuest BOOLEAN, ' +
+    'bcrypt BINARY(60) NOT NULL ) ';
 
-const SQL_CREATE_IMG =  'create table ' + TABLE_IMG + ' ( ' +
-                        'id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
-                        'userId nchar(16) NOT NULL,' +
-                        'path nchar(20) NOT NULL unique,' +
-                        'name nvarchar(50),' +
-                        'ml5 nvarchar(25),' +
-                        'ml5_conf Decimal(20,19),' +
-                        'ml5_meta text, ' +
-                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
+const SQL_CREATE_IMG = 'create table ' + TABLE_IMG + ' ( ' +
+    'id int NOT NULL PRIMARY KEY AUTO_INCREMENT,' +
+    'userId nchar(16) NOT NULL,' +
+    'path nchar(20) NOT NULL unique,' +
+    'name nvarchar(50),' +
+    'ml5 nvarchar(25),' +
+    'ml5_conf Decimal(20,19),' +
+    'ml5_meta text, ' +
+    'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
 
 const SQL_CREATE_TASK = 'create table ' + TABLE_TASK + ' ( ' +
-                        'id nchar(16) NOT NULL, ' +
-                        'userId nchar(16) NOT NULL, ' +
-                        'title nchar(50) NOT NULL, ' +
-                        'description text, ' +
-                        'date date, '+
-                        'time time, ' +
-                        'done BOOLEAN, ' +
-                        'PRIMARY KEY (userId, id), ' +
-                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
+    'id nchar(16) NOT NULL, ' +
+    'userId nchar(16) NOT NULL, ' +
+    'title nchar(50) NOT NULL, ' +
+    'description text, ' +
+    'date date, ' +
+    'time time, ' +
+    'done BOOLEAN, ' +
+    'PRIMARY KEY (userId, id), ' +
+    'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
 
 
 const SQL_CREATE_SCORE = 'create table ' + TABLE_SCORE + ' ( ' +
-                        'score int NOT NULL, ' +
-                        'ticks int NOT NULL, ' +
-                        'userId nchar(16) NOT NULL, ' +
-                        'timestamp timestamp NOT NULL, ' +
-                        'PRIMARY KEY (userId, score), ' +
-                        'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
+    'score int NOT NULL, ' +
+    'ticks int NOT NULL, ' +
+    'userId nchar(16) NOT NULL, ' +
+    'timestamp timestamp NOT NULL, ' +
+    'PRIMARY KEY (userId, score), ' +
+    'FOREIGN KEY(userId) REFERENCES ' + TABLE_USER + '(id) )';
 
 
-const SQL_INSERT_IMG =  'Insert Into  ' + TABLE_IMG +
-                        ' (path, name, userId, ml5, ml5_conf, ml5_meta) ' +
-                        ' Values (?, ?, ?, ?, ?, ? )';
+const SQL_INSERT_IMG = 'Insert Into  ' + TABLE_IMG +
+    ' (path, name, userId, ml5, ml5_conf, ml5_meta) ' +
+    ' Values (?, ?, ?, ?, ?, ? )';
 
 const SQL_UPDATE_IMG = 'Update ' + TABLE_IMG + ' Set ' +
-                        'name = ?, ml5 = ?, ml5_conf = ?, ml5_meta = ?' +
-                        ' Where path = ? AND userId = ?';
+    'name = ?, ml5 = ?, ml5_conf = ?, ml5_meta = ?' +
+    ' Where path = ? AND userId = ?';
 
 const SQL_GET_IMG = 'Select path, userDisplayName, img.name, ml5, ml5_conf ' +
-                    ' from ' + TABLE_IMG + ' as img '+
-                    ' join ' + TABLE_USER + ' as usr on img.userId = usr.id' +
-                    ' where ' +
-                    ' ml5 like ? And' +
-                    ' img.name like ? And' +
-                    ' userDisplayName like ? ' +
-                    ' Order By ml5_conf desc';
+    ' from ' + TABLE_IMG + ' as img ' +
+    ' join ' + TABLE_USER + ' as usr on img.userId = usr.id' +
+    ' where ' +
+    ' ml5 like ? And' +
+    ' img.name like ? And' +
+    ' userDisplayName like ? ' +
+    ' Order By ml5_conf desc';
 
 const SQL_DELETE_IMG = 'Delete From ' + TABLE_IMG + ' where img_path = ?';
 
 const SQL_INSERT_USER = 'Insert Into ' + TABLE_USER +
-                        ' (id, username, userDisplayName, bcrypt, isGuest) ' +
-                        ' Values ( ?, ?, ?, ?, ? )';
+    ' (id, username, userDisplayName, bcrypt, isGuest) ' +
+    ' Values ( ?, ?, ?, ?, ? )';
 
 const SQL_GET_HASH = 'select id, userDisplayName, bcrypt from ' + TABLE_USER +
-                        ' where username = ? AND isGuest = false ';
+    ' where username = ? AND isGuest = false ';
 
 const SQL_INSERT_TASK = 'Insert Into ' + TABLE_TASK +
-                        ' (id, userId, title, description, date, time, done) ' +
-                        ' Values ( ?, ?, ?, ?, ?, ?, ? )'
+    ' (id, userId, title, description, date, time, done) ' +
+    ' Values ( ?, ?, ?, ?, ?, ?, ? )'
 
-const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET '+
-                        ' title = ?, description = ?, date = ?, time = ?, done = ? ' +
-                        ' where id = ? AND userId = ? ';
+const SQL_UPDATE_TASK = 'Update ' + TABLE_TASK + ' SET ' +
+    ' title = ?, description = ?, date = ?, time = ?, done = ? ' +
+    ' where id = ? AND userId = ? ';
 
 const SQL_QUERY_TASK = 'Select id, title, description, date, time, done ' +
-                    ' from ' + TABLE_TASK +
-                    ' where userId = ? '+
-                    ' AND Date(date) = Date(?)';
+    ' from ' + TABLE_TASK +
+    ' where userId = ? ' +
+    ' AND Date(date) = Date(?)';
 
 const SQL_GET_TASK = 'Select date ' +
-                    ' from ' + TABLE_TASK + ' as ta '+
-                    ' where id = ? '+
-                    ' AND userId = ?';
+    ' from ' + TABLE_TASK + ' as ta ' +
+    ' where id = ? ' +
+    ' AND userId = ?';
 
-const SQL_DELETE_TASK = 'Delete from '+TABLE_TASK+
-                        ' where id = ? AND userId = ? ';
+const SQL_DELETE_TASK = 'Delete from ' + TABLE_TASK +
+    ' where id = ? AND userId = ? ';
 
-const SQL_INSERT_SCORE = 'Insert into '+TABLE_SCORE+
-                        ' (score, ticks, userId, timestamp) '+
-                        ' values( ?, ?, ?, ? ) ';
+const SQL_INSERT_SCORE = 'Insert into ' + TABLE_SCORE +
+    ' (score, ticks, userId, timestamp) ' +
+    ' values( ?, ?, ?, ? ) ';
 
-const SQL_GET_SCORE = 'Select score, ticks, timestamp, userDisplayName from '+TABLE_SCORE+
-                        ' join '+TABLE_USER+' as usr on usr.id = userId '+
-                        ' order by score DESC '+
-                        ' limit 10 ';
+const SQL_GET_SCORE = 'Select score, ticks, timestamp, userDisplayName from ' + TABLE_SCORE +
+    ' join ' + TABLE_USER + ' as usr on usr.id = userId ' +
+    ' order by score DESC ' +
+    ' limit 10 ';
 
 func = {}
 
@@ -144,15 +145,21 @@ func.call = (con, statement) => {
 func.transaction = async (method) => {
 
     const con = await func.getConnection();
-    const data = await method(con);
-    con.release;
-    return data;
+    try {
+        const data = await method(con);
+        con.commit();
+        con.release;
+        return data;
+    } catch (err) {
+        con.rollback();
+        throw err;
+    }
 
 }
 
 func.insertTask = (con, task) => {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         con.query(SQL_INSERT_TASK, [
             task.id,
@@ -163,7 +170,7 @@ func.insertTask = (con, task) => {
             task.time,
             task.done
         ], (error, data) => {
-            if(error) reject(error);
+            if (error) reject(error);
             else resolve(data)
         })
 
@@ -172,7 +179,7 @@ func.insertTask = (con, task) => {
 
 func.updateTask = (con, task) => {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         con.query(SQL_UPDATE_TASK, [
             task.title,
@@ -183,7 +190,7 @@ func.updateTask = (con, task) => {
             task.id,
             task.user,
         ], (error, data) => {
-            if(error) reject(error);
+            if (error) reject(error);
             else resolve(data)
         })
 
@@ -192,14 +199,14 @@ func.updateTask = (con, task) => {
 
 func.queryTasks = (con, params) => {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         con.query(SQL_QUERY_TASK, [
             params.user,
             params.date
         ], (error, data) => {
-            if(error) return reject(error);
-            data.forEach( row => row.date = row.date.toISOString().split('T')[0] );
+            if (error) return reject(error);
+            data.forEach(row => row.date = row.date.toISOString().split('T')[0]);
             resolve(data)
         })
 
@@ -208,14 +215,14 @@ func.queryTasks = (con, params) => {
 
 func.getTaskDate = (con, id, user) => {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         con.query(SQL_GET_TASK, [
             id,
             user.id
         ], (error, data) => {
-            if(error) reject(error);
-            if(data.length === 0) reject(error);
+            if (error) reject(error);
+            if (data.length === 0) reject(error);
             else resolve(data[0].date.toISOString().split('T')[0]);
         })
 
@@ -224,13 +231,13 @@ func.getTaskDate = (con, id, user) => {
 
 func.deleteTask = (con, id, user) => {
 
-    return new Promise( (resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
         con.query(SQL_DELETE_TASK, [
             id,
             user.id
         ], (error, data) => {
-            if(error) reject(error);
+            if (error) reject(error);
             else resolve(data)
         })
 
@@ -241,7 +248,7 @@ func.delete_img = (con, img_path, callback) => con.query(SQL_DELETE_IMG, [img_pa
 
 func.insertImage = (con, image) => {
 
-    return new Promise( (resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         con.query(SQL_INSERT_IMG,
             [image.path,
             image.name,
@@ -249,16 +256,16 @@ func.insertImage = (con, image) => {
             image.ml5.label,
             image.ml5.confidence,
             JSON.stringify(image.ml5.meta)
-        ], (err, data) => {
-            if(err) reject(err);
-            else resolve(data);
-        });
+            ], (err, data) => {
+                if (err) reject(err);
+                else resolve(data);
+            });
     })
 }
 
 func.updateImage = (con, image) => {
 
-    return new Promise( (resolve, reject) => { 
+    return new Promise((resolve, reject) => {
         con.query(SQL_UPDATE_IMG,
             [image.name,
             image.ml5.label,
@@ -266,17 +273,17 @@ func.updateImage = (con, image) => {
             JSON.stringify(image.ml5.meta),
             image.path,
             image.user.id
-        ], (err, data) => {
-            if(err) reject(err);
-            else resolve(data);
-        });
+            ], (err, data) => {
+                if (err) reject(err);
+                else resolve(data);
+            });
     });
 }
 
 func.queryImages = (con, params) => {
 
     return new Promise((resolve, reject) => {
-        
+
         const name = (params.name ?? '') + '%';
         const user = (params.user ?? '') + '%';
         const ml5 = (params.ml5 ?? '') + '%';
@@ -293,7 +300,7 @@ func.queryImages = (con, params) => {
 
 
 func.insertScore = (con, score) => {
- 
+
     return new Promise((resolve, reject) => {
 
         con.query(SQL_INSERT_SCORE, [
@@ -339,7 +346,7 @@ func.getPasswordHash = (con, user) => {
 
         con.query(SQL_GET_HASH, [user.username], (err, res) => {
             if (err) return reject(err);
-            else if( res.length <= 0 ) return reject('No User Found');
+            else if (res.length <= 0) return reject('No User Found');
 
             user.id = res[0].id;
             user.userDisplayName = res[0].userDisplayName;
@@ -349,20 +356,40 @@ func.getPasswordHash = (con, user) => {
     })
 }
 
-func.initDatabase = function () {
 
-    // Check for file indicating that tables have been initialized
-    return func.transaction(async con => {
 
+func.initDatabase = async () => {
+
+    const file = path.join(__dirname, '..', 'public', 'doodles', TABLE_NAME + '_EXISTS.info');
+    if (fs.existsSync(file)) return;
+
+    const init = async con => {
         await func.call(con, SQL_CREATE_USER);
         await func.call(con, SQL_CREATE_IMG);
         await func.call(con, SQL_CREATE_TASK);
         await func.call(con, SQL_CREATE_SCORE);
-        return 'OK';
-
+        return 'Tables created successfully';
     }
-    );
 
+    let tries = 0;
+    const MAX_TRIES = 30;
+
+    while (tries++ < MAX_TRIES) {
+
+        try {
+            const res = await func.transaction(init);
+            fs.writeFileSync(file, '');
+            console.log(res);
+            return;
+
+        } catch (err) {
+            console.log(err)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            console.log(`Waiting for database connection | Trie: ${tries} / ${MAX_TRIES} - CODE ${err.code}`);
+        }
+    }
+
+    throw new Error('Unable to initialize database');
 }
 
 
@@ -370,28 +397,28 @@ func.initDatabase = function () {
 
 func.exportData = () => {
 
-    return func.transaction( async con => {
+    return func.transaction(async con => {
 
         const user = 'Select * from ' + TABLE_USER;
-        const img  = 'Select * from ' + TABLE_IMG;
-        const task ='Select * from ' + TABLE_TASK;
+        const img = 'Select * from ' + TABLE_IMG;
+        const task = 'Select * from ' + TABLE_TASK;
 
         const user_data = await func.call(con, user);
-        const img_data  = await func.call(con, img);
+        const img_data = await func.call(con, img);
         const task_data = await func.call(con, task);
 
 
         return {
-            users: user_data.map( row => new Object({ ...row, bcrypt: row.bcrypt.toString() }) ),
-            tasks: task_data.map( row => new Object({ ...row }) ),
-            images: img_data.map( row => new Object({ ...row }) ),
+            users: user_data.map(row => new Object({ ...row, bcrypt: row.bcrypt.toString() })),
+            tasks: task_data.map(row => new Object({ ...row })),
+            images: img_data.map(row => new Object({ ...row })),
         }
     });
 }
 
 func.import_data = data => {
 
-    return func.transaction( async con => {
+    return func.transaction(async con => {
 
         throw 'Not implemented'
     });

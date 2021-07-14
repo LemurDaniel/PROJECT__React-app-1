@@ -5,7 +5,6 @@ const path = require('path');
 const http = require('http');
 const https = require('https');
 const express = require('express');
-const bodyParser = require('body-parser');
 
 // load custom modules
 const sql = require('./modules/sqlCalls');
@@ -17,73 +16,31 @@ const { routes: auth_routes, auth } = require('./modules/userAuth');
 // Get environment variables
 const HTTPS_ENABLE = (process.env.HTTPS_ENABLE == 'true' ? true : false);
 const PORT = process.env.PORT || (HTTPS_ENABLE ? 443 : 80);
+const SSL = {
+    key: HTTPS_ENABLE ? fs.readFileSync(path.join(__dirname, process.env.SSL_KEY)).toString() : null,
+    cert: HTTPS_ENABLE ? fs.readFileSync(path.join(__dirname, process.env.SSL_CERT)).toString() : null,
+};
 
 
 //Create Server//
 const app = express();
 // app.use(cors())
+app.set('json spaces', 2)   // Send nicley formatted Json
+app.use(express.json({ limit: '5mb' }))
 
 // Make everything in /public  publicly accessible
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'build')));
-
-// Use bodyParser to automatically convert json body to object
-app.use(bodyParser.json({ limit: '5mb' }))
 
 // Use routes from authorization module and image module
 app.use(auth_routes);
 app.use(image_routes);
 app.use(task_routes);
 
-// Send nicley formatted Json
-app.set('json spaces', 2)
-
-
-
-// Create http or https server depending on environment Variable
-var server;
-if (!HTTPS_ENABLE)
-    server = http.createServer(app);
-else {
-
-    server = https.createServer({
-        key: fs.readFileSync(path.join(__dirname, process.env.SSL_KEY)).toString(),
-        cert: fs.readFileSync(path.join(__dirname, process.env.SSL_CERT)).toString(),
-    }, app);
-
-}
-
-
-// Initialize DB
-var tries = 0;
-const MAX_TRIES = 30;
-async function checkForConnection() {
-
-    if (++tries > MAX_TRIES) return console.log('Couldn\'t connect to database')
-
-    try {
-        const file = path.join(__dirname, 'public', 'doodles', process.env.SQL_TABLE_NAME + '_EXISTS.info');
-        if (!fs.existsSync(file)) {
-            await sql.initDatabase();
-            fs.writeFileSync(file, '');
-        };
-
-        server.listen(PORT);
-        console.log('Connection Successfull, listening now on Port: ' + PORT);
-    } catch (err) {
-        console.log(err)
-        console.log('Waiting for database connection | Trie: ' + tries + '/' + MAX_TRIES + '  - CODE: ' + err.code);
-        setTimeout(() => checkForConnection(), 2000);
-    }
-
-}
-checkForConnection();
-
-
-
 
 app.use('/', (req, res, next) => {
-    if (req.path === '/' || req.path === '/index') return res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    if (req.path === '/' || req.path === '/index')
+        return res.sendFile(path.join(__dirname, 'build', 'index.html'));
 
     res.set('X-Robots-Tag', 'noindex');
     next();
@@ -106,16 +63,26 @@ app.get('/credits', (req, res) => res.sendFile(path.join(__dirname, 'public', 'h
 app.use((req, res) => res.status(404).sendFile(path.join(__dirname, 'public', 'codepenTemplate', '404.html')));
 
 
+// Initalize database and create Server.
+
+sql.initDatabase().then(() => {
+
+    console.log('Database initialized');
+
+    if (HTTPS_ENABLE) {
+        https.createServer(SSL, app).listen(PORT);
+        http.createServer((req, res) => {
+            const header = { 'Location': `https://${req.headers.host + req.url}` };
+            res.writeHead(302, header).end();
+        }).listen(80);
 
 
-// If https is enabled then create a second http server that automatically redirects all traffic to https //
-if (HTTPS_ENABLE) {
-    const app_http = express();
-    const http_server = http.createServer(app_http);
-    http_server.listen(80);
+        console.log('HTTP to HTTPS redirection now listening on port 80')
+        console.log('HTTPS Server now listening on Port: ' + PORT);
 
-    app_http.use((req, res, next) => {
-        if (res.secure) return next();
-        else res.redirect('https://' + req.headers.host + req.url);
-    })
-}
+    } else {
+        http.createServer(app).listen(PORT);
+        console.log('HTTP Server now listening on Port: ' + PORT);
+    }
+
+}).catch(console.log);
