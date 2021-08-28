@@ -10,7 +10,7 @@ import Asteroid from './modulesJs/Asteroids';
 import ParticleManager from './modulesJs/Particle';
 
 
-const MAX_ASTEROIDS = 40;
+const MAX_ASTEROIDS = 44;
 const SCALE = 2;
 const ENGINE = Matter.Engine.create({
     gravity: {

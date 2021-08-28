@@ -2,7 +2,7 @@ import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
 
-const someVariableWithoutADescriptiveName = 0.0025;
+const someVariableWithoutADescriptiveName = 0.0035;
 
 class Asteroid extends Particle {
 
@@ -12,8 +12,6 @@ class Asteroid extends Particle {
         super(pos, velocity, radius);
         this.mass = Math.PI * radius * radius;
         this.verts = verts;
-
-        const angVel = (Math.round(Math.random()) === 0 ? 1 : -1) * Math.random() * 10;
 
         this.matterBody = Matter.Body.create({
             frictionAir: 0,
