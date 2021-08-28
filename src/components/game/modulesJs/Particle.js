@@ -75,19 +75,16 @@ class ParticleManager {
         this._checkLimbo();
         this._checkDying(canvas);
 
-        let end = this.particles.length - 1;
-        for (let i = 0; i <= end; i++) {
+        for (let i = 0; i < this.particles.length; i++) {
 
             const prt = this.particles[i];
 
-            prt.collisions = {}; // reset collisions for this frame.
-
-            if (prt.alive) prt.render(canvas);
-            else this.particles[i--] = this.particles[end--];
-
+            if (prt.alive) 
+                prt.render(canvas);
+            else 
+                this._removeParticleAtIndex(i--);
         }
 
-        this.particles.length = end + 1;
     }
 
     _removeParticleAtIndex(index) {
@@ -108,7 +105,8 @@ class ParticleManager {
         }
     }
 
-    calculateCollsision(collider, afterCollision) {
+
+    calculateCollsisions(collider, afterCollision) {
 
         const particles = this.particles;
 
@@ -116,22 +114,7 @@ class ParticleManager {
 
             const prt = particles[i];
 
-            if (!prt.alive) continue;
-            if (prt === collider) continue;
-
-            // Prevent double calculating and handling of collisions.
-            if (collider.id in prt.collisions) continue;
-
-            // Calculate distance.
-            const dist = prt.dist(collider);
-            if (dist >= prt.radius + collider.radius) {
-                prt.collisions[collider.id] = false;
-                collider.collisions[prt.id] = false;
-                continue;
-            }
-            prt.collisions[collider.id] = true;
-            collider.collisions[prt.id] = true;
-
+            if (!prt.isColliding(collider)) continue;
 
             // On Collision.
             const resultCollider = collider.onCollision(prt);
@@ -143,11 +126,11 @@ class ParticleManager {
 
             if (afterCollision)
                 afterCollision(resultCollider, resultCollided, collider, prt);
+
             if (!collider.alive) break;
         }
 
     }
-
 }
 
 
@@ -195,6 +178,23 @@ export class Particle extends Vector {
         this._onActive.push(onActive);
     }
 
+    isColliding(collider) {
+     
+        if (!this.alive || !collider.alive) return false;
+        if (this === collider) return false;
+
+        // Prevent double calculating and handling of collisions.
+        if (collider.id in this.collisions) return false;
+
+        // Calculate distance.
+        const dist = this.dist(collider);
+        const collided = dist <= this.radius + collider.radius
+
+        this.collisions[collider.id] = collided;
+        collider.collisions[this.id] = collided;
+        return collided;
+    }
+
     isOOB(canvas) {
         if (this.x > canvas.width + this.radius * 2) return true;
         if (this.y > canvas.height + this.radius * 2) return true;
@@ -227,6 +227,7 @@ export class Particle extends Vector {
 
     render(canvas) {
         const ctx = canvas.getContext('2d')
+        this.collisions = {};
         this.move(canvas);
         this.draw(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
@@ -249,6 +250,8 @@ export class Particle extends Vector {
     onActive(world) {
         this._onActive.forEach(handler => handler());
     }
+
+
 }
 
 

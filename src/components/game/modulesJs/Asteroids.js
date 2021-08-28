@@ -2,6 +2,8 @@ import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
 
+const someVariableWithoutADescriptiveName = 0.0025;
+
 class Asteroid extends Particle {
 
     static targetAmount = 0;
@@ -11,42 +13,54 @@ class Asteroid extends Particle {
         this.mass = Math.PI * radius * radius;
         this.verts = verts;
 
+        const angVel = (Math.round(Math.random()) === 0 ? 1 : -1) * Math.random() * 10;
+
         this.matterBody = Matter.Body.create({
             frictionAir: 0,
             friction: 0,
+            density: 1,
+            mass: this.mass,
+            restitution: 0.65,
         })
-        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity)
-        Matter.Body.setPosition(this.matterBody, this.MatterVector);
-        Matter.Body.setMass(this.matterBody, this.mass*10);
-        Matter.Body.setVertices(this.matterBody, verts.map(vert => vert.MatterVector));
 
-        this.setRotation();
+        Matter.Body.setVertices(this.matterBody, verts.map(vert => vert.MatterVector));
+        Matter.Body.setPosition(this.matterBody, this.MatterVector);
+        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity)
+
+        // Apply a force to the body at an angle to make them spin.
+        const forceOrigin = Vector.add(this,
+            this.velocity.copy().setMag(1).mul(this.radius)
+        );
+
+        const angle = forceOrigin.heading() - (Math.random() * Math.PI / 16 - Math.PI / 32)
+        const force = Vector.fromAngle(angle, this.mass * 0.025);
+
+        Matter.Body.applyForce(this.matterBody, forceOrigin.MatterVector, force.MatterVector);
     }
 
     onActive(world) {
         super.onActive(world);
         Matter.Composite.add(world, this.matterBody);
-        console.log(world)
-    }
-
-    setRotation() {
-        this.rotation = 1;
-        if (Math.round(Math.random()))
-            this.rotation = -1;
+        console.log(this.matterBody.angularVelocity)
     }
 
     move(canvas) {
 
+        this.angle = this.matterBody.angle;
         this.x = this.matterBody.position.x;
         this.y = this.matterBody.position.y;
-        super.wrapBounds(canvas);
-        Matter.Body.setPosition(this.matterBody, this.MatterVector)
+        this.velocity.x = this.matterBody.velocity.x;
+        this.velocity.y = this.matterBody.velocity.y;
 
-        return;
-        this.velocity.limit(4);
-        super.move(canvas);
-        this.angle += this.velocity.heading() * 0.0055 * this.rotation;
-        if (this.velocity.mag() < 0.15) this.velocity.setMag(Math.random() * (canvas.width * 0.0025))
+        if (this.velocity.mag() < 0.75)
+            this.velocity.setMag(Math.random() * (canvas.width * someVariableWithoutADescriptiveName))
+
+        this.velocity.limit(canvas.width * someVariableWithoutADescriptiveName);
+        super.wrapBounds(canvas);
+
+        Matter.Body.setPosition(this.matterBody, this.MatterVector);
+        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
+
     }
 
     static getRandom(canvas, ship) {
@@ -62,7 +76,9 @@ class Asteroid extends Particle {
         const direction = Vector.sub(ship, pos);
         const obfuscateAngle = direction.heading() - (Math.random() * Math.PI / 16 - Math.PI / 32)
 
-        const velocity = Vector.fromAngle(obfuscateAngle, Math.random() * (canvas.width * 0.0055))
+        const velocity = Vector.fromAngle(obfuscateAngle,
+            Math.random() * (canvas.width * someVariableWithoutADescriptiveName)
+        )
 
         const max = Math.min(canvas.width * 0.055, 55);
         const min = canvas.width * 0.015;

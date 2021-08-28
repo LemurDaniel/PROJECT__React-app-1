@@ -183,17 +183,20 @@ const Spacegame = () => {
 
             // Collision dedection.
             asteroids.particles.forEach(asteroid => {
-                cannon.calculateCollsision(asteroid, (collider, collided) => {
+                cannon.calculateCollsisions(asteroid, (collider, collided) => {
                     const points = Math.round(collided * (1 / canvas.width * 1000));
                     setScore(sc => sc + points);
                     setAstAmount(asteroids.count());
                 })
-                asteroids.calculateCollsision(ship, () => {
-                    setAstAmount(asteroids.count());
-                    if (ship.alive) return;
-                    setGameRunning(false);
-                    setPause(true);
-                })
+
+                if(!ship.isColliding(asteroid)) return;
+
+                ship.onCollision(asteroid);
+                setAstAmount(asteroids.count());
+        
+                if (ship.alive) return;
+                setGameRunning(false);
+                setPause(true);
             });
 
         };
