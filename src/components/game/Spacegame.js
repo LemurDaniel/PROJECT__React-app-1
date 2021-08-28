@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import Matter from 'matter-js';
 
 import Timer from './Timer';
 import Highscore from './Highscore';
@@ -11,28 +12,62 @@ import ParticleManager from './modulesJs/Particle';
 
 const MAX_ASTEROIDS = 40;
 const SCALE = 2;
-const ship = new Ship(0, 0, 0)
-const asteroids = new ParticleManager();
-const mousePos = {
-    vec: new Vector(0, 0),
-    draw: true,
+const ENGINE = Matter.Engine.create({
+    gravity: {
+        x: 0,
+        y: 0,
+    }
+});
+
+const data = {
+
+    ship: null,
+    asteroids: null,
+    mousePos: {
+        vec: new Vector(0, 0),
+        draw: true,
+    },
+
 }
 
-
 const Spacegame = () => {
+
+    const initializeGame = () => {
+
+        const c = canvasRef.current;
+        const ship = new Ship();
+      
+        ship.velocity = new Vector(0, 0);
+        ship.x = c.width / 2;
+        ship.y = c.height / 2;
+        ship.alive = true;
+        ship.lives = 3;
+
+        data.ship = ship;
+        data.asteroids = new ParticleManager(ENGINE.world);
+
+
+        setAstAmount(0);
+        setScore(0);
+        setTicks(0);
+        setGameRunning(true);
+        setPause(false);
+    }
+
 
     const canvasRef = useRef(null);
     const [dimension, setDimension] = useState([window.innerWidth, window.innerHeight - 70])
     useEffect(() => {
-        const setSize = () => {
+        window.onresize = () => {
             const newWidth = window.innerWidth;
             const newHeight = window.innerHeight - 70;
             setDimension([newWidth, newHeight])
         }
-        window.onresize = setSize;
+
+        initializeGame();
         window.onkeyup = e => {
-            if (e.code === 'Space') ship.shoot();
-            else if (e.code === 'KeyW' || e.code === 'ArrowUp') ship.thrust();
+            if (e.code === 'Space') data.ship.shoot();
+            else if (e.code === 'KeyW' || e.code === 'ArrowUp') data.ship.thrust();
         }
 
         return () => window.onresize = null;
@@ -42,9 +77,9 @@ const Spacegame = () => {
         const width = dimension[0]
         const height = dimension[1]
 
-        if (ship.x === 0 && ship.y === 0) {
-            ship.x = width * SCALE / 2
-            ship.y = height * SCALE / 2
+        if (data.ship.x === 0 && data.ship.y === 0) {
+            data.ship.x = width * SCALE / 2
+            data.ship.y = height * SCALE / 2
         }
 
         canvas.height = height * SCALE;
@@ -62,6 +97,9 @@ const Spacegame = () => {
 
     const onMouseMove = e => {
         const canvas = canvasRef.current;
+        const { ship, mousePos } = data;
+
+        if (!ship || !gameRunning) return;
 
         if (e.type === 'touchmove' || e.type === 'touchstart') {
             const touch = e.nativeEvent.touches[0]
@@ -87,13 +125,15 @@ const Spacegame = () => {
     const [astTarget, setAstTarget] = useState(0);
     const [score, setScore] = useState(0);
     useEffect(() => {
-        const amount = Math.floor(score / Math.pow(2, 13)  * MAX_ASTEROIDS);
+        const amount = Math.floor(score / Math.pow(2, 13) * MAX_ASTEROIDS);
         setAstTarget(Math.max(4, amount));
     }, [score])
     useEffect(() => {
+        const { ship, asteroids } = data;
         while (asteroids.count(true) < astTarget) {
             const ast = Asteroid.getRandom(canvasRef.current, ship);
-            ast.setLimbo(Math.random() * 750 + 150, () => setAstAmount(asteroids.count()));
+            ast.setLimbo(Math.random() * 750 + 150);
+            ast.setOnActive(() => setAstAmount(asteroids.count()));
             asteroids.push(ast);
         }
     }, [astTarget, astAmount]);
@@ -103,34 +143,21 @@ const Spacegame = () => {
     const [gameRunning, setGameRunning] = useState(true);
     const [ticks, setTicks] = useState(0);
     useEffect(() => {
-        if(ticks === 0) return;
+        if (ticks === 0) return;
         else if (ticks % (60 * 5) === 0) setScore(s => s + 125);
         else if (ticks % 60 === 0) setScore(s => s + 25);
         else if (ticks % 30 === 0) setScore(s => s + 5);
-    },[ticks]);
+    }, [ticks]);
 
-
-    const onRestart = () => {
-
-        const c = canvasRef.current;
-        ship.velocity = new Vector(0, 0);
-        ship.x = c.width / 2;
-        ship.y = c.height / 2;
-        ship.alive = true;
-        ship.lives = 3;
-        asteroids.reset();
-        setAstAmount(0);
-        setScore(0);
-        setTicks(0);
-        setGameRunning(true);
-        setPause(false);
-    }
 
 
     useEffect(() => {
-        if (!ship || !asteroids || !gameRunning) return;
-        const loop = () => {
+        const { ship, mousePos, asteroids, delta = 1000 / 60 } = data;
 
+        if (!ship || !asteroids || !gameRunning) return;
+
+        const loop = () => { 
+   
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
 
@@ -141,6 +168,7 @@ const Spacegame = () => {
             ctx.lineCap = 'round';
             ctx.lineWidth = 4;
 
+            Matter.Engine.update(ENGINE, delta);
             const cannon = ship.cannon;
             asteroids.render(canvas);
             cannon.render(canvas)
@@ -154,30 +182,29 @@ const Spacegame = () => {
 
 
             // Collision dedection.
-            asteroids.particles.forEach(prt => {
-                asteroids.calculateCollsision(ship, () => {
+            asteroids.particles.forEach(asteroid => {
+                cannon.calculateCollsisions(asteroid, (collider, collided) => {
+                    const points = Math.round(collided * (1 / canvas.width * 1000));
+                    setScore(sc => sc + points);
                     setAstAmount(asteroids.count());
-                    if (ship.alive) return;
-                    setGameRunning(false);
-                    setPause(true);
                 })
-                asteroids.calculateCollsision(prt);
-            });
 
-            cannon.particles.forEach(bullet => {
-                asteroids.calculateCollsision(bullet, result => {
-                    const points = Math.round( result * (1/canvas.width*1000) );
-                    setScore( sc => sc + points);
-                    setAstAmount(asteroids.count());
-                })
-            })
+                if(!ship.isColliding(asteroid)) return;
+
+                ship.onCollision(asteroid);
+                setAstAmount(asteroids.count());
+        
+                if (ship.alive) return;
+                setGameRunning(false);
+                setPause(true);
+            });
 
         };
 
         // Draw on frame to make cursor dissapear.
         if (pause) return loop();
 
-        const ticker = setInterval(() => loop(), 1000 / 60);
+        const ticker = setInterval(() => loop(), delta);
         return () => clearInterval(ticker);
     }, [pause, gameRunning]);
 
@@ -195,11 +222,11 @@ const Spacegame = () => {
                 </div>
             </div>
 
-            {gameRunning ? null : <Highscore score={score} ticks={ticks} gameRunning={gameRunning} onRestart={onRestart} />}
+            {gameRunning ? null : <Highscore score={score} ticks={ticks} gameRunning={gameRunning} onRestart={initializeGame} />}
 
             <div className="rounded-md">
                 <canvas style={{ 'touch-action': 'none' }}
-                    height={dimension[1]} width={dimension[0]} onMouseMove={onMouseMove} onClick={e => ship.shoot()}
+                    height={dimension[1]} width={dimension[0]} onMouseMove={onMouseMove} onClick={e => data.ship.shoot()}
                     onTouchMove={onMouseMove} onTouchEnd={onMouseMove} onTouchStart={onMouseMove}
                     onMouseLeave={e => setPause(true)} onMouseEnter={e => setPause(false)}
                     ref={canvasRef} className="" ></canvas>
