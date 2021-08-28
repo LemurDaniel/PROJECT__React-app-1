@@ -1,4 +1,10 @@
+import Matter from "matter-js";
+
 class Vector {
+
+    get MatterVector() {
+        return Matter.Vector.create(this.x, this.y);
+    }
 
     constructor(x, y) {
         this.x = x ?? 0;
