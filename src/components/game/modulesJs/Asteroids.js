@@ -2,7 +2,7 @@ import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
 
-const someVariableWithoutADescriptiveName = 0.0035;
+const someVariableWithoutADescriptiveName = 0.0038;
 
 class Asteroid extends Particle {
 
@@ -13,6 +13,8 @@ class Asteroid extends Particle {
         this.mass = Math.PI * radius * radius;
         this.verts = verts;
 
+        const angVel = Math.log(this.mass) * 0.0025 * (Math.round(Math.random()) === 0 ? 1 : -1);
+        
         this.matterBody = Matter.Body.create({
             frictionAir: 0,
             friction: 0,
@@ -24,22 +26,12 @@ class Asteroid extends Particle {
         Matter.Body.setVertices(this.matterBody, verts.map(vert => vert.MatterVector));
         Matter.Body.setPosition(this.matterBody, this.MatterVector);
         Matter.Body.setVelocity(this.matterBody, this.MatterVelocity)
-
-        // Apply a force to the body at an angle to make them spin.
-        const forceOrigin = Vector.add(this,
-            this.velocity.copy().setMag(1).mul(this.radius)
-        );
-
-        const angle = forceOrigin.heading() - (Math.random() * Math.PI / 16 - Math.PI / 32)
-        const force = Vector.fromAngle(angle, this.mass * 0.025);
-
-        Matter.Body.applyForce(this.matterBody, forceOrigin.MatterVector, force.MatterVector);
+        Matter.Body.setAngularVelocity(this.matterBody, angVel)
     }
 
     onActive(world) {
         super.onActive(world);
         Matter.Composite.add(world, this.matterBody);
-        console.log(this.matterBody.angularVelocity)
     }
 
     move(canvas) {
@@ -50,10 +42,11 @@ class Asteroid extends Particle {
         this.velocity.x = this.matterBody.velocity.x;
         this.velocity.y = this.matterBody.velocity.y;
 
-        if (this.velocity.mag() < 0.75)
-            this.velocity.setMag(Math.random() * (canvas.width * someVariableWithoutADescriptiveName))
+        const vel = canvas.width * someVariableWithoutADescriptiveName;
+        if (this.velocity.mag() < 0.55)
+            this.velocity.setMag(Math.random() * vel)
 
-        this.velocity.limit(canvas.width * someVariableWithoutADescriptiveName);
+        this.velocity.limit(Math.min(vel, Math.random() * 4 + 9));
         super.wrapBounds(canvas);
 
         Matter.Body.setPosition(this.matterBody, this.MatterVector);

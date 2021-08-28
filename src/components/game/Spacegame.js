@@ -9,6 +9,10 @@ import Ship from './modulesJs/Spaceship';
 import Asteroid from './modulesJs/Asteroids';
 import ParticleManager from './modulesJs/Particle';
 
+const INITIAL_AMOUNT = 4;
+const INITIAL_TRESHHOLD = 400;
+const TRESHHOLD_INCREASE = 1.22;
+const TRESHHOLD_DAMPEN = 0.002;
 
 const MAX_ASTEROIDS = 44;
 const SCALE = 2;
@@ -32,11 +36,12 @@ const data = {
 
 const Spacegame = () => {
 
+    // Also called on restart game.
     const initializeGame = () => {
 
         const c = canvasRef.current;
         const ship = new Ship();
-      
+
         ship.velocity = new Vector(0, 0);
         ship.x = c.width / 2;
         ship.y = c.height / 2;
@@ -46,8 +51,14 @@ const Spacegame = () => {
         data.ship = ship;
         data.asteroids = new ParticleManager(ENGINE.world);
 
+        window.onkeyup = e => {
+            if (e.code === 'Space') data.ship.shoot();
+            else if (e.code === 'KeyW' || e.code === 'ArrowUp') data.ship.thrust();
+        }
 
         setAstAmount(0);
+        setTreshhold(INITIAL_TRESHHOLD);
+        setAstTarget(INITIAL_AMOUNT);
         setScore(0);
         setTicks(0);
         setGameRunning(true);
@@ -65,10 +76,6 @@ const Spacegame = () => {
         }
 
         initializeGame();
-        window.onkeyup = e => {
-            if (e.code === 'Space') data.ship.shoot();
-            else if (e.code === 'KeyW' || e.code === 'ArrowUp') data.ship.thrust();
-        }
 
         return () => window.onresize = null;
     }, [])
@@ -122,11 +129,14 @@ const Spacegame = () => {
 
 
     const [astAmount, setAstAmount] = useState(0);
-    const [astTarget, setAstTarget] = useState(0);
+    const [astTarget, setAstTarget] = useState(INITIAL_AMOUNT);
+    const [treshhold, setTreshhold] = useState(INITIAL_TRESHHOLD);
     const [score, setScore] = useState(0);
     useEffect(() => {
-        const amount = Math.floor(score / Math.pow(2, 13) * MAX_ASTEROIDS);
-        setAstTarget(Math.max(4, amount));
+        if (score < treshhold) return;
+        setTreshhold(score * TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount);
+        console.log(score * TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount)
+        setAstTarget(amount => amount + 1);
     }, [score])
     useEffect(() => {
         const { ship, asteroids } = data;
@@ -156,8 +166,8 @@ const Spacegame = () => {
 
         if (!ship || !asteroids || !gameRunning) return;
 
-        const loop = () => { 
-   
+        const loop = () => {
+
             const canvas = canvasRef.current;
             const ctx = canvas.getContext('2d');
 
@@ -189,11 +199,11 @@ const Spacegame = () => {
                     setAstAmount(asteroids.count());
                 })
 
-                if(!ship.isColliding(asteroid)) return;
+                if (!ship.isColliding(asteroid)) return;
 
                 ship.onCollision(asteroid);
                 setAstAmount(asteroids.count());
-        
+
                 if (ship.alive) return;
                 setGameRunning(false);
                 setPause(true);
