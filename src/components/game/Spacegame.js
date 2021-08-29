@@ -31,6 +31,7 @@ const data = {
         vec: new Vector(0, 0),
         draw: true,
     },
+    frame: 0,
 
 }
 
@@ -135,14 +136,13 @@ const Spacegame = () => {
     useEffect(() => {
         if (score < treshhold) return;
         setTreshhold(score * TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount);
-        console.log(score * TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount)
         setAstTarget(amount => amount + 1);
     }, [score])
     useEffect(() => {
         const { ship, asteroids } = data;
         while (asteroids.count(true) < astTarget) {
             const ast = Asteroid.getRandom(canvasRef.current, ship);
-            ast.setLimbo(Math.random() * 750 + 150);
+            ast.setLimbo(Math.random() * 550 + 95);
             ast.setOnActive(() => setAstAmount(asteroids.count()));
             asteroids.push(ast);
         }
@@ -190,6 +190,8 @@ const Spacegame = () => {
                 ctx.fill();
             }
 
+
+            if(Math.round(data.frame++ % 3) !== 0) return;
 
             // Collision dedection.
             asteroids.particles.forEach(asteroid => {

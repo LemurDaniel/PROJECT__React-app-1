@@ -65,7 +65,7 @@ class Asteroid extends Particle {
 
 
         const direction = Vector.sub(ship, pos);
-        const obfuscateAngle = direction.heading() - (Math.random() * Math.PI / 16 - Math.PI / 32)
+        const obfuscateAngle = direction.heading() - (Math.random() * Math.PI / 32 - Math.PI / 64)
 
         const velocity = Vector.fromAngle(obfuscateAngle,
             Math.random() * (canvas.width * someVariableWithoutADescriptiveName)
