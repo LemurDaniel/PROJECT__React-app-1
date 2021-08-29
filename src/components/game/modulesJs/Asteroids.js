@@ -14,13 +14,17 @@ class Asteroid extends Particle {
         this.verts = verts;
 
         const angVel = Math.log(this.mass) * 0.0025 * (Math.round(Math.random()) === 0 ? 1 : -1);
-        
+
         this.matterBody = Matter.Body.create({
+            label: 'asteroid',
             frictionAir: 0,
             friction: 0,
             density: 1,
             mass: this.mass,
             restitution: 0.65,
+            plugin:{
+                particleRef: this,
+            }
         })
 
         Matter.Body.setVertices(this.matterBody, verts.map(vert => vert.MatterVector));
@@ -29,9 +33,21 @@ class Asteroid extends Particle {
         Matter.Body.setAngularVelocity(this.matterBody, angVel)
     }
 
-    onActive(world) {
-        super.onActive(world);
-        Matter.Composite.add(world, this.matterBody);
+    onActive(particleManager) {
+        this.pm = particleManager;
+        Matter.Composite.add(this.pm.matterWorld, this.matterBody);
+    }
+
+    onDying() {
+        this.matterBody.collisionFilter = {
+            group: -1,
+            category: 2,
+            mask: 0,
+        };
+    }
+
+    onDeath() {
+        Matter.Composite.remove(this.pm.matterWorld, this.matterBody);
     }
 
     move(canvas) {

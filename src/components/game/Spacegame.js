@@ -13,9 +13,8 @@ const INITIAL_AMOUNT = 4;
 const INITIAL_TRESHHOLD = 400;
 const TRESHHOLD_INCREASE = 1.22;
 const TRESHHOLD_DAMPEN = 0.002;
-
-const MAX_ASTEROIDS = 44;
 const SCALE = 2;
+
 const ENGINE = Matter.Engine.create({
     gravity: {
         x: 0,
@@ -41,25 +40,22 @@ const Spacegame = () => {
     const initializeGame = () => {
 
         const c = canvasRef.current;
-        const ship = new Ship();
 
-        ship.velocity = new Vector(0, 0);
-        ship.x = c.width / 2;
-        ship.y = c.height / 2;
-        ship.alive = true;
-        ship.lives = 3;
-
-        data.ship = ship;
         data.asteroids = new ParticleManager(ENGINE.world);
+        data.ship = new Ship(
+            c.width / 2,
+            c.height / 2,
+            ENGINE.world
+        )
 
         window.onkeyup = e => {
             if (e.code === 'Space') data.ship.shoot();
             else if (e.code === 'KeyW' || e.code === 'ArrowUp') data.ship.thrust();
         }
 
-        setAstAmount(0);
         setTreshhold(INITIAL_TRESHHOLD);
         setAstTarget(INITIAL_AMOUNT);
+        setAstAmount(0);
         setScore(0);
         setTicks(0);
         setGameRunning(true);
@@ -140,10 +136,9 @@ const Spacegame = () => {
     }, [score])
     useEffect(() => {
         const { ship, asteroids } = data;
-        while (asteroids.count(true) < astTarget) {
+        while (asteroids.count + asteroids.limboCount < astTarget) {
             const ast = Asteroid.getRandom(canvasRef.current, ship);
             ast.setLimbo(Math.random() * 550 + 95);
-            ast.setOnActive(() => setAstAmount(asteroids.count()));
             asteroids.push(ast);
         }
     }, [astTarget, astAmount]);
@@ -165,6 +160,28 @@ const Spacegame = () => {
         const { ship, mousePos, asteroids, delta = 1000 / 60 } = data;
 
         if (!ship || !asteroids || !gameRunning) return;
+
+        // Collision handeling for bullets hitting asteroids.
+        // Asteroids hitting asteroids is done by MatterJS internally.
+        Matter.Events.off(ENGINE, 'collisionStart')
+        Matter.Events.on(ENGINE, 'collisionStart', ({ pairs }) => {
+            pairs.forEach(({ bodyA, bodyB }) => {
+                let [bullet, asteroid] = [null, null];
+
+                if (bodyA.label === 'bullet' && bodyB.label === 'asteroid')
+                    [bullet, asteroid] = [bodyA, bodyB];
+                else if (bodyA.label === 'asteroid' && bodyB.label === 'bullet')
+                    [bullet, asteroid] = [bodyB, bodyA];
+                else return;
+
+                const result = bullet.plugin.particleRef.onCollision(asteroid.plugin.particleRef);
+                const points = Math.round(result * (1 / canvasRef.current.width * 1000));
+                setScore(sc => sc + points);
+            })
+        });
+
+        // Update displayed asteroid count.
+        asteroids.onCountChanged = count => setAstAmount(count);
 
         const loop = () => {
 
@@ -191,21 +208,14 @@ const Spacegame = () => {
             }
 
 
-            if(Math.round(data.frame++ % 3) !== 0) return;
+            if (data.frame++ % 3 !== 0) return;
 
-            // Collision dedection.
+            // Collision dedection for ship.
             asteroids.particles.forEach(asteroid => {
-                cannon.calculateCollsisions(asteroid, (collider, collided) => {
-                    const points = Math.round(collided * (1 / canvas.width * 1000));
-                    setScore(sc => sc + points);
-                    setAstAmount(asteroids.count());
-                })
 
                 if (!ship.isColliding(asteroid)) return;
 
                 ship.onCollision(asteroid);
-                setAstAmount(asteroids.count());
-
                 if (ship.alive) return;
                 setGameRunning(false);
                 setPause(true);

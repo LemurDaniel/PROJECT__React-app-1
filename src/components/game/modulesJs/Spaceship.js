@@ -1,7 +1,7 @@
 
 import ParticleManager, { Particle } from './Particle';
 import Vector from './Vector'
-
+import Matter from 'matter-js';
 
 
 
@@ -9,29 +9,59 @@ class Bullet extends Particle {
 
   constructor(pos, velocity) {
     super(pos, velocity, 10);
+
     this.add(Vector.mul(velocity, 1))
     this.angle = this.velocity.heading();
+    this.rect = [10, -2.5, 20, 5];
+
+    this.matterBody = Matter.Bodies.rectangle(
+      ...this.rect,
+      {
+        label: 'bullet',
+        frictionAir: 0,
+        friction: 0,
+        isSensor: true,
+        plugin: {
+          particleRef: this,
+        }
+      })
+
+    Matter.Body.setPosition(this.matterBody, this.MatterVector);
+    Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
+  }
+
+  onActive(particleManager) {
+    this.pm = particleManager;
+    Matter.Composite.add(this.pm.matterWorld, this.matterBody);
+  }
+
+  onDeath() {
+    Matter.Composite.remove(this.pm.matterWorld, this.matterBody);
   }
 
   move(canvas) {
     // super.move(canvas);
-    this.add(this.velocity)
+    // this.add(this.velocity);
+    this.x = this.matterBody.position.x;
+    this.y = this.matterBody.position.y;
+
     this.alive = !this.isOOB(canvas);
-    this.died = !this.alive;
   }
 
   draw(ctx) {
     super.draw(ctx);
-    ctx.fillRect(10, -2.5, 20, 5);
+    ctx.fillRect(...this.rect);
   }
 
   onCollision(ast) {
 
     ast.alive = false
     this.alive = false;
-    this.died = true;
+    this.hidden = true;
+    this.fadeTime = 0;
 
     return Math.floor(ast.mass / (Math.random() * 10 + 100));
+
   }
 
 }
@@ -39,7 +69,7 @@ class Bullet extends Particle {
 
 class Ship extends Particle {
 
-  constructor(x, y, angle) {
+  constructor(x, y, matterWorld) {
     super(
       new Vector(x, y),
       new Vector(0, 0), 5, 3
@@ -50,7 +80,7 @@ class Ship extends Particle {
     this.friction = 0.05;
     this.maxV = 14;
 
-    this.cannon = new ParticleManager();
+    this.cannon = new ParticleManager(matterWorld);
 
   }
 

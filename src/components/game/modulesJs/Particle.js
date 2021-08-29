@@ -11,9 +11,16 @@ class ParticleManager {
     }
 
 
-    count(includeLimbo) {
-        return this.particles.length + (includeLimbo ? this.limbo.length : 0);
+
+    get count() {
+        return this.particles.length;
     }
+
+    get limboCount() {
+        return this.limbo.length;
+    }
+
+    onCountChanged(newCount, oldCount) { }
 
     push(prt) {
         if (prt.limbo > 0) this.limbo.push(prt)
@@ -21,12 +28,12 @@ class ParticleManager {
     }
 
     pushParticle(prt) {
-        prt.pm = this;
+        prt.onActive(this);
         this.particles.push(prt);
-        prt.onActive(this.matterWorld);
     }
 
     reset() {
+        this.particles.forEach(prt => prt.onDeath());
         this.limbo = [];
         this.particles = [];
         this.dying = [];
@@ -61,8 +68,10 @@ class ParticleManager {
             prt.move(canvas)
             if (!prt.hidden) prt.draw(ctx);
 
-            if (prt.faded)
+            if (prt.faded) {
                 this.dying[i--] = this.dying[end--];
+                prt.onDeath();
+            }
 
         }
 
@@ -72,6 +81,8 @@ class ParticleManager {
 
     render(canvas) {
 
+        const initialLength = this.particles.length;
+
         this._checkLimbo();
         this._checkDying(canvas);
 
@@ -79,12 +90,14 @@ class ParticleManager {
 
             const prt = this.particles[i];
 
-            if (prt.alive) 
+            if (prt.alive)
                 prt.render(canvas);
-            else 
+            else
                 this._removeParticleAtIndex(i--);
         }
 
+        if (initialLength !== this.particles.length)
+            this.onCountChanged(this.particles.length, initialLength);
     }
 
     _removeParticleAtIndex(index) {
@@ -95,6 +108,7 @@ class ParticleManager {
         if (!prt.died) {
             this.dying.push(prt);
             prt.hidden = true;
+            prt.onDying();
         }
     }
 
@@ -105,7 +119,7 @@ class ParticleManager {
         }
     }
 
-
+    // obsolete.
     calculateCollsisions(collider, afterCollision) {
 
         const particles = this.particles;
@@ -170,16 +184,12 @@ export class Particle extends Vector {
         this.pm._removeParticle(this);
     }
 
-    setLimbo(time, onActive) {
+    setLimbo(time) {
         this.limbo = Math.round(time);
     }
 
-    setOnActive(onActive) {
-        this._onActive.push(onActive);
-    }
-
     isColliding(collider) {
-     
+
         if (!this.alive || !collider.alive) return false;
         if (this === collider) return false;
 
@@ -243,15 +253,13 @@ export class Particle extends Vector {
         ctx.rotate(this.angle);
     }
 
-    onCollision(prt) {
-        return 0;
-    }
+    onCollision(prt) { };
 
-    onActive(world) {
-        this._onActive.forEach(handler => handler());
-    }
+    onActive(pm) { }
 
+    onDying() { }
 
+    onDeath() { }
 }
 
 
