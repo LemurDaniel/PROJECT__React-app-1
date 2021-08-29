@@ -2,7 +2,7 @@ import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
 
-const someVariableWithoutADescriptiveName = 0.0038;
+const someVariableWithoutADescriptiveName = 0.005;
 
 class Asteroid extends Particle {
 
