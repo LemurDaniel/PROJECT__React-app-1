@@ -188,6 +188,7 @@ export class Particle extends Vector {
         this.limbo = Math.round(time);
     }
 
+    // obsolete.
     isColliding(collider) {
 
         if (!this.alive || !collider.alive) return false;

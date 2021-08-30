@@ -41,6 +41,9 @@ const Spacegame = () => {
 
         const c = canvasRef.current;
 
+        if (data.ship !== null)
+            Matter.Composite.remove(ENGINE.world, data.ship.matterBody);
+
         data.asteroids = new ParticleManager(ENGINE.world);
         data.ship = new Ship(
             c.width / 2,
@@ -166,17 +169,28 @@ const Spacegame = () => {
         Matter.Events.off(ENGINE, 'collisionStart')
         Matter.Events.on(ENGINE, 'collisionStart', ({ pairs }) => {
             pairs.forEach(({ bodyA, bodyB }) => {
-                let [bullet, asteroid] = [null, null];
+                let [sensor, asteroid] = [null, null];
 
-                if (bodyA.label === 'bullet' && bodyB.label === 'asteroid')
-                    [bullet, asteroid] = [bodyA, bodyB];
-                else if (bodyA.label === 'asteroid' && bodyB.label === 'bullet')
-                    [bullet, asteroid] = [bodyB, bodyA];
+                if (bodyA.label === 'asteroid')
+                    [sensor, asteroid] = [bodyB, bodyA];
+                else if (bodyB.label === 'asteroid')
+                    [sensor, asteroid] = [bodyA, bodyB];
                 else return;
 
-                const result = bullet.plugin.particleRef.onCollision(asteroid.plugin.particleRef);
-                const points = Math.round(result * (1 / canvasRef.current.width * 1000));
-                setScore(sc => sc + points);
+                const [sensorPrt, asteroidPrt] = [sensor.plugin.particleRef, asteroid.plugin.particleRef]
+
+                const result = sensorPrt.onCollision(asteroidPrt);
+
+                console.log(sensor.label)
+                if (sensor.label === 'bullet') {
+                    const points = Math.round(result * (1 / canvasRef.current.width * 1000));
+                    setScore(sc => sc + points);
+                }
+                else if (sensor.label === 'spaceship' && !sensorPrt.alive) {
+                    setGameRunning(false);
+                    setPause(true);
+                }
+
             })
         });
 
@@ -195,7 +209,6 @@ const Spacegame = () => {
             ctx.lineCap = 'round';
             ctx.lineWidth = 4;
 
-            Matter.Engine.update(ENGINE, delta);
             const cannon = ship.cannon;
             asteroids.render(canvas);
             cannon.render(canvas)
@@ -206,20 +219,6 @@ const Spacegame = () => {
                 ctx.arc(mousePos.vec.x, mousePos.vec.y, 5, 0, Math.PI * 2)
                 ctx.fill();
             }
-
-
-            if (data.frame++ % 3 !== 0) return;
-
-            // Collision dedection for ship.
-            asteroids.particles.forEach(asteroid => {
-
-                if (!ship.isColliding(asteroid)) return;
-
-                ship.onCollision(asteroid);
-                if (ship.alive) return;
-                setGameRunning(false);
-                setPause(true);
-            });
 
         };
 

@@ -72,7 +72,7 @@ class Ship extends Particle {
   constructor(x, y, matterWorld) {
     super(
       new Vector(x, y),
-      new Vector(0, 0), 5, 3
+      new Vector(0, 0), 15, 3
     )
 
     this.faded = true;
@@ -82,6 +82,20 @@ class Ship extends Particle {
 
     this.cannon = new ParticleManager(matterWorld);
 
+    this.matterBody = Matter.Bodies.circle(
+      this.x, this.y, this.radius,
+      {
+        label: 'spaceship',
+        frictionAir: 0,
+        friction: 0,
+        density: 1,
+        isSensor: true,
+        plugin: {
+          particleRef: this,
+        }
+      })
+
+    Matter.Composite.add(matterWorld, this.matterBody);
   }
 
   shoot() {
@@ -115,6 +129,13 @@ class Ship extends Particle {
     }
 
     super.draw(ctx);
+
+    // Draw collsion body for testing. 
+    //ctx.beginPath();
+    //ctx.arc(0, 0, this.radius, 0, Math.PI * 2)
+    //ctx.stroke();
+
+    ctx.translate(10, 0);
     this.drawShip(ctx);
   }
 
@@ -163,6 +184,14 @@ class Ship extends Particle {
 
     super.move(canvas);
 
+    // The movement is still being calculated by the particle object and injected as positions into the MatterJS Object.
+    // MatterJs doesn't need to move the ship, it only has to calculate whether a collsion with an asteroid occured.
+    this.matterBody.position.x = this.x;
+    this.matterBody.position.y = this.y;
+    this.matterBody.velocity.x = 0;
+    this.matterBody.velocity.y = 0;
+    // The angle has no importance, since the collision object for matterJs is a circle and not the actual shape of the spaceship.
+    this.matterBody.angle = 0;
   }
 
   onCollision(ast) {
@@ -175,11 +204,8 @@ class Ship extends Particle {
       this.fadeTime = 12;
       this.fadeEnd = 12;
     }
-
   }
-
 }
-
 
 
 

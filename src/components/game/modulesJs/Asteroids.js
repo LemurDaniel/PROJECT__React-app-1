@@ -22,7 +22,7 @@ class Asteroid extends Particle {
             density: 1,
             mass: this.mass,
             restitution: 0.65,
-            plugin:{
+            plugin: {
                 particleRef: this,
             }
         })
