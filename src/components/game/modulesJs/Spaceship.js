@@ -191,7 +191,7 @@ class Ship extends Particle {
     this.matterBody.velocity.x = 0;
     this.matterBody.velocity.y = 0;
     // The angle has no importance, since the collision object for matterJs is a circle and not the actual shape of the spaceship.
-    this.matterBody.angle = 0;
+    //this.matterBody.angle = 0;
   }
 
   onCollision(ast) {

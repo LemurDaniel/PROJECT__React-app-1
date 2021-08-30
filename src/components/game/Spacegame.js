@@ -181,7 +181,6 @@ const Spacegame = () => {
 
                 const result = sensorPrt.onCollision(asteroidPrt);
 
-                console.log(sensor.label)
                 if (sensor.label === 'bullet') {
                     const points = Math.round(result * (1 / canvasRef.current.width * 1000));
                     setScore(sc => sc + points);
@@ -209,6 +208,7 @@ const Spacegame = () => {
             ctx.lineCap = 'round';
             ctx.lineWidth = 4;
 
+            Matter.Engine.update(ENGINE, delta);
             const cannon = ship.cannon;
             asteroids.render(canvas);
             cannon.render(canvas)
