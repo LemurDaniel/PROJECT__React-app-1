@@ -2,7 +2,7 @@
 import ParticleManager, { Particle } from './Particle';
 import Vector from './Vector'
 import Matter from 'matter-js';
-
+import rough from 'roughjs/bundled/rough.cjs';
 
 
 class Bullet extends Particle {
@@ -27,7 +27,7 @@ class Bullet extends Particle {
   }
 
   move(canvas) {
-    if(!this.isOOB(canvas)) return;
+    if (!this.isOOB(canvas)) return;
 
     this.alive = false;
     this.died = true;
@@ -35,7 +35,14 @@ class Bullet extends Particle {
 
   draw(ctx) {
     super.draw(ctx);
-    ctx.fillRect(...Bullet.rectangle);
+
+    if (Window.DrawRoughJS) {
+      const roughCan = rough.canvas(ctx.canvas);
+      roughCan.rectangle(...Bullet.rectangle, { seed: this.seed, ...Window.RoughJSSetting });
+    }
+    else
+      ctx.fillRect(...Bullet.rectangle);
+
   }
 
   onCollision(ast) {
@@ -131,16 +138,26 @@ class Ship extends Particle {
 
     ctx.translate(10, 0);
 
-    ctx.beginPath();
-    ctx.moveTo(20, 0);
-    ctx.lineTo(-20, 20)
-    ctx.lineTo(-20, -20)
-    ctx.closePath();
-    ctx.stroke();
+    if (Window.DrawRoughJS) {
+      const roughCan = rough.canvas(ctx.canvas);
 
-    ctx.strokeRect(-28, -5 - 10, 8, 10);
-    ctx.strokeRect(-28, 5, 8, 10);
-    ctx.strokeRect(16, -1, 10, 2);
+      roughCan.rectangle(-28, -15, 8, 10, { seed: this.seed, ...Window.RoughJSSetting });
+      roughCan.rectangle(-28, 5, 8, 10, { seed: this.seed, ...Window.RoughJSSetting });
+      roughCan.rectangle(16, -1, 10, 2, { seed: this.seed, ...Window.RoughJSSetting });
+      roughCan.polygon([[20, 0], [-20, 20], [-20, -20]], { seed: this.seed, ...Window.RoughJSSetting });
+    }
+    else {
+      ctx.beginPath();
+      ctx.moveTo(20, 0);
+      ctx.lineTo(-20, 20)
+      ctx.lineTo(-20, -20)
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.strokeRect(-28, -5 - 10, 8, 10);
+      ctx.strokeRect(-28, 5, 8, 10);
+      ctx.strokeRect(16, -1, 10, 2);
+    }
 
   }
 

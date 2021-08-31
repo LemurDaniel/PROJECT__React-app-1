@@ -23,7 +23,15 @@ const ENGINE = Matter.Engine.create({
 });
 
 Window.MatterJSWorld = ENGINE.world;
-
+Window.Frames = 0;
+Window.DrawRoughJS = true;
+Window.RoughJSSetting = {
+    roughness: 1.8,
+    fill: 'white', stroke: 'white',
+    fillWeight: 2, strokeWidth: 4,
+    fillStyle: 'zigzag ',
+    bowing: 0.9, curveFitting: 0.2
+}
 
 const data = {
 
@@ -33,7 +41,6 @@ const data = {
         vec: new Vector(0, 0),
         draw: true,
     },
-    frame: 0,
 
 }
 
@@ -45,8 +52,8 @@ const Spacegame = () => {
         const c = canvasRef.current;
 
         if (data.ship !== null) data.ship.onInActive();
-        if(data.asteroids !== null) data.asteroids.reset();
-        
+        if (data.asteroids !== null) data.asteroids.reset();
+
         data.ship = new Ship(c.width / 2, c.height / 2);
         data.asteroids = new ParticleManager();
         data.ship.onActive();
@@ -208,6 +215,7 @@ const Spacegame = () => {
             ctx.lineCap = 'round';
             ctx.lineWidth = 4;
 
+            Window.Frames++;
             Matter.Engine.update(ENGINE, delta);
             const cannon = ship.cannon;
             asteroids.render(canvas);
@@ -232,7 +240,14 @@ const Spacegame = () => {
     }, [pause, gameRunning]);
 
 
-
+    const [drawType, setDrawType] = useState('Scribbled');
+    const changeDrawType = e => {
+        Window.DrawRoughJS = !Window.DrawRoughJS;
+        if (!Window.DrawRoughJS)
+            setDrawType('Standard');
+        else
+            setDrawType('Scribbled');
+    }
 
     return (
         <div className="overflow-hidden select-none" >
@@ -240,9 +255,11 @@ const Spacegame = () => {
             <div className="relative flex justify-evenly font-bold text-brand2-100" >
                 <p className="absolute md:left-1/3 top-2">Highscore: {score}</p>
                 <p className="absolute md:right-1/3 top-8 md:top-2">Asteroids: {astAmount} / {astTarget}</p>
-                <div className="absolute right-4 md:right-12 top-2 md:top-2">
+                <div className="absolute right-4 md:right-12 top-8">
                     <Timer ticks={ticks} setTicks={setTicks} pause={pause || !gameRunning} />
                 </div>
+                <button type="button" className="btn-decent text-sm  btn-light  absolute right-4 md:right-8 top-2"
+                    onClick={changeDrawType}>{drawType}</button>
             </div>
 
             {gameRunning ? null : <Highscore score={score} ticks={ticks} gameRunning={gameRunning} onRestart={initializeGame} />}

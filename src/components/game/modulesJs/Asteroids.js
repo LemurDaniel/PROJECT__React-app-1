@@ -1,6 +1,7 @@
 import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
+import rough from 'roughjs/bundled/rough.cjs';
 
 const someVariableWithoutADescriptiveName = 0.0054;
 
@@ -23,9 +24,6 @@ class Asteroid extends Particle {
                 vertices: verts.map(vert => vert.MatterVector)
             }
         );
-
-        this.mass = Math.PI * radius * radius;
-        this.verts = verts;
 
         const angVel = Math.log(this.mass) * 0.0025 * (Math.round(Math.random()) === 0 ? 1 : -1);
         Matter.Body.setAngularVelocity(this.matterBody, angVel)
@@ -79,16 +77,22 @@ class Asteroid extends Particle {
 
     draw(ctx) {
 
-        super.draw(ctx);
-        const verts = this.verts;
+        const verts = this.vertices;
 
-        ctx.beginPath();
-        ctx.moveTo(verts[0].x, verts[0].y);
-        for (let i = 1; i < verts.length; i++) {
-            ctx.lineTo(verts[i].x, verts[i].y);
+        if (Window.DrawRoughJS) {
+            const roughCan = rough.canvas(ctx.canvas);
+            roughCan.polygon(verts.map(v => [v.x, v.y]), { seed: this.seed, ...Window.RoughJSSetting });
         }
-        ctx.closePath();
-        ctx.stroke();
+        else {
+
+            ctx.beginPath();
+            ctx.moveTo(verts[0].x, verts[0].y);
+            for (let i = 1; i < verts.length; i++) {
+                ctx.lineTo(verts[i].x, verts[i].y);
+            }
+            ctx.closePath();
+            ctx.stroke();
+        }
 
     }
 

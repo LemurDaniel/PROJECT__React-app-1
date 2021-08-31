@@ -164,6 +164,10 @@ export class Particle extends Vector {
         return this.matterBody.angle;
     }
 
+    get mass() {
+        return this.matterBody.mass;
+    }
+
     set angle(angle) {
         Matter.Body.setAngle(this.matterBody, angle);
     }
@@ -173,7 +177,7 @@ export class Particle extends Vector {
 
         const {
             lives = 1,
-            radius = 0
+            radius = 0,
         } = options;
 
         delete options.lives;
@@ -190,7 +194,7 @@ export class Particle extends Vector {
         Matter.Body.setVelocity(this.matterBody, velocity.MatterVector);
         Matter.Body.setAngle(this.matterBody, velocity.heading());
 
-        this._onActive = [];
+        this.seed = Math.random() * Number.MAX_SAFE_INTEGER;
 
         this.limbo = 0; // Time before Particle is active.
         this.lives = lives;
@@ -198,6 +202,7 @@ export class Particle extends Vector {
         this.died = false;
         this.radius = radius;
         this.velocity = velocity;
+        this.vertices = options.vertices;
 
         // obsolete
         this.collisions = {};
@@ -281,7 +286,11 @@ export class Particle extends Vector {
         Matter.Body.setPosition(this.matterBody, this.MatterVector);
         Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
 
-        if (this.hidden) return
+        if (Window.Frames % 7 === 0)
+            this.seed = Math.random() * Number.MAX_SAFE_INTEGER;
+
+
+        if (this.hidden || this.died) return;
         ctx.setTransform(1, 0, 0, 1, this.x, this.y);
         ctx.rotate(this.angle);
         this.draw(ctx);
