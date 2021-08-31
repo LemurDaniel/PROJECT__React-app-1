@@ -5,6 +5,7 @@ class ParticleManager {
 
     constructor(matterWorld) {
         this.matterWorld = matterWorld;
+        this.lastFrame = 0;
         this.limbo = [];
         this.particles = [];
         this.dying = [];
@@ -68,7 +69,8 @@ class ParticleManager {
 
             const prt = this.dying[i];
 
-            prt.fade();
+            if (this.lastFrame !== Window.Frames) prt.fade();
+
             prt.render(canvas);
 
             if (prt.faded) {
@@ -101,6 +103,8 @@ class ParticleManager {
 
         if (initialLength !== this.particles.length)
             this.onCountChanged(this.particles.length, initialLength);
+
+        this.lastFrame = Window.Frames;
     }
 
     _removeParticleAtIndex(index) {
