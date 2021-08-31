@@ -2,71 +2,43 @@ import { Particle } from './Particle'
 import Vector from './Vector'
 import Matter from 'matter-js';
 
-const someVariableWithoutADescriptiveName = 0.005;
+const someVariableWithoutADescriptiveName = 0.0054;
 
 class Asteroid extends Particle {
 
     static targetAmount = 0;
 
     constructor(pos, velocity, radius, verts) {
-        super(pos, velocity, radius);
+        super(pos, velocity,
+            {
+                radius: radius,
+
+                label: 'asteroid',
+                frictionAir: 0,
+                friction: 0,
+                density: 1,
+                mass: Math.PI * radius * radius,
+                restitution: 0.65,
+
+                vertices: verts.map(vert => vert.MatterVector)
+            }
+        );
+
         this.mass = Math.PI * radius * radius;
         this.verts = verts;
 
         const angVel = Math.log(this.mass) * 0.0025 * (Math.round(Math.random()) === 0 ? 1 : -1);
-
-        this.matterBody = Matter.Body.create({
-            label: 'asteroid',
-            frictionAir: 0,
-            friction: 0,
-            density: 1,
-            mass: this.mass,
-            restitution: 0.65,
-            plugin: {
-                particleRef: this,
-            }
-        })
-
-        Matter.Body.setVertices(this.matterBody, verts.map(vert => vert.MatterVector));
-        Matter.Body.setPosition(this.matterBody, this.MatterVector);
-        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity)
         Matter.Body.setAngularVelocity(this.matterBody, angVel)
-    }
-
-    onActive(particleManager) {
-        this.pm = particleManager;
-        Matter.Composite.add(this.pm.matterWorld, this.matterBody);
-    }
-
-    onDying() {
-        this.matterBody.collisionFilter = {
-            group: -1,
-            category: 2,
-            mask: 0,
-        };
-    }
-
-    onDeath() {
-        Matter.Composite.remove(this.pm.matterWorld, this.matterBody);
     }
 
     move(canvas) {
 
-        this.angle = this.matterBody.angle;
-        this.x = this.matterBody.position.x;
-        this.y = this.matterBody.position.y;
-        this.velocity.x = this.matterBody.velocity.x;
-        this.velocity.y = this.matterBody.velocity.y;
-
         const vel = canvas.width * someVariableWithoutADescriptiveName;
+
         if (this.velocity.mag() < 0.55)
             this.velocity.setMag(Math.random() * vel)
 
         this.velocity.limit(Math.min(vel, Math.random() * 4 + 9));
-        super.wrapBounds(canvas);
-
-        Matter.Body.setPosition(this.matterBody, this.MatterVector);
-        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
 
     }
 
@@ -76,8 +48,7 @@ class Asteroid extends Particle {
         // and moves it at an random angle outside of the screen.
         const pos = new Vector(canvas.width / 2, canvas.height / 2);
         const angle = Math.random() * (Math.PI * 2);
-        const move = Vector.fromAngle(angle, pos.mag() + 10);
-        pos.add(move);
+        pos.add(Vector.fromAngle(angle, pos.mag() + 10));
 
 
         const direction = Vector.sub(ship, pos);

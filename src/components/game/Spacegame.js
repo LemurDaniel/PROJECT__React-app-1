@@ -22,6 +22,9 @@ const ENGINE = Matter.Engine.create({
     }
 });
 
+Window.MatterJSWorld = ENGINE.world;
+
+
 const data = {
 
     ship: null,
@@ -41,15 +44,12 @@ const Spacegame = () => {
 
         const c = canvasRef.current;
 
-        if (data.ship !== null)
-            Matter.Composite.remove(ENGINE.world, data.ship.matterBody);
-
-        data.asteroids = new ParticleManager(ENGINE.world);
-        data.ship = new Ship(
-            c.width / 2,
-            c.height / 2,
-            ENGINE.world
-        )
+        if (data.ship !== null) data.ship.onInActive();
+        if(data.asteroids !== null) data.asteroids.reset();
+        
+        data.ship = new Ship(c.width / 2, c.height / 2);
+        data.asteroids = new ParticleManager();
+        data.ship.onActive();
 
         window.onkeyup = e => {
             if (e.code === 'Space') data.ship.shoot();
@@ -141,7 +141,7 @@ const Spacegame = () => {
         const { ship, asteroids } = data;
         while (asteroids.count + asteroids.limboCount < astTarget) {
             const ast = Asteroid.getRandom(canvasRef.current, ship);
-            ast.setLimbo(Math.random() * 550 + 95);
+            ast.limbo = Math.random() * 550 + 95;
             asteroids.push(ast);
         }
     }, [astTarget, astAmount]);
@@ -212,7 +212,9 @@ const Spacegame = () => {
             const cannon = ship.cannon;
             asteroids.render(canvas);
             cannon.render(canvas)
-            ship.render(canvas)
+            ship.render(canvas);
+
+            ship.drawLives(ctx);
 
             if (mousePos.draw && !pause) {
                 ctx.beginPath();

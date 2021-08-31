@@ -7,55 +7,42 @@ import Matter from 'matter-js';
 
 class Bullet extends Particle {
 
+
+  static rectangle = [10, -2.5, 20, 5];
+  static vertices = Matter.Bodies.rectangle(...Bullet.rectangle).vertices.map(v => new Vector(v.x, v.y));
+
   constructor(pos, velocity) {
-    super(pos, velocity, 10);
-
-    this.add(Vector.mul(velocity, 1))
-    this.angle = this.velocity.heading();
-    this.rect = [10, -2.5, 20, 5];
-
-    this.matterBody = Matter.Bodies.rectangle(
-      ...this.rect,
+    super(pos, velocity,
       {
+
         label: 'bullet',
         frictionAir: 0,
         friction: 0,
         isSensor: true,
-        plugin: {
-          particleRef: this,
-        }
-      })
 
-    Matter.Body.setPosition(this.matterBody, this.MatterVector);
-    Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
-  }
+        vertices: Bullet.vertices.map(v => v.MatterVector),
+      }
+    );
 
-  onActive(particleManager) {
-    this.pm = particleManager;
-    Matter.Composite.add(this.pm.matterWorld, this.matterBody);
-  }
-
-  onDeath() {
-    Matter.Composite.remove(this.pm.matterWorld, this.matterBody);
   }
 
   move(canvas) {
-    // super.move(canvas);
-    // this.add(this.velocity);
-    this.x = this.matterBody.position.x;
-    this.y = this.matterBody.position.y;
+    if(!this.isOOB(canvas)) return;
 
-    this.alive = !this.isOOB(canvas);
+    this.alive = false;
+    this.died = true;
   }
 
   draw(ctx) {
     super.draw(ctx);
-    ctx.fillRect(...this.rect);
+    ctx.fillRect(...Bullet.rectangle);
   }
 
   onCollision(ast) {
 
-    ast.alive = false
+    ast.disableCollision();
+    ast.alive = false;
+
     this.alive = false;
     this.hidden = true;
     this.fadeTime = 0;
@@ -69,33 +56,29 @@ class Bullet extends Particle {
 
 class Ship extends Particle {
 
-  constructor(x, y, matterWorld) {
+  constructor(x, y) {
     super(
       new Vector(x, y),
-      new Vector(0, 0), 15, 3
+      new Vector(0, 0),
+      {
+        radius: 15,
+        lives: 3,
+
+        label: 'spaceship',
+        frictionAir: 0.009,
+        friction: 0,
+        density: 1,
+
+        restitution: 0,
+        isSensor: true,
+      }
     )
 
     this.faded = true;
     this.cursor = new Vector(1, 1);
-    this.friction = 0.05;
     this.maxV = 14;
 
-    this.cannon = new ParticleManager(matterWorld);
-
-    this.matterBody = Matter.Bodies.circle(
-      this.x, this.y, this.radius,
-      {
-        label: 'spaceship',
-        frictionAir: 0,
-        friction: 0,
-        density: 1,
-        isSensor: true,
-        plugin: {
-          particleRef: this,
-        }
-      })
-
-    Matter.Composite.add(matterWorld, this.matterBody);
+    this.cannon = new ParticleManager();
   }
 
   shoot() {
@@ -117,26 +100,8 @@ class Ship extends Particle {
       this.velocity = Vector.fromAngle(
         this.angle, this.cursor.mag() * 0.035)
     }
-  }
 
-  // draw spaceship
-  draw(ctx) {
-    this.drawLives(ctx)
-
-    if (!this.faded) {
-      this.fade();
-      if (this.hidden) return;
-    }
-
-    super.draw(ctx);
-
-    // Draw collsion body for testing. 
-    //ctx.beginPath();
-    //ctx.arc(0, 0, this.radius, 0, Math.PI * 2)
-    //ctx.stroke();
-
-    ctx.translate(10, 0);
-    this.drawShip(ctx);
+    Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
   }
 
   drawLives(ctx) {
@@ -149,12 +114,22 @@ class Ship extends Particle {
     ctx.rotate(-Math.PI / 4)
 
     for (let i = 0; i < this.lives; i++) {
-      this.drawShip(ctx);
+      this.draw(ctx);
+      ctx.translate(-10, 0);
       ctx.translate(60 * size, 60 * size);
     }
+
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-  drawShip(ctx) {
+  draw(ctx) {
+
+    // Draw collsion body for testing. 
+    //ctx.beginPath();
+    //ctx.arc(0, 0, this.radius, 0, Math.PI * 2)
+    //ctx.stroke();
+
+    ctx.translate(10, 0);
 
     ctx.beginPath();
     ctx.moveTo(20, 0);
@@ -171,31 +146,21 @@ class Ship extends Particle {
 
   move(canvas) {
 
-    // limit Velocity to max Velocity
     this.velocity.limit(this.maxV);
-
-    // reduce velocity by friction // add/subtract for negative/positive velocity
-    this.velocity.x -= this.friction * Math.sign(this.velocity.x);
-    this.velocity.y -= this.friction * Math.sign(this.velocity.y);
 
     if (this.velocity.mag() <= 10e-2) this.velocity.setMag(0);
 
     this.angle = this.cursor.heading();
 
-    super.move(canvas);
+    if (!this.faded) this.fade();
 
-    // The movement is still being calculated by the particle object and injected as positions into the MatterJS Object.
-    // MatterJs doesn't need to move the ship, it only has to calculate whether a collsion with an asteroid occured.
-    this.matterBody.position.x = this.x;
-    this.matterBody.position.y = this.y;
-    this.matterBody.velocity.x = 0;
-    this.matterBody.velocity.y = 0;
-    // The angle has no importance, since the collision object for matterJs is a circle and not the actual shape of the spaceship.
-    //this.matterBody.angle = 0;
   }
 
   onCollision(ast) {
+
+    ast.disableCollision();
     ast.alive = false;
+
     if (--this.lives <= 0)
       this.alive = false;
     else {

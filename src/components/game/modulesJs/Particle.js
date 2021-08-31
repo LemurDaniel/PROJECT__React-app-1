@@ -1,5 +1,5 @@
 import Vector from './Vector';
-
+import Matter from 'matter-js';
 
 class ParticleManager {
 
@@ -8,6 +8,13 @@ class ParticleManager {
         this.limbo = [];
         this.particles = [];
         this.dying = [];
+
+        // Call particle.onActive on all particles that are pushed to the particles array.
+        this.particles.push = function (particle) {
+            Array.prototype.push.call(this, particle)
+            particle.onActive();
+        }
+
     }
 
 
@@ -23,17 +30,14 @@ class ParticleManager {
     onCountChanged(newCount, oldCount) { }
 
     push(prt) {
-        if (prt.limbo > 0) this.limbo.push(prt)
-        else this.pushParticle(prt)
-    }
-
-    pushParticle(prt) {
-        prt.onActive(this);
-        this.particles.push(prt);
+        if (prt.limbo > 0)
+            this.limbo.push(prt)
+        else
+            this.particles.push(prt)
     }
 
     reset() {
-        this.particles.forEach(prt => prt.onDeath());
+        this.particles.forEach(prt => prt.onInActive());
         this.limbo = [];
         this.particles = [];
         this.dying = [];
@@ -48,7 +52,7 @@ class ParticleManager {
 
             if (--prt.limbo <= 0) {
                 this.limbo[i--] = this.limbo[end--];
-                this.pushParticle(prt);
+                this.particles.push(prt);
             }
         }
 
@@ -65,12 +69,11 @@ class ParticleManager {
             const prt = this.dying[i];
 
             prt.fade();
-            prt.move(canvas)
-            if (!prt.hidden) prt.draw(ctx);
+            prt.render(canvas);
 
             if (prt.faded) {
                 this.dying[i--] = this.dying[end--];
-                prt.onDeath();
+                prt.onInActive();
             }
 
         }
@@ -108,7 +111,8 @@ class ParticleManager {
         if (!prt.died) {
             this.dying.push(prt);
             prt.hidden = true;
-            prt.onDying();
+        } else {
+            prt.onInActive();
         }
     }
 
@@ -156,21 +160,48 @@ export class Particle extends Vector {
         return this.velocity.MatterVector;
     }
 
-    constructor(pos, velocity, radius, lives = 1) {
-        super(pos.x, pos.y);
-        this.id = Particle.id++;
+    get angle() {
+        return this.matterBody.angle;
+    }
 
-        this.pm = null;
+    set angle(angle) {
+        Matter.Body.setAngle(this.matterBody, angle);
+    }
+
+    constructor(position, velocity, options) {
+        super(position.x, position.y);
+
+        const {
+            lives = 1,
+            radius = 0
+        } = options;
+
+        delete options.lives;
+        delete options.radius;
+
+        this.matterBody = Matter.Body.create({
+            ...options,
+            plugin: {
+                particleRef: this,
+            }
+        })
+
+        Matter.Body.setPosition(this.matterBody, position.MatterVector);
+        Matter.Body.setVelocity(this.matterBody, velocity.MatterVector);
+        Matter.Body.setAngle(this.matterBody, velocity.heading());
+
         this._onActive = [];
 
         this.limbo = 0; // Time before Particle is active.
         this.lives = lives;
         this.alive = true;
         this.died = false;
-        this.angle = 0;
         this.radius = radius;
         this.velocity = velocity;
+
+        // obsolete
         this.collisions = {};
+        this.id = Particle.id++;
 
 
         this.fadeTime = 8;
@@ -180,12 +211,12 @@ export class Particle extends Vector {
         this.time = 0;
     }
 
-    _removeSelf() {
-        this.pm._removeParticle(this);
-    }
-
-    setLimbo(time) {
-        this.limbo = Math.round(time);
+    disableCollision() {
+        this.matterBody.collisionFilter = {
+            group: -1,
+            category: 2,
+            mask: 0,
+        };
     }
 
     // obsolete.
@@ -238,29 +269,38 @@ export class Particle extends Vector {
 
     render(canvas) {
         const ctx = canvas.getContext('2d')
-        this.collisions = {};
+
+        this.x = this.matterBody.position.x;
+        this.y = this.matterBody.position.y;
+        this.velocity.y = this.matterBody.velocity.y;
+        this.velocity.x = this.matterBody.velocity.x;
+
         this.move(canvas);
+        this.wrapBounds(canvas);
+
+        Matter.Body.setPosition(this.matterBody, this.MatterVector);
+        Matter.Body.setVelocity(this.matterBody, this.MatterVelocity);
+
+        if (this.hidden) return
+        ctx.setTransform(1, 0, 0, 1, this.x, this.y);
+        ctx.rotate(this.angle);
         this.draw(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);
     }
 
-    move(canvas) {
-        this.add(this.velocity);
-        this.wrapBounds(canvas);
-    }
+    draw(ctx) { }
 
-    draw(ctx) {
-        ctx.setTransform(1, 0, 0, 1, this.x, this.y);
-        ctx.rotate(this.angle);
-    }
+    move(canvas) { }
 
     onCollision(prt) { };
 
-    onActive(pm) { }
+    onActive() {
+        Matter.Composite.add(Window.MatterJSWorld, this.matterBody);
+    }
 
-    onDying() { }
-
-    onDeath() { }
+    onInActive() {
+        Matter.Composite.remove(Window.MatterJSWorld, this.matterBody);
+    }
 }
 
 
