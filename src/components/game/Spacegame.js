@@ -247,6 +247,25 @@ const Spacegame = () => {
             setDrawType('Standard');
         else
             setDrawType('Scribbled');
+
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        ctx.strokeStyle = 'white';
+        ctx.fillStyle = 'white';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 4;
+
+        // All the underlying movement is done by the physics engine.
+        // As long as Engine.update isn't call as many rerenders can be done, without any movement.
+        const { asteroids, ship, ship: { cannon } } = data;
+        asteroids.render(canvas);
+        cannon.render(canvas)
+        ship.render(canvas);
+
+        ship.drawLives(ctx);
     }
 
     return (

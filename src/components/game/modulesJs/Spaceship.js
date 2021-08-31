@@ -29,6 +29,7 @@ class Bullet extends Particle {
   move(canvas) {
     if (!this.isOOB(canvas)) return;
 
+    this.disableCollision();
     this.alive = false;
     this.died = true;
   }
