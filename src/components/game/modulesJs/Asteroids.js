@@ -3,7 +3,7 @@ import Vector from './Vector'
 import Matter from 'matter-js';
 import rough from 'roughjs/bundled/rough.cjs';
 
-const someVariableWithoutADescriptiveName = 0.0054;
+const someVariableWithoutADescriptiveName = 0.0052;
 
 class Asteroid extends Particle {
 
@@ -52,12 +52,13 @@ class Asteroid extends Particle {
         const direction = Vector.sub(ship, pos);
         const obfuscateAngle = direction.heading() - (Math.random() * Math.PI / 32 - Math.PI / 64)
 
+        const anotherVariable = canvas.width * (1/Window.Scale) * 2;
         const velocity = Vector.fromAngle(obfuscateAngle,
-            Math.random() * (canvas.width * someVariableWithoutADescriptiveName)
+            Math.random() * (anotherVariable * someVariableWithoutADescriptiveName)
         )
 
-        const max = Math.min(canvas.width * 0.055, 55);
-        const min = canvas.width * 0.015;
+        const max = Math.min(anotherVariable * 0.075, 45);
+        const min = anotherVariable * 0.015;
         const radius = Math.random() * max + min;
 
         const verts = [];

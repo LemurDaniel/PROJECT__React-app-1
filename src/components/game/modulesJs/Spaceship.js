@@ -69,7 +69,7 @@ class Ship extends Particle {
       new Vector(x, y),
       new Vector(0, 0),
       {
-        radius: 15,
+        radius: 5,
         lives: 3,
 
         label: 'spaceship',
@@ -84,14 +84,14 @@ class Ship extends Particle {
 
     this.faded = true;
     this.cursor = new Vector(1, 1);
-    this.maxV = 14;
+    this.maxV = 19;
 
     this.cannon = new ParticleManager();
   }
 
   shoot() {
     this.cannon.push(new Bullet(
-      this.copy(), Vector.fromAngle(this.angle, 20)
+      this.copy(), Vector.fromAngle(this.angle, 30)
     ))
   }
 
@@ -115,7 +115,7 @@ class Ship extends Particle {
   drawLives(ctx) {
 
     const canvas = ctx.canvas;
-    ctx.setTransform(1, 0, 0, 1, canvas.width * 0.05, canvas.height * 0.035)
+    ctx.setTransform(Window.DrawScale, 0, 0, Window.DrawScale, canvas.width * 0.05, canvas.height * 0.035)
 
     const size = 0.8;
     ctx.scale(size, size)
@@ -164,7 +164,7 @@ class Ship extends Particle {
 
   move(canvas) {
 
-    this.velocity.limit(this.maxV);
+    this.velocity.limit(this.maxV * Window.DrawScale);
 
     if (this.velocity.mag() <= 10e-2) this.velocity.setMag(0);
 

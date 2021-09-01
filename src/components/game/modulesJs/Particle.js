@@ -195,8 +195,9 @@ export class Particle extends Vector {
         })
 
         Matter.Body.setPosition(this.matterBody, position.MatterVector);
-        Matter.Body.setVelocity(this.matterBody, velocity.MatterVector);
+        Matter.Body.setVelocity(this.matterBody, velocity.mul(Window.DrawScale).MatterVector);
         Matter.Body.setAngle(this.matterBody, velocity.heading());
+        Matter.Body.scale(this.matterBody, Window.DrawScale, Window.DrawScale);
 
         this.seed = Math.random() * Number.MAX_SAFE_INTEGER;
 
@@ -204,9 +205,9 @@ export class Particle extends Vector {
         this.lives = lives;
         this.alive = true;
         this.died = false;
-        this.radius = radius;
+        this.radius = radius * Window.DrawScale;
         this.velocity = velocity;
-        this.vertices = options.vertices;
+        this.vertices = options.vertices; 
 
         // obsolete
         this.collisions = {};
@@ -295,7 +296,7 @@ export class Particle extends Vector {
 
 
         if (this.hidden || this.died) return;
-        ctx.setTransform(1, 0, 0, 1, this.x, this.y);
+        ctx.setTransform(Window.DrawScale, 0, 0, Window.DrawScale, this.x, this.y);
         ctx.rotate(this.angle);
         this.draw(ctx);
         ctx.setTransform(1, 0, 0, 1, 0, 0);

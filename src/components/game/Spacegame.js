@@ -10,11 +10,17 @@ import Asteroid from './modulesJs/Asteroids';
 import ParticleManager from './modulesJs/Particle';
 
 const INITIAL_AMOUNT = 4;
-const INITIAL_TRESHHOLD = 400;
-const TRESHHOLD_INCREASE = 1.22;
-const TRESHHOLD_DAMPEN = 0.002;
-const SCALE = 2;
+const INITIAL_TRESHHOLD = 800;
+const TRESHHOLD_INCREASE = 1.3;
+const TRESHHOLD_DAMPEN = 0.008;
+const SCALE = 2; /// Higher number results in higher canvas resolution.
 
+
+for (let i = 0, num = 800, ast = 4; i < 33; i++) {
+    num = num * (1.3 - ast * 0.008)
+    ast++
+    console.log(ast + ' ==> ' + Math.round(num))
+}
 const ENGINE = Matter.Engine.create({
     gravity: {
         x: 0,
@@ -22,6 +28,8 @@ const ENGINE = Matter.Engine.create({
     }
 });
 
+Window.Scale = SCALE;
+Window.DrawScale = SCALE / 2;
 Window.MatterJSWorld = ENGINE.world;
 Window.Frames = 0;
 Window.DrawRoughJS = true;
@@ -46,6 +54,9 @@ const data = {
 
 const Spacegame = () => {
 
+    const canvasRef = useRef(null);
+    const [dimension, setDimension] = useState([window.innerWidth, window.innerHeight - 70])
+
     // Also called on restart game.
     const initializeGame = () => {
 
@@ -54,7 +65,7 @@ const Spacegame = () => {
         if (data.ship !== null) data.ship.onInActive();
         if (data.asteroids !== null) data.asteroids.reset();
 
-        data.ship = new Ship(c.width / 2, c.height / 2);
+        data.ship = new Ship(dimension[0] * SCALE / 2, dimension[1] * SCALE / 2);
         data.asteroids = new ParticleManager();
         data.ship.onActive();
 
@@ -73,8 +84,6 @@ const Spacegame = () => {
     }
 
 
-    const canvasRef = useRef(null);
-    const [dimension, setDimension] = useState([window.innerWidth, window.innerHeight - 70])
     useEffect(() => {
         window.onresize = () => {
             const newWidth = window.innerWidth;
@@ -90,11 +99,6 @@ const Spacegame = () => {
         const canvas = canvasRef.current;
         const width = dimension[0]
         const height = dimension[1]
-
-        if (data.ship.x === 0 && data.ship.y === 0) {
-            data.ship.x = width * SCALE / 2
-            data.ship.y = height * SCALE / 2
-        }
 
         canvas.height = height * SCALE;
         canvas.width = width * SCALE;
@@ -141,7 +145,7 @@ const Spacegame = () => {
     const [score, setScore] = useState(0);
     useEffect(() => {
         if (score < treshhold) return;
-        setTreshhold(score * TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount);
+        setTreshhold(score * Math.max(TRESHHOLD_INCREASE - TRESHHOLD_DAMPEN * astAmount, 1.01));
         setAstTarget(amount => amount + 1);
     }, [score])
     useEffect(() => {
@@ -226,7 +230,7 @@ const Spacegame = () => {
 
             if (mousePos.draw && !pause) {
                 ctx.beginPath();
-                ctx.arc(mousePos.vec.x, mousePos.vec.y, 5, 0, Math.PI * 2)
+                ctx.arc(mousePos.vec.x, mousePos.vec.y, 5 * Window.DrawScale, 0, Math.PI * 2)
                 ctx.fill();
             }
 
