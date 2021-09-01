@@ -13,7 +13,7 @@ const INITIAL_AMOUNT = 4;
 const INITIAL_TRESHHOLD = 400;
 const TRESHHOLD_INCREASE = 1.22;
 const TRESHHOLD_DAMPEN = 0.002;
-const SCALE = 2;
+const SCALE = 2; /// Higher number results in higher canvas resolution.
 
 const ENGINE = Matter.Engine.create({
     gravity: {
@@ -22,6 +22,8 @@ const ENGINE = Matter.Engine.create({
     }
 });
 
+Window.Scale = SCALE;
+Window.DrawScale = SCALE / 2;
 Window.MatterJSWorld = ENGINE.world;
 Window.Frames = 0;
 Window.DrawRoughJS = true;
@@ -226,7 +228,7 @@ const Spacegame = () => {
 
             if (mousePos.draw && !pause) {
                 ctx.beginPath();
-                ctx.arc(mousePos.vec.x, mousePos.vec.y, 5, 0, Math.PI * 2)
+                ctx.arc(mousePos.vec.x, mousePos.vec.y, 5 * Window.DrawScale, 0, Math.PI * 2)
                 ctx.fill();
             }
 
