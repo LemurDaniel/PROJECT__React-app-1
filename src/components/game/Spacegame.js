@@ -77,6 +77,7 @@ const Spacegame = () => {
         setTreshhold(INITIAL_TRESHHOLD);
         setAstTarget(INITIAL_AMOUNT);
         setAstAmount(0);
+        setAstAmount(1);
         setScore(0);
         setTicks(0);
         setGameRunning(true);

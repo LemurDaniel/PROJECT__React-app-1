@@ -17,7 +17,7 @@ services:
         restart: always
         volumes:
             - ./doodles:/var/project/src/public/doodles
-            - ./certs:/var/project/src/certs
+            - ./env/certs:/var/project/src/certs/
         ports:
             - 443:443
             - 80:80
