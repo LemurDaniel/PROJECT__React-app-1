@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     
 env:
-  HOST: daniel-testing.cloud
+  HOST: lemur-daniel.de
   USERNAME: daniellandau1998
   IMAGE_NAME: node-server
   IMAGE_TAG: latest
