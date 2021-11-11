@@ -8,7 +8,7 @@ services:
       ports:
         - 80:80
       volumes:
-        - ./certs/certbot:/etc/letsencrypt/
+        - ./env/certs/certbot:/etc/letsencrypt/
 
 volumes:
     nginx:

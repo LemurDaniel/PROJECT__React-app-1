@@ -36,11 +36,11 @@ ___
 
 #### Generate private key:
         
-        openssl genrsa -out jwt.private.pem 512
+        openssl genrsa -out jwt.private.key 512
 
 #### Generate public key:
 
-        openssl rsa -in jwt.private.pem -outform PEM -pubout -out jwt.public.pem
+        openssl rsa -in jwt.private.key -outform PEM -pubout -out jwt.public.key
 
 </details>
 
