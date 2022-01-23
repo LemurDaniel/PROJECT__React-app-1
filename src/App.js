@@ -21,7 +21,6 @@ import Gallery from './components/images/Gallery';
 
 function App() {
 
-  // const [meta, setMeta] = useState({ user: 'Testnutzer (Guest adaff)', endpoint: 'http://192.168.178.41', token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImM3OTJjMzkyMWQxNTY0ZDciLCJ1c2VyRGlzcGxheU5hbWUiOiJUZXN0IHVzZXIyIiwiaWF0IjoxNjI0NTMxMTYxLCJleHAiOjE2MjQ1NzQzNjF9.1b8hAe_QHZgb_95YAfbUMoHdiY4oUQHC2ssIUfI9A85vzz8BoRl7YIfIpeXNADMnraAP_DnzyMpu9z5N6shQ5w' });
   const [meta, setMeta] = useState({ endpoint: window.location.origin });
   useEffect(() => {
     const call = async () => {

@@ -1,6 +1,6 @@
 {
   "homepage": "/",
-  "name": "react_app_1",
+  "name": "doodles-react-spa",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
