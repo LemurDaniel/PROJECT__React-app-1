@@ -27,9 +27,6 @@ const Footer = () => {
                 <a href="/impressum" className="border-r px-2  hover:underline  hidden md:inline">
                     Datenschutz & Impressum
                 </a>
-                <a href="https://www.youtube.com/watch?v=w7ejDZ8SWv8" className="border-r px-2 hover:underline  hidden md:inline">
-                    Traversy Media's Tutorial
-                </a>
                 <p className="px-2 inline "> <BiCopyright className="inline" />
                     copyright 2021 - <span className="font-bold"> LemurDaniel </span>
                 </p>
