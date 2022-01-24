@@ -15,12 +15,14 @@ const TRESHHOLD_INCREASE = 1.3;
 const TRESHHOLD_DAMPEN = 0.008;
 const SCALE = 2; /// Higher number results in higher canvas resolution.
 
-
+/*
 for (let i = 0, num = 800, ast = 4; i < 33; i++) {
     num = num * (1.3 - ast * 0.008)
     ast++
     console.log(ast + ' ==> ' + Math.round(num))
 }
+*/
+
 const ENGINE = Matter.Engine.create({
     gravity: {
         x: 0,

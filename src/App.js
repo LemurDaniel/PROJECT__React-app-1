@@ -1,7 +1,7 @@
 import './css/Tailwind.css'
 import './css/App.css';
 
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
 
@@ -25,11 +25,15 @@ function App() {
   useEffect(() => {
     const call = async () => {
       const res = await fetch(meta.endpoint + `/user?token=${meta.token}`);
-      if (res.status !== 200 && res.status !== 304) return setMeta({ ...meta, user: null, token: null });
+      if (res.status !== 200 && res.status !== 304) 
+        return setMeta({ ...meta, user: null, token: null });
 
-      const data = await res.json();
-      setMeta({ ...meta, user: data.userDisplayName });
-
+      try {
+        const data = await res.json();
+        setMeta({ ...meta, user: data.userDisplayName });
+      } catch (err) {
+        return setMeta({ ...meta, user: null, token: null });
+      }
     }
     call();
   }, []);
@@ -44,13 +48,15 @@ function App() {
           <Nav />
 
           <div className="min-h-screen md:min-h-full">
-            <Route path='/' exact component={Home} />
-            <Route path='/index' exact component={Home} />
-            <Route path='/game' component={Spacegame} />
-            <Route path='/taskTracker' component={TaskTracker} />
-            <Route path='/gallery' component={Gallery} />
-            <Route path='/drawing' component={Drawing} />
-            <Route path='/impressum' component={Impressum} />
+            <Routes>
+              <Route path='/' exact element={<Home />} />
+              <Route path='/index' exact element={<Home />} />
+              <Route path='/game' element={<Spacegame />} />
+              <Route path='/taskTracker' element={<TaskTracker />} />
+              <Route path='/gallery' element={<Gallery />} />
+              <Route path='/drawing' element={<Drawing />} />
+              <Route path='/impressum' element={<Impressum />} />
+            </Routes>
           </div>
 
         </Router>

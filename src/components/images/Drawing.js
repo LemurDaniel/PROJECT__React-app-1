@@ -150,6 +150,18 @@ const Drawing = ({ size }) => {
         ctxHidden.stroke();
     }
 
+    const clearCanvas = () => {
+        const ctxMain = canvasMain.current.getContext('2d');
+        const ctxHidden = canvasHidden.current.getContext('2d');
+
+        ctxHidden.fillStyle = 'white';
+        ctxHidden.fillStyle = 'white';
+
+        ctxMain.fillRect(0, 0, canvasMain.current.width, canvasMain.current.height);
+        ctxHidden.fillRect(0, 0, canvasHidden.current.width, canvasHidden.current.height);
+
+        setMl5(new Array(10).fill({ label: '', confidence: 0 }));
+    }
 
     // Methods and states for sending picutre to server.
     const [path, setPath] = useState('');
@@ -176,7 +188,7 @@ const Drawing = ({ size }) => {
                 meta: ml5,
             }
         }
-        
+
         try {
             const res = await fetch(meta.endpoint + `/images?token=${meta.token}`, {
                 method: 'POST',
@@ -187,8 +199,8 @@ const Drawing = ({ size }) => {
             })
 
             const data = await res.json();
-            if(res.status !== 200) throw 'Something went wrong: ' + data.err;
-            
+            if (res.status !== 200) throw 'Something went wrong: ' + data.err;
+
             setError('');
             setText(path === '' ? 'Image has been sent' : 'Image has been updated');
             setPath(data.path);
@@ -214,6 +226,7 @@ const Drawing = ({ size }) => {
                 color={strokeColor} setColor={setStrokeColor}
                 width={strokeWidth} setWidth={setStrokeWidth}
                 rubber={rubber} setRubber={setRubber}
+                onClearCanvas={clearCanvas}
             />
 
             <div className={"z-50 relative " + (loaderHidden ? 'hidden' : '')} >
@@ -224,7 +237,7 @@ const Drawing = ({ size }) => {
 
 
             {/* The two canvas. */}
-            <div ref={canvasFrame} className="relative bg-transparent" style={{ 'touch-action': 'none' }}
+            <div ref={canvasFrame} className="relative bg-transparent" style={{ 'touchAction': 'none' }}
                 onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
                 <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
                 <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
