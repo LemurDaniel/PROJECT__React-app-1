@@ -161,6 +161,8 @@ const Drawing = ({ size }) => {
         ctxHidden.fillRect(0, 0, canvasHidden.current.width, canvasHidden.current.height);
 
         setMl5(new Array(10).fill({ label: '', confidence: 0 }));
+        setTitle('');
+        setPath('');
     }
 
     // Methods and states for sending picutre to server.
