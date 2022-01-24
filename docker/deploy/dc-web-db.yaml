@@ -29,7 +29,7 @@ services:
             SQL_PORT: 3306
             SQL_USER: nodeServer
             SQL_DATABASE: node_db
-            SQL_TABLE_NAME: deploy2
+            SQL_TABLE_NAME: deploy4
 
             HTTPS_ENABLE: 'true'
             SSL_KEY:  /certs/certbot/live/www.lemur-daniel.de/privkey.pem

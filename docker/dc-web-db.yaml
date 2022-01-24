@@ -17,8 +17,8 @@ services:
         container_name: nodejs
         restart: always
         volumes:
-            - ./deploy/certs:/var/project/src/certs
             - ../server:/var/project/src
+            - ./deploy/env/certs:/var/project/src/certs
         ports:
             - 443:443
             - 80:80
@@ -32,13 +32,13 @@ services:
             SQL_DATABASE: node_db
             SQL_TABLE_NAME: deploy2
 
-            HTTPS_ENABLE: 'true'
-            SSL_KEY:  /certs/ssl.key
-            SSL_CERT: /certs/ssl.crt
+            HTTPS_ENABLE: 'false'
+            SSL_KEY:  ./certs/ssl.key
+            SSL_CERT: ./certs/ssl.crt
 
-            JWT_ENCRYPTION_ENABLE: 'true'
-            JWT_SIGNING_KEY: /certs/jwt.private.key
-            JWT_VERIFY_KEY: /certs/jwt.public.key
+            JWT_ENCRYPTION_ENABLE: 'false'
+            JWT_SIGNING_KEY: ./certs/jwt.private.key
+            JWT_VERIFY_KEY: ./certs/jwt.public.key
         env_file:
             - ./deploy/env/sql-config.env
             - ./deploy/env/jwt-config.env
