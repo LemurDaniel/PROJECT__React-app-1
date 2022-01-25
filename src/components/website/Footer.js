@@ -14,9 +14,6 @@ const Footer = () => {
 
 
             <div className="order-1 mx-auto md:mx-0 py-1 md:py-0   block md:hidden">
-                <a href="https://www.youtube.com/watch?v=w7ejDZ8SWv8" className="font-extralight hover:underline  pr-1">
-                    Traversy Media's Tutorial
-                </a>
                 <a href="/impressum" className="font-extralight hover:underline   border-l pl-1">
                     Datenschutz & Impressum
                 </a>
