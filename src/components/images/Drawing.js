@@ -96,7 +96,7 @@ const Drawing = ({ size }) => {
         let cursor = e;
         if (e.type === 'touchmove' || e.type === 'touchstart') cursor = e.nativeEvent.touches[0]
         pos.x = cursor.clientX - frame.offsetLeft;
-        pos.y = cursor.clientY - frame.offsetTop;
+        pos.y = cursor.clientY - frame.offsetTop + window.scrollY;
 
     }
 
@@ -239,8 +239,12 @@ const Drawing = ({ size }) => {
 
 
             {/* The two canvas. */}
-            <div ref={canvasFrame} className="relative bg-transparent" style={{ 'touchAction': 'none' }}
-                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
+            <div ref={canvasFrame} className="relative bg-transparent " style={{ 'touchAction': 'none' }}
+                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} 
+                onMouseEnter={e => document.getElementsByTagName("body")[0].classList.add("stop-scrolling")} 
+                onMouseLeave={e => document.getElementsByTagName("body")[0].classList.remove("stop-scrolling")}
+                >
+
                 <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
                 <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
                     onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}

@@ -10,7 +10,7 @@ const Footer = () => {
 
     return (
 
-        <footer className="p-0 md:py-1 md:px-12 w-full  absolute md:fixed bottom-0   flex flex-col lg:flex-row justify-between  bg-dark-100 text-white text-xs font-bold">
+        <footer className="p-0 md:py-1 md:px-12  absolute md:fixed inset-x-0 -bottom-12 md:bottom-0  flex flex-col lg:flex-row justify-between  bg-dark-100 text-white text-xs font-bold">
 
 
             <div className="order-1 mx-auto md:mx-0 py-1 md:py-0   block md:hidden">

@@ -28,6 +28,11 @@ body {
 }
 
 
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}
+
 /* Header for Tasklist */
 
 .header {
