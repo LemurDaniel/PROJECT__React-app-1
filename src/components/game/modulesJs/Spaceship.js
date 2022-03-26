@@ -89,7 +89,12 @@ class Ship extends Particle {
     this.cannon = new ParticleManager();
   }
 
+  onThrust(gradual) { }
+  onShoot() { }
+
   shoot() {
+    this.onShoot?.call()
+
     this.cannon.push(new Bullet(
       this.copy(), Vector.fromAngle(this.angle, 30)
     ))
@@ -101,6 +106,8 @@ class Ship extends Particle {
 
 
   thrust(gradual) {
+    this.onThrust?.call(gradual)
+
     if (gradual) {
       this.velocity.add(Vector.fromAngle(
         this.angle, this.cursor.mag() * 0.00105))

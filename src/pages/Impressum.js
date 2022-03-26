@@ -57,6 +57,43 @@ const Impressum = () => {
       </div>
 
 
+      <div className="text-white mx-auto mt-10">
+        <h1 className="text-xl underline pb-2">Credits:</h1>
+
+        <p>
+          Alle verwendeted Sounds im Spaceship-Spiel sind aus <a href="https://freesound.org/" >Freesounds.org</a> entnommen.
+        </p>
+
+        <ul className="list-disc pl-5 py-5 links">
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/bubaproducer/sounds/151025/" >ship_laser</a> von <a href="https://freesound.org/people/bubaproducer/" >bubaproducer</a> </p>
+          </li>
+
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/StormwaveAudio/sounds/330629/" >ship_impact</a> von <a href="https://freesound.org/people/StormwaveAudio/" >StormwaveAudio</a> </p>
+          </li>
+
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/MATRIXXX_/sounds/515123/" >ship_thrust</a> von <a href="https://freesound.org/people/MATRIXXX_/" >MATRIXXX_</a> </p>
+          </li>
+
+
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/runningmind/sounds/387857/" >asteroid_explosion</a> von <a href="https://freesound.org/people/runningmind/" >runningmind</a> </p>
+          </li>
+
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/afleetingspeck/sounds/232444/" >game_over</a> von <a href="https://freesound.org/people/afleetingspeck/" >afleetingspeck</a> </p>
+          </li>
+
+          <li className="py-1 border-b rounded-sm border-gray-600">
+            <p> <a href="https://freesound.org/people/LittleRobotSoundFactory/sounds/270402/" >highscore</a> von <a href="https://freesound.org/people/LittleRobotSoundFactory/" >LittleRobotSoundFactory</a> </p>
+          </li>
+        </ul>
+
+      </div>
+
+
     </div>
 
   )

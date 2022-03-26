@@ -8,6 +8,7 @@ import Vector from './modulesJs/Vector';
 import Ship from './modulesJs/Spaceship';
 import Asteroid from './modulesJs/Asteroids';
 import ParticleManager from './modulesJs/Particle';
+import useAudio from './Audio';
 
 const INITIAL_AMOUNT = 4;
 const INITIAL_TRESHHOLD = 800;
@@ -56,6 +57,8 @@ const data = {
 
 const Spacegame = () => {
 
+    
+    const [playSound] = useAudio()
     const canvasRef = useRef(null);
     const [dimension, setDimension] = useState([window.innerWidth, window.innerHeight - 70])
 
@@ -70,6 +73,9 @@ const Spacegame = () => {
         data.ship = new Ship(dimension[0] * SCALE / 2, dimension[1] * SCALE / 2);
         data.asteroids = new ParticleManager();
         data.ship.onActive();
+
+        data.ship.onShoot = () => playSound("ship_laser");
+        data.ship.onThrust = () => playSound("ship_thrust", 0.15, true);
 
         window.onkeyup = e => {
             if (e.code === 'Space') data.ship.shoot();
@@ -86,7 +92,6 @@ const Spacegame = () => {
         setPause(false);
     }
 
-
     useEffect(() => {
         window.onresize = () => {
             const newWidth = window.innerWidth;
@@ -98,6 +103,8 @@ const Spacegame = () => {
 
         return () => window.onresize = null;
     }, [])
+   
+
     useEffect(() => {
         const canvas = canvasRef.current;
         const width = dimension[0]
@@ -198,8 +205,13 @@ const Spacegame = () => {
                 if (sensor.label === 'bullet') {
                     const points = Math.round(result * (1 / canvasRef.current.width * 1000));
                     setScore(sc => sc + points);
+                    playSound("asteroid_explosion", 0.75);
+                }
+                else if (sensor.label === 'spaceship' && sensorPrt.alive) {
+                    playSound("ship_impact");
                 }
                 else if (sensor.label === 'spaceship' && !sensorPrt.alive) {
+                    playSound("game_over", 1);
                     setGameRunning(false);
                     setPause(true);
                 }
