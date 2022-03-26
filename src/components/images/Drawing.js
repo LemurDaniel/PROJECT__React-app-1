@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import Strokecontrol from './Strokecontrol'
 import UserContext from '../UserContext'
 import Loading from '../website/Loading'
-
+import useAudio from '../useAudio'
 
 // Set positioning for drawing.
 const pos = { x: null, y: null }
 const Drawing = ({ size }) => {
+
+    const [playSound, toggleLoop] = useAudio();
 
     // The div containing the canvas elements is set to relative.
     // So its position must be used to calculate the mouse position on canvas.
@@ -90,8 +92,17 @@ const Drawing = ({ size }) => {
     }
 
 
+    const onMouseUp = e => {
+        toggleLoop("pen_erase", false);
+        toggleLoop("pen_brush", false); 
+        classify()
+    }
+    const onMouseDown = e => {
+        if (e.button === 2) toggleLoop("pen_erase", true, 0.7);
+        else toggleLoop("pen_brush", true, 1);
+        updatePosition(e);
+    }
     const updatePosition = e => {
-
         const frame = canvasFrame.current;
         let cursor = e;
         if (e.type === 'touchmove' || e.type === 'touchstart') cursor = e.nativeEvent.touches[0]
@@ -175,8 +186,10 @@ const Drawing = ({ size }) => {
     const [loaderHidden, setLoaderHidden] = useState(true);
 
     const sendToServer = async e => {
-
+   
         if (sending || !loaderHidden) return;
+
+        playSound("button_click")
         setSending(true);
         setLoaderHidden(false);
 
@@ -240,15 +253,15 @@ const Drawing = ({ size }) => {
 
             {/* The two canvas. */}
             <div ref={canvasFrame} className="relative bg-transparent " style={{ 'touchAction': 'none' }}
-                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} 
-                onMouseEnter={e => document.getElementsByTagName("body")[0].classList.add("stop-scrolling")} 
-                onMouseLeave={e => document.getElementsByTagName("body")[0].classList.remove("stop-scrolling")}
-                >
+                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke}
+                onMouseEnter={e => document.getElementsByTagName("body")[0].classList.add("stop-scrolling")}
+                onMouseLeave={e => { onMouseUp(e); document.getElementsByTagName("body")[0].classList.remove("stop-scrolling") }}
+            >
 
                 <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
                 <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
-                    onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}
-                    onTouchStart={updatePosition} onTouchMove={draw} onTouchEnd={classify}
+                    onMouseDown={onMouseDown} onMouseMove={draw} onMouseUp={onMouseUp}
+                    onTouchStart={onMouseDown} onTouchMove={draw} onTouchEnd={onMouseUp}
                 />
 
 

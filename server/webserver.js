@@ -1,7 +1,7 @@
 // Load Modules //
 const fs = require('fs');
 const path = require('path');
-// const cors = require('cors'); 
+const cors = require('cors'); 
 const http = require('http');
 const https = require('https');
 const express = require('express');
@@ -30,7 +30,7 @@ fs.writeFileSync(path.join(__dirname, "public/assets/sounds", "soundeffects.json
 
 //Create Server//
 const app = express();
-// app.use(cors())
+app.use(cors())
 app.set('json spaces', 2)   // Send nicley formatted Json
 app.use(express.json({ limit: '5mb' }))
 

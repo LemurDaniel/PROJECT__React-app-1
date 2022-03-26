@@ -8,7 +8,7 @@ import Vector from './modulesJs/Vector';
 import Ship from './modulesJs/Spaceship';
 import Asteroid from './modulesJs/Asteroids';
 import ParticleManager from './modulesJs/Particle';
-import useAudio from './Audio';
+import useAudio from '../useAudio';
 
 const INITIAL_AMOUNT = 4;
 const INITIAL_TRESHHOLD = 800;

@@ -2,12 +2,13 @@ import React, { useState } from 'react'
 
 import { MdCancel } from 'react-icons/md'
 import { ImCross, ImCheckmark } from 'react-icons/im'
+import useAudio from '../useAudio';
 
 const MAX_LEN_DESCRIPTION = 200;
 
 const AddTask = ({ showModal, onAdd }) => {
 
-
+    const [playSound] = useAudio();
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [done, setDone] = useState(false);
@@ -27,9 +28,10 @@ const AddTask = ({ showModal, onAdd }) => {
             time: date.split('T')[1],
             done: done
         }
-        
+
         onAdd(task)
         showModal(false);
+        playSound("button_click")
 
         setTitle('');
         setDone(false);
@@ -44,7 +46,7 @@ const AddTask = ({ showModal, onAdd }) => {
 
                 <header className="p-1 px-2 bg-dark-700  text-xl rounded-t-md   flex justify-start">
 
-                    <div className="p-1 mr-3 w-min   hover:bg-white hover:text-dark-700 rounded-full  duration-300" onClick={e => setDone(!done)} >
+                    <div className="p-1 mr-3 w-min   hover:bg-white hover:text-dark-700 rounded-full  duration-300" onClick={e => { playSound("button_click"); setDone(!done) }} >
                         {!done ?
                             <ImCross className="text-brand2-300" /> :
                             <ImCheckmark className="text-brand2-400" />
@@ -52,7 +54,7 @@ const AddTask = ({ showModal, onAdd }) => {
                     </div>
 
                     <h1 >Add a new Task</h1>
-                    <i className="absolute right-1 top-1 text-sm hover:bg-brand2-250 rounded-full" onClick={e => showModal(false)}> <MdCancel /> </i>
+                    <i className="absolute right-1 top-1 text-sm hover:bg-brand2-250 rounded-full" onClick={e => { playSound("button_click"); showModal(false) }}> <MdCancel /> </i>
 
                 </header>
 
@@ -71,7 +73,7 @@ const AddTask = ({ showModal, onAdd }) => {
                             <input type="datetime-local" name="task_date" id="task_date"
                                 className="select-none focus:outline-none w-full"
                                 value={date}
-                                onChange={e => setDate(e.target.value)}
+                                onChange={e => { playSound("button_click"); setDate(e.target.value); }}
                             />
                         </div>
                         <div className="border-b-2 p-2">
@@ -79,7 +81,7 @@ const AddTask = ({ showModal, onAdd }) => {
                             <textarea name="task_desc" rows="4"
                                 className="focus:outline-none w-full"
                                 placeholder='Add a description' value={description}
-                                onChange={e => setDescription(e.target.value.substr(0, MAX_LEN_DESCRIPTION)) }
+                                onChange={e => setDescription(e.target.value.substr(0, MAX_LEN_DESCRIPTION))}
                             />
                         </div >
                     </form>

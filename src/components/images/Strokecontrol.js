@@ -2,9 +2,11 @@ import React, { useEffect, useRef } from 'react'
 
 import { BiEraser } from 'react-icons/bi'
 import { MdAutorenew } from 'react-icons/md'
+import useAudio from '../useAudio'
 
 const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setColor, rubber, setRubber, onClearCanvas }) => {
 
+    const [playSound, toggleLoop] = useAudio();
     const canvasRef = useRef(null);
     useEffect(() => {
         const canvas = canvasRef.current;
@@ -24,7 +26,7 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.setTransform(1, 0, 0, 1, size, size);
-        
+
         ctx.beginPath();
         ctx.strokeStyle = '#00000';
         ctx.fillStyle = color;
@@ -43,14 +45,14 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
         <div className="m-5 flex justify-evenly ">
 
             <div className="mx-1 ">
-                <MdAutorenew className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '')} onClick={onClearCanvas} />
+                <MdAutorenew className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '')} onClick={e => { playSound("button_click"); onClearCanvas() }} />
             </div>
 
             <div className="mx-1">
                 {rubber ?
-                    <BiEraser className={"rounded-active " + (!isTouchDevice ? 'hoverable' : '')} onClick={e => setRubber(false)} />
+                    <BiEraser className={"rounded-active " + (!isTouchDevice ? 'hoverable' : '')} onClick={e => { playSound("button_click"); setRubber(false) }} />
                     :
-                    <BiEraser className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '')} onClick={e => setRubber(true)} />
+                    <BiEraser className={"rounded-inactive " + (!isTouchDevice ? 'hoverable' : '')} onClick={e => { playSound("button_click"); setRubber(true) }} />
                 }
             </div>
 
@@ -58,12 +60,13 @@ const Strokecontrol = ({ size, widthMin, widthMax, width, setWidth, color, setCo
                 <div className="bg-white rounded-full  hover:bg-blue-100 duration-300">
                     <canvas ref={canvasRef} height={size} width={size} />
                     <input style={{ height: size, width: size }} className="opacity-0 absolute top-0"
-                        type="color" value={color} onChange={e => setColor(e.target.value)} />
+                        type="color" value={color} onClick={e => playSound("button_click")} onChange={e => setColor(e.target.value)} />
                 </div>
             </div>
 
             <div className="mx-1 my-2">
-                <input type="range" min={widthMin} max={widthMax} value={width} onChange={e => setWidth(e.target.value)} />
+                <input type="range" min={widthMin} max={widthMax} value={width}
+                    onChange={e => setWidth(e.target.value)} onMouseDown={e => toggleLoop("button_slide", true, 1)} onMouseUp={e => toggleLoop("button_slide", false)} />
             </div>
         </div>
     )

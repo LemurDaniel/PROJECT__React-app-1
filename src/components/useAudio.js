@@ -24,7 +24,7 @@ const useAudio = () => {
     }
     useEffect(getSoundEffects, [])
 
-    const play = (filename, volume = 0.15, playSingle = false) => {
+    const playSound = (filename, volume = 0.15, playSingle = false) => {
 
         if (!(filename in soundRef.current)) return;
 
@@ -34,7 +34,20 @@ const useAudio = () => {
 
     }
 
-    return [play]
+    const toggleLoop = (filename, loop = true, volume = 0.15) => {
+
+        if (!(filename in soundRef.current)) return;
+
+        const audio = soundRef.current[filename];
+        audio.volume = volume;
+
+        audio.loop = loop;
+        if (audio.loop) audio.play();
+        else audio.pause()
+    }
+
+
+    return [playSound, toggleLoop]
 }
 
 

@@ -1,7 +1,11 @@
 {
     "asteroid_explosion": "/assets/sounds/asteroid_explosion.mp3",
+    "button_click": "/assets/sounds/button_click.mp3",
+    "button_slide": "/assets/sounds/button_slide.mp3",
     "game_over": "/assets/sounds/game_over.mp3",
     "highscore": "/assets/sounds/highscore.mp3",
+    "pen_brush": "/assets/sounds/pen_brush.mp3",
+    "pen_erase": "/assets/sounds/pen_erase.mp3",
     "ship_impact": "/assets/sounds/ship_impact.mp3",
     "ship_laser": "/assets/sounds/ship_laser.mp3",
     "ship_thrust": "/assets/sounds/ship_thrust.mp3"
