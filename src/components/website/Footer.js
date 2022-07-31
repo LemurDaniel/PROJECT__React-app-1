@@ -10,13 +10,10 @@ const Footer = () => {
 
     return (
 
-        <footer className="p-0 md:py-1 md:px-12 w-full  absolute md:fixed bottom-0   flex flex-col lg:flex-row justify-between  bg-dark-100 text-white text-xs font-bold">
+        <footer className="p-0 md:py-1 md:px-12  absolute md:fixed inset-x-0 -bottom-12 md:bottom-0  flex flex-col lg:flex-row justify-between  bg-dark-100 text-white text-xs font-bold">
 
 
             <div className="order-1 mx-auto md:mx-0 py-1 md:py-0   block md:hidden">
-                <a href="https://www.youtube.com/watch?v=w7ejDZ8SWv8" className="font-extralight hover:underline  pr-1">
-                    Traversy Media's Tutorial
-                </a>
                 <a href="/impressum" className="font-extralight hover:underline   border-l pl-1">
                     Datenschutz & Impressum
                 </a>
@@ -26,9 +23,6 @@ const Footer = () => {
             <div className="order-2 mx-auto lg:mx-0  py-1 md:py-0   border-gray-700 border-t md:border-t-0     font-extralight">
                 <a href="/impressum" className="border-r px-2  hover:underline  hidden md:inline">
                     Datenschutz & Impressum
-                </a>
-                <a href="https://www.youtube.com/watch?v=w7ejDZ8SWv8" className="border-r px-2 hover:underline  hidden md:inline">
-                    Traversy Media's Tutorial
                 </a>
                 <p className="px-2 inline "> <BiCopyright className="inline" />
                     copyright 2021 - <span className="font-bold"> LemurDaniel </span>

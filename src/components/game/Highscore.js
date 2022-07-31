@@ -4,6 +4,7 @@ import { BiTimer } from 'react-icons/bi'
 import { IoMdCalendar } from 'react-icons/io';
 
 import UserContext from '../UserContext';
+import useAudio from '../useAudio';
 
 function ticksToString(ticks) {
     const sec = ticks % 60;
@@ -19,9 +20,12 @@ function ticksToString(ticks) {
 
 const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
 
+    const [playSound] = useAudio();
     const { meta } = useContext(UserContext);
     const [scores, setScores] = useState([]);
     const [userScore, setUserScore] = useState({});
+
+
     useEffect(() => {
         if (gameRunning) return;
         const onGameEnd = async () => {
@@ -31,6 +35,7 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                 ticks: ticks,
                 timestamp: new Date().toISOString().split('.')[0]
             }
+
             try {
                 let res = await fetch(meta.endpoint + `/score?token=${meta.token}`, {
                     method: 'POST',
@@ -46,13 +51,13 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
             try {
                 let res = await fetch(meta.endpoint + `/score?token=${meta.token}`);
                 const data = await res.json();
-         
+
                 const scores = data.result;
                 scores.length = 5;
                 scores.sort((a, b) => b.score - a.score)
                 setScores(scores);
                 setUserScore(updScore);
-            } catch(err) {
+            } catch (err) {
                 console.log(err)
             }
 
@@ -60,6 +65,12 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
         onGameEnd();
     }, [gameRunning])
 
+    useEffect(() => {
+        if (scores.length === 0) return;
+        if (scores[0].userDisplayName !== meta.user) return;
+
+        setTimeout(() => playSound("highscore", 1, true), 1500)
+    }, [userScore]);
 
     const timestampNow = new Date(userScore.timestamp).toLocaleDateString();
 
@@ -92,8 +103,8 @@ const Highscore = ({ score, ticks, gameRunning, onRestart }) => {
                         <ol className="list-decimal px-6">
                             {scores.map(({ userDisplayName, timestamp, score, ticks }, i) => {
                                 return <li key={i} className="border-b-2 rounded-sm">
-                                    
-                                    <p >{userDisplayName}</p>                     
+
+                                    <p >{userDisplayName}</p>
 
                                     <div className="font-semibold flex justify-between items-center">
                                         <p>{score} Points</p>

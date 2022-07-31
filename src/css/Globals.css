@@ -28,6 +28,17 @@ body {
 }
 
 
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}
+
+
+/* href style */
+.links a {
+    @apply underline text-blue-600 hover:text-blue-800 visited:text-purple-600
+ }
+
 /* Header for Tasklist */
 
 .header {

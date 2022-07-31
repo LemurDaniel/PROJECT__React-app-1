@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState, useContext } from 'react'
 import Strokecontrol from './Strokecontrol'
 import UserContext from '../UserContext'
 import Loading from '../website/Loading'
-
+import useAudio from '../useAudio'
 
 // Set positioning for drawing.
 const pos = { x: null, y: null }
 const Drawing = ({ size }) => {
+
+    const [playSound, toggleLoop] = useAudio();
 
     // The div containing the canvas elements is set to relative.
     // So its position must be used to calculate the mouse position on canvas.
@@ -90,13 +92,22 @@ const Drawing = ({ size }) => {
     }
 
 
+    const onMouseUp = e => {
+        toggleLoop("pen_erase", false);
+        toggleLoop("pen_brush", false); 
+        classify()
+    }
+    const onMouseDown = e => {
+        if (e.button === 2) toggleLoop("pen_erase", true, 0.7);
+        else toggleLoop("pen_brush", true, 1);
+        updatePosition(e);
+    }
     const updatePosition = e => {
-
         const frame = canvasFrame.current;
         let cursor = e;
         if (e.type === 'touchmove' || e.type === 'touchstart') cursor = e.nativeEvent.touches[0]
         pos.x = cursor.clientX - frame.offsetLeft;
-        pos.y = cursor.clientY - frame.offsetTop;
+        pos.y = cursor.clientY - frame.offsetTop + window.scrollY;
 
     }
 
@@ -150,6 +161,20 @@ const Drawing = ({ size }) => {
         ctxHidden.stroke();
     }
 
+    const clearCanvas = () => {
+        const ctxMain = canvasMain.current.getContext('2d');
+        const ctxHidden = canvasHidden.current.getContext('2d');
+
+        ctxHidden.fillStyle = 'white';
+        ctxHidden.fillStyle = 'white';
+
+        ctxMain.fillRect(0, 0, canvasMain.current.width, canvasMain.current.height);
+        ctxHidden.fillRect(0, 0, canvasHidden.current.width, canvasHidden.current.height);
+
+        setMl5(new Array(10).fill({ label: '', confidence: 0 }));
+        setTitle('');
+        setPath('');
+    }
 
     // Methods and states for sending picutre to server.
     const [path, setPath] = useState('');
@@ -161,8 +186,10 @@ const Drawing = ({ size }) => {
     const [loaderHidden, setLoaderHidden] = useState(true);
 
     const sendToServer = async e => {
-
+   
         if (sending || !loaderHidden) return;
+
+        playSound("button_click")
         setSending(true);
         setLoaderHidden(false);
 
@@ -176,7 +203,7 @@ const Drawing = ({ size }) => {
                 meta: ml5,
             }
         }
-        
+
         try {
             const res = await fetch(meta.endpoint + `/images?token=${meta.token}`, {
                 method: 'POST',
@@ -187,8 +214,8 @@ const Drawing = ({ size }) => {
             })
 
             const data = await res.json();
-            if(res.status !== 200) throw 'Something went wrong: ' + data.err;
-            
+            if (res.status !== 200) throw 'Something went wrong: ' + data.err;
+
             setError('');
             setText(path === '' ? 'Image has been sent' : 'Image has been updated');
             setPath(data.path);
@@ -214,6 +241,7 @@ const Drawing = ({ size }) => {
                 color={strokeColor} setColor={setStrokeColor}
                 width={strokeWidth} setWidth={setStrokeWidth}
                 rubber={rubber} setRubber={setRubber}
+                onClearCanvas={clearCanvas}
             />
 
             <div className={"z-50 relative " + (loaderHidden ? 'hidden' : '')} >
@@ -224,12 +252,16 @@ const Drawing = ({ size }) => {
 
 
             {/* The two canvas. */}
-            <div ref={canvasFrame} className="relative bg-transparent" style={{ 'touch-action': 'none' }}
-                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke} >
+            <div ref={canvasFrame} className="relative bg-transparent " style={{ 'touchAction': 'none' }}
+                onContextMenu={e => e.preventDefault()} onWheel={onScrollStroke}
+                onMouseEnter={e => document.getElementsByTagName("body")[0].classList.add("stop-scrolling")}
+                onMouseLeave={e => { onMouseUp(e); document.getElementsByTagName("body")[0].classList.remove("stop-scrolling") }}
+            >
+
                 <canvas ref={canvasHidden} height={size} width={size} className="absolute top-0" />
                 <canvas ref={canvasMain} height={size} width={size} className="relative rounded-sm bg-white"
-                    onMouseDown={updatePosition} onMouseMove={draw} onMouseUp={classify}
-                    onTouchStart={updatePosition} onTouchMove={draw} onTouchEnd={classify}
+                    onMouseDown={onMouseDown} onMouseMove={draw} onMouseUp={onMouseUp}
+                    onTouchStart={onMouseDown} onTouchMove={draw} onTouchEnd={onMouseUp}
                 />
 
 

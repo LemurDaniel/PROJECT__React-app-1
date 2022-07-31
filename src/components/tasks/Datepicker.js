@@ -1,11 +1,13 @@
 import React from 'react'
 
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs'
+import useAudio from '../useAudio'
 
 const Datepicker = ({ date, setDate }) => {
 
-
+    const [playSound] = useAudio()
     const moveDate = direction => {
+        playSound("button_click");
         const newDate = new Date(date);
         newDate.setDate(newDate.getDate() + direction);
         setDate(newDate.toISOString().split('T')[0])

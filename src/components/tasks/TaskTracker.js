@@ -7,6 +7,7 @@ import Task from './Task';
 import AddTask from './AddTask';
 import UserContext from '../UserContext';
 import Datepicker from './Datepicker';
+import useAudio from '../useAudio';
 
 const sortTypes = {
     'time': {
@@ -30,6 +31,7 @@ const sortTypes = {
 const TaskTracker = () => {
 
     const { meta } = useContext(UserContext);
+    const [playSound] = useAudio();
 
     const [showModal, setShowModal] = useState(false);
     const [sortType, setSortType] = useState(sortTypes['time']);
@@ -81,7 +83,7 @@ const TaskTracker = () => {
             body: JSON.stringify(task)
         })
 
-        if(res.status !== 200) return;
+        if (res.status !== 200) return;
         const data = await res.json();
         const newTasks = [...tasks, data];
         newTasks.sort(sortType.func)
@@ -113,6 +115,7 @@ const TaskTracker = () => {
 
     const onSortChange = e => {
 
+        playSound("button_click")
         const newSortType = sortTypes[e.target.value];
         setSortType(newSortType);
 
@@ -140,7 +143,7 @@ const TaskTracker = () => {
                         </select>
                     </div>
 
-                    <button className="my-2 btn-prominent btn-light font-bold" onClick={e => setShowModal(!showModal)} >
+                    <button className="my-2 btn-prominent btn-light font-bold" onClick={e => {playSound("button_click"); setShowModal(!showModal)}} >
                         {!showModal ? 'Add new Task' : 'Close new Task'}
                     </button>
                 </header>

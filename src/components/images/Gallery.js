@@ -6,10 +6,12 @@ import UserContext from '../UserContext'
 import Searchbar from './Searchbar';
 import Image from './Image';
 import Loading from '../website/Loading';
+import useAudio from '../useAudio';
 
 const Gallery = () => {
 
     const { meta } = useContext(UserContext);
+    const [playSound] = useAudio();
 
     const [hash, setHash] = useState(null)
     const [images, setImages] = useState([]);
@@ -17,6 +19,7 @@ const Gallery = () => {
 
     const searchImages = async (name, user, label) => {
 
+        playSound("button_click")
         try {
             setLoading(true);
 

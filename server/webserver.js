@@ -22,6 +22,12 @@ const SSL = {
 };
 
 
+const soundEffects = {};
+fs.readdirSync(path.join(__dirname, "public/assets/sounds")).
+    filter(item => item.split(".").pop() === "mp3").
+    forEach(item => soundEffects[item.split(".")[0]] = path.join("/assets/sounds", item));
+fs.writeFileSync(path.join(__dirname, "public/assets/sounds", "soundeffects.json"), JSON.stringify(soundEffects, null, 4));
+
 //Create Server//
 const app = express();
 // app.use(cors())
