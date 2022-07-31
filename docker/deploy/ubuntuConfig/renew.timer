@@ -3,7 +3,7 @@ Description=Timer to renew certificate
 
 [Timer]
 OnBootSec=5sec
-OnCalendar=*-*-1,25 0:00:00
+OnCalendar=Mon *-*-* 20:00:00
 Unit=renew.service
 
 [Install]

@@ -3,10 +3,10 @@
 file=$(cat /root/PROJECT__React-app-1/docker/deploy/ubuntuConfig/lastCertDate.txt)
 
 lastDateFormated=$(date -d $file +%Y/%m/%d)
-expirationFormated=$(date -d '80 days ago' +%Y/%m/%d)
+expirationFormated=$(date -d '70 days ago' +%Y/%m/%d)
 
 lastDate=$(date -d $file '+%s')
-expiration=$(date -d '80 days ago' +%s)
+expiration=$(date -d '70 days ago' +%s)
 
 currentDate=$(date -d 'today' '+%Y/%m/%d')
 currentLog=$currentDate'/ --- expiration: '$expirationFormated' - lastDate: '$lastDateFormated' || ['$expiration' -ge '$lastDate'] ===> '
